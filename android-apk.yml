@@ -1,0 +1,57 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Repo indir
+        uses: actions/checkout@v4
+
+      - name: Java kur
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Flutter kur
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Proje zip dosyasini ac
+        run: |
+          mkdir appsrc
+          unzip -q TrinkWeightLoss_Clean_Flutter_Project.zip -d appsrc
+          find appsrc -name pubspec.yaml
+
+      - name: Proje klasorunu bul
+        id: findproj
+        run: |
+          PROJECT_DIR=$(dirname "$(find appsrc -name pubspec.yaml | head -n 1)")
+          echo "project_dir=$PROJECT_DIR" >> $GITHUB_OUTPUT
+          echo "Bulunan klasor: $PROJECT_DIR"
+
+      - name: Android klasorunu olustur
+        run: |
+          cd "${{ steps.findproj.outputs.project_dir }}"
+          flutter create . --platforms=android
+
+      - name: Paketleri indir
+        run: |
+          cd "${{ steps.findproj.outputs.project_dir }}"
+          flutter pub get
+
+      - name: APK olustur
+        run: |
+          cd "${{ steps.findproj.outputs.project_dir }}"
+          flutter build apk --release
+
+      - name: APK yukle
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: ${{ steps.findproj.outputs.project_dir }}/build/app/outputs/flutter-apk/app-release.apk
