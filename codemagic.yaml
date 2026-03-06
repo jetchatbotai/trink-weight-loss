@@ -16,14 +16,18 @@ workflows:
           fi
           echo "Found app dir: $APP_DIR"
           echo "APP_DIR=$APP_DIR" >> $CM_ENV
-
-      - name: Prepare Flutter project
+- name: Prepare Flutter project
         script: |
           cd "$APP_DIR"
           if [ ! -d "android" ]; then
-            flutter create . --platforms=android
+            flutter create . --platforms=android --project-name trink_weight_loss --org com.trink.weightloss
           fi
           flutter pub get
+      
+        
+          
+          
+          
 
       - name: Build APK
         script: |
