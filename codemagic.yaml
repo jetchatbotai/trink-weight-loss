@@ -8,7 +8,7 @@ workflows:
     scripts:
       - name: Unzip project
         script: |
-          unzip -o TrinkWeightLoss_Clean_Flutter_Project.zip -d extracted
+          unzip -o "TrinkWeightLoss_Clean_Flutter_Project (1).zip" -d extracted
           APP_DIR=$(find extracted -name pubspec.yaml | head -n 1 | xargs dirname)
           if [ -z "$APP_DIR" ]; then
             echo "pubspec.yaml not found"
