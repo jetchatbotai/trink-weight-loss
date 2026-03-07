@@ -1,0 +1,1987 @@
+workflows:
+  android-build:
+    name: Trink Android Build
+    max_build_duration: 45
+    environment:
+      flutter: stable
+
+    scripts:
+      - name: Create Flutter project
+        script: |
+          flutter create trink_app --platforms=android --project-name trink_weight_loss --org com.trink
+
+      - name: Replace main.dart with V6 ultra app
+        script: |
+          cd trink_app
+          cat > lib/main.dart << 'EOF'
+          import 'dart:async';
+          import 'dart:math' as math;
+          import 'package:flutter/material.dart';
+
+          void main() {
+            runApp(const TrinkApp());
+          }
+
+          class TrinkApp extends StatelessWidget {
+            const TrinkApp({super.key});
+
+            @override
+            Widget build(BuildContext context) {
+              return MaterialApp(
+                debugShowCheckedModeBanner: false,
+                title: 'Trink Weight Loss',
+                theme: ThemeData(
+                  brightness: Brightness.dark,
+                  scaffoldBackgroundColor: const Color(0xFF090909),
+                  useMaterial3: true,
+                  colorScheme: const ColorScheme.dark(
+                    primary: Color(0xFF39FF14),
+                    secondary: Color(0xFF39FF14),
+                    surface: Color(0xFF171717),
+                  ),
+                  appBarTheme: const AppBarTheme(
+                    backgroundColor: Color(0xFF090909),
+                    elevation: 0,
+                  ),
+                ),
+                home: const MainShell(),
+              );
+            }
+          }
+
+          enum ExerciseCategory {
+            abs('Abs'),
+            legs('Legs'),
+            glutes('Glutes'),
+            arms('Arms'),
+            shoulders('Shoulders'),
+            chest('Chest'),
+            back('Back'),
+            fullBody('Full Body'),
+            cardio('Cardio'),
+            stretching('Stretching'),
+            hiit('HIIT'),
+            mobility('Mobility');
+
+            const ExerciseCategory(this.label);
+            final String label;
+          }
+
+          enum ExerciseDifficulty {
+            beginner('Beginner'),
+            intermediate('Intermediate'),
+            advanced('Advanced');
+
+            const ExerciseDifficulty(this.label);
+            final String label;
+          }
+
+          enum MovementPattern {
+            jumping,
+            squat,
+            push,
+            plank,
+            lunge,
+            crunch,
+            bridge,
+            stretch,
+            run,
+            twist,
+            kick,
+            raise,
+            generic,
+          }
+
+          MovementPattern resolvePattern(String baseName) {
+            final name = baseName.toLowerCase();
+
+            if (name.contains('jumping jack')) return MovementPattern.jumping;
+            if (name.contains('burpee')) return MovementPattern.jumping;
+            if (name.contains('jump squat') || name.contains('bodyweight squat')) {
+              return MovementPattern.squat;
+            }
+            if (name.contains('push up') ||
+                name.contains('tricep dip') ||
+                name.contains('pike push up')) {
+              return MovementPattern.push;
+            }
+            if (name.contains('plank')) return MovementPattern.plank;
+            if (name.contains('lunge')) return MovementPattern.lunge;
+            if (name.contains('bicycle crunch')) return MovementPattern.crunch;
+            if (name.contains('glute bridge')) return MovementPattern.bridge;
+            if (name.contains('hamstring stretch') ||
+                name.contains('cat cow stretch') ||
+                name.contains('hip opener')) {
+              return MovementPattern.stretch;
+            }
+            if (name.contains('high knees') ||
+                name.contains('fast feet') ||
+                name.contains('mountain climbers')) {
+              return MovementPattern.run;
+            }
+            if (name.contains('torso twist') || name.contains('skaters')) {
+              return MovementPattern.twist;
+            }
+            if (name.contains('donkey kick') || name.contains('fire hydrant')) {
+              return MovementPattern.kick;
+            }
+            if (name.contains('leg raises') ||
+                name.contains('arm circles') ||
+                name.contains('superman hold') ||
+                name.contains('bird dog')) {
+              return MovementPattern.raise;
+            }
+
+            return MovementPattern.generic;
+          }
+
+          class Exercise {
+            final String id;
+            final String baseName;
+            final String name;
+            final String description;
+            final ExerciseCategory category;
+            final ExerciseDifficulty difficulty;
+            final int durationSeconds;
+            final int calories;
+            final List<String> targetMuscles;
+            final String animationUrl;
+
+            const Exercise({
+              required this.id,
+              required this.baseName,
+              required this.name,
+              required this.description,
+              required this.category,
+              required this.difficulty,
+              required this.durationSeconds,
+              required this.calories,
+              required this.targetMuscles,
+              required this.animationUrl,
+            });
+
+            String get formattedDuration {
+              final minutes = durationSeconds ~/ 60;
+              final seconds = durationSeconds % 60;
+              if (minutes > 0 && seconds == 0) return '$minutes min';
+              if (minutes > 0) return '$minutes min $seconds sec';
+              return '$seconds sec';
+            }
+          }
+
+          class WorkoutCollection {
+            final String id;
+            final String title;
+            final String subtitle;
+            final String goal;
+            final ExerciseDifficulty difficulty;
+            final List<Exercise> exercises;
+
+            const WorkoutCollection({
+              required this.id,
+              required this.title,
+              required this.subtitle,
+              required this.goal,
+              required this.difficulty,
+              required this.exercises,
+            });
+
+            int get totalDuration =>
+                exercises.fold(0, (sum, item) => sum + item.durationSeconds);
+
+            int get totalCalories =>
+                exercises.fold(0, (sum, item) => sum + item.calories);
+
+            String get formattedDuration {
+              final minutes = totalDuration ~/ 60;
+              final seconds = totalDuration % 60;
+              if (seconds == 0) return '$minutes min';
+              return '$minutes min $seconds sec';
+            }
+          }
+
+          class ExerciseRepository {
+            static final Map<String, String> animationMap = {
+              'Jumping Jacks': 'https://media.giphy.com/media/3o7TKO3P8JkQ0Y9mDK/giphy.gif',
+              'Mountain Climbers': 'https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif',
+              'Plank Hold': 'https://media.giphy.com/media/3o7aD2saalBwwftBIY/giphy.gif',
+              'Bicycle Crunch': 'https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif',
+              'Leg Raises': 'https://media.giphy.com/media/26ufdipQqU2lhNA4g/giphy.gif',
+              'Bodyweight Squat': 'https://media.giphy.com/media/3o7TKtnuHOHHUjR38Y/giphy.gif',
+              'Jump Squat': 'https://media.giphy.com/media/l0MYEqEzwMWFCg8rm/giphy.gif',
+              'Forward Lunge': 'https://media.giphy.com/media/3o7aCTfyhYawdOXcFW/giphy.gif',
+              'Reverse Lunge': 'https://media.giphy.com/media/26u4cqiYI30juCOGY/giphy.gif',
+              'Glute Bridge': 'https://media.giphy.com/media/26gssIytJvy1b1THO/giphy.gif',
+              'Donkey Kick': 'https://media.giphy.com/media/l0HlQ7LRalQqdWfao/giphy.gif',
+              'Fire Hydrant': 'https://media.giphy.com/media/l0MYM98IwMYDIn1fO/giphy.gif',
+              'Push Up': 'https://media.giphy.com/media/xT9IgG50Fb7Mi0prBC/giphy.gif',
+              'Knee Push Up': 'https://media.giphy.com/media/3o6Zt481isNVuQI1l6/giphy.gif',
+              'Pike Push Up': 'https://media.giphy.com/media/26u4lOMA8JKSnL9Uk/giphy.gif',
+              'Arm Circles': 'https://media.giphy.com/media/3o6ZsY8Ff1a7rJ4mU8/giphy.gif',
+              'Tricep Dip': 'https://media.giphy.com/media/l0HlNQ03J5JxX6lva/giphy.gif',
+              'Superman Hold': 'https://media.giphy.com/media/26gJyz3sN8nmXWlYQ/giphy.gif',
+              'Bird Dog': 'https://media.giphy.com/media/l0MYB8Ory7Hqefo9a/giphy.gif',
+              'Burpee': 'https://media.giphy.com/media/l378zKVk7Eh3yHoJi/giphy.gif',
+              'High Knees': 'https://media.giphy.com/media/l0MYKDrZ8n8q9JfDG/giphy.gif',
+              'Fast Feet': 'https://media.giphy.com/media/26uf2JHNV0Tq3ugkE/giphy.gif',
+              'Skaters': 'https://media.giphy.com/media/26u4cqiYI30juCOGY/giphy.gif',
+              'Cat Cow Stretch': 'https://media.giphy.com/media/l0MYu5zKQitx3s8Ra/giphy.gif',
+              'Hamstring Stretch': 'https://media.giphy.com/media/3o7aD4VrQ0fD5M2rTi/giphy.gif',
+              'Hip Opener': 'https://media.giphy.com/media/l0MYM98IwMYDIn1fO/giphy.gif',
+              'Torso Twist': 'https://media.giphy.com/media/3o72F8t9TDi2xVnxOE/giphy.gif',
+            };
+
+            static final List<Exercise> allExercises = _buildExercises();
+
+            static List<Exercise> _buildExercises() {
+              final templates = <_Template>[
+                _Template(
+                  baseName: 'Jumping Jacks',
+                  description: 'Classic cardio movement for a quick warm-up and fat burn.',
+                  category: ExerciseCategory.cardio,
+                  muscles: ['Full Body', 'Legs', 'Shoulders'],
+                  calories: 18,
+                ),
+                _Template(
+                  baseName: 'Mountain Climbers',
+                  description: 'Core and cardio movement for endurance and burn.',
+                  category: ExerciseCategory.fullBody,
+                  muscles: ['Core', 'Shoulders', 'Legs'],
+                  calories: 22,
+                ),
+                _Template(
+                  baseName: 'Plank Hold',
+                  description: 'Static core stability exercise.',
+                  category: ExerciseCategory.abs,
+                  muscles: ['Core', 'Shoulders'],
+                  calories: 12,
+                ),
+                _Template(
+                  baseName: 'Bicycle Crunch',
+                  description: 'Dynamic abdominal movement for abs and obliques.',
+                  category: ExerciseCategory.abs,
+                  muscles: ['Abs', 'Obliques'],
+                  calories: 16,
+                ),
+                _Template(
+                  baseName: 'Leg Raises',
+                  description: 'Lower abdominal strengthening movement.',
+                  category: ExerciseCategory.abs,
+                  muscles: ['Lower Abs', 'Hip Flexors'],
+                  calories: 13,
+                ),
+                _Template(
+                  baseName: 'Bodyweight Squat',
+                  description: 'Foundational lower body strength exercise.',
+                  category: ExerciseCategory.legs,
+                  muscles: ['Quads', 'Glutes', 'Hamstrings'],
+                  calories: 16,
+                ),
+                _Template(
+                  baseName: 'Jump Squat',
+                  description: 'Explosive leg movement for power and calorie burn.',
+                  category: ExerciseCategory.legs,
+                  muscles: ['Glutes', 'Quads', 'Calves'],
+                  calories: 24,
+                ),
+                _Template(
+                  baseName: 'Forward Lunge',
+                  description: 'Single-leg exercise for strength and balance.',
+                  category: ExerciseCategory.legs,
+                  muscles: ['Quads', 'Glutes', 'Hamstrings'],
+                  calories: 15,
+                ),
+                _Template(
+                  baseName: 'Reverse Lunge',
+                  description: 'Joint-friendly lunge variation with strong glute activation.',
+                  category: ExerciseCategory.legs,
+                  muscles: ['Glutes', 'Quads', 'Hamstrings'],
+                  calories: 15,
+                ),
+                _Template(
+                  baseName: 'Glute Bridge',
+                  description: 'Hip extension movement focused on the glutes.',
+                  category: ExerciseCategory.glutes,
+                  muscles: ['Glutes', 'Hamstrings'],
+                  calories: 11,
+                ),
+                _Template(
+                  baseName: 'Donkey Kick',
+                  description: 'Glute activation and shaping movement.',
+                  category: ExerciseCategory.glutes,
+                  muscles: ['Glutes'],
+                  calories: 10,
+                ),
+                _Template(
+                  baseName: 'Fire Hydrant',
+                  description: 'Outer glute and hip activation movement.',
+                  category: ExerciseCategory.glutes,
+                  muscles: ['Glutes', 'Hips'],
+                  calories: 10,
+                ),
+                _Template(
+                  baseName: 'Push Up',
+                  description: 'Classic upper-body bodyweight exercise.',
+                  category: ExerciseCategory.chest,
+                  muscles: ['Chest', 'Triceps', 'Shoulders'],
+                  calories: 16,
+                ),
+                _Template(
+                  baseName: 'Knee Push Up',
+                  description: 'Beginner-friendly chest press movement.',
+                  category: ExerciseCategory.chest,
+                  muscles: ['Chest', 'Triceps'],
+                  calories: 11,
+                ),
+                _Template(
+                  baseName: 'Pike Push Up',
+                  description: 'Bodyweight shoulder pressing movement.',
+                  category: ExerciseCategory.shoulders,
+                  muscles: ['Shoulders', 'Triceps'],
+                  calories: 17,
+                ),
+                _Template(
+                  baseName: 'Arm Circles',
+                  description: 'Shoulder endurance and warm-up drill.',
+                  category: ExerciseCategory.shoulders,
+                  muscles: ['Shoulders'],
+                  calories: 8,
+                ),
+                _Template(
+                  baseName: 'Tricep Dip',
+                  description: 'Bodyweight tricep builder using a chair or edge.',
+                  category: ExerciseCategory.arms,
+                  muscles: ['Triceps', 'Shoulders'],
+                  calories: 13,
+                ),
+                _Template(
+                  baseName: 'Superman Hold',
+                  description: 'Posterior chain movement for the back and glutes.',
+                  category: ExerciseCategory.back,
+                  muscles: ['Lower Back', 'Glutes', 'Upper Back'],
+                  calories: 9,
+                ),
+                _Template(
+                  baseName: 'Bird Dog',
+                  description: 'Core stability and posture exercise.',
+                  category: ExerciseCategory.back,
+                  muscles: ['Core', 'Lower Back', 'Glutes'],
+                  calories: 9,
+                ),
+                _Template(
+                  baseName: 'Burpee',
+                  description: 'High-intensity full-body fat burning exercise.',
+                  category: ExerciseCategory.hiit,
+                  muscles: ['Full Body'],
+                  calories: 28,
+                ),
+                _Template(
+                  baseName: 'High Knees',
+                  description: 'Fast cardio drill to elevate heart rate.',
+                  category: ExerciseCategory.hiit,
+                  muscles: ['Core', 'Legs'],
+                  calories: 20,
+                ),
+                _Template(
+                  baseName: 'Fast Feet',
+                  description: 'Footwork cardio movement with high pace.',
+                  category: ExerciseCategory.cardio,
+                  muscles: ['Legs', 'Calves'],
+                  calories: 18,
+                ),
+                _Template(
+                  baseName: 'Skaters',
+                  description: 'Lateral cardio exercise for agility and burn.',
+                  category: ExerciseCategory.cardio,
+                  muscles: ['Glutes', 'Legs', 'Core'],
+                  calories: 19,
+                ),
+                _Template(
+                  baseName: 'Cat Cow Stretch',
+                  description: 'Mobility and spinal movement for recovery.',
+                  category: ExerciseCategory.stretching,
+                  muscles: ['Spine', 'Core'],
+                  calories: 5,
+                ),
+                _Template(
+                  baseName: 'Hamstring Stretch',
+                  description: 'Recovery stretch for the back of the legs.',
+                  category: ExerciseCategory.stretching,
+                  muscles: ['Hamstrings'],
+                  calories: 4,
+                ),
+                _Template(
+                  baseName: 'Hip Opener',
+                  description: 'Mobility drill for the hips and lower body.',
+                  category: ExerciseCategory.mobility,
+                  muscles: ['Hips', 'Glutes'],
+                  calories: 6,
+                ),
+                _Template(
+                  baseName: 'Torso Twist',
+                  description: 'Mobility movement for trunk rotation and posture.',
+                  category: ExerciseCategory.mobility,
+                  muscles: ['Core', 'Spine'],
+                  calories: 6,
+                ),
+              ];
+
+              final variations = <_Variation>[
+                _Variation(
+                  suffix: 'Beginner',
+                  difficulty: ExerciseDifficulty.beginner,
+                  durationSeconds: 30,
+                  multiplier: 1.0,
+                ),
+                _Variation(
+                  suffix: 'Intermediate',
+                  difficulty: ExerciseDifficulty.intermediate,
+                  durationSeconds: 45,
+                  multiplier: 1.2,
+                ),
+                _Variation(
+                  suffix: 'Advanced',
+                  difficulty: ExerciseDifficulty.advanced,
+                  durationSeconds: 60,
+                  multiplier: 1.5,
+                ),
+                _Variation(
+                  suffix: 'Quick Burn',
+                  difficulty: ExerciseDifficulty.intermediate,
+                  durationSeconds: 40,
+                  multiplier: 1.15,
+                ),
+                _Variation(
+                  suffix: 'Endurance',
+                  difficulty: ExerciseDifficulty.advanced,
+                  durationSeconds: 90,
+                  multiplier: 1.9,
+                ),
+                _Variation(
+                  suffix: 'Power',
+                  difficulty: ExerciseDifficulty.advanced,
+                  durationSeconds: 50,
+                  multiplier: 1.35,
+                ),
+                _Variation(
+                  suffix: 'Lite',
+                  difficulty: ExerciseDifficulty.beginner,
+                  durationSeconds: 25,
+                  multiplier: 0.85,
+                ),
+                _Variation(
+                  suffix: 'Tempo',
+                  difficulty: ExerciseDifficulty.intermediate,
+                  durationSeconds: 55,
+                  multiplier: 1.25,
+                ),
+              ];
+
+              final exercises = <Exercise>[];
+              int index = 1;
+
+              for (final template in templates) {
+                for (final variation in variations) {
+                  exercises.add(
+                    Exercise(
+                      id: 'ex_${index.toString().padLeft(3, '0')}',
+                      baseName: template.baseName,
+                      name: '${template.baseName} ${variation.suffix}',
+                      description: template.description,
+                      category: template.category,
+                      difficulty: variation.difficulty,
+                      durationSeconds: variation.durationSeconds,
+                      calories: (template.calories * variation.multiplier).round(),
+                      targetMuscles: template.muscles,
+                      animationUrl: animationMap[template.baseName] ?? '',
+                    ),
+                  );
+                  index++;
+                }
+              }
+
+              return exercises;
+            }
+          }
+
+          class WorkoutRepository {
+            static List<WorkoutCollection> buildCollections(List<Exercise> all) {
+              final collections = <WorkoutCollection>[];
+              final groupedByCategory = <ExerciseCategory, List<Exercise>>{};
+
+              for (final category in ExerciseCategory.values) {
+                groupedByCategory[category] =
+                    all.where((e) => e.category == category).toList();
+              }
+
+              int idCounter = 1;
+
+              for (final category in ExerciseCategory.values) {
+                final list = groupedByCategory[category]!;
+                for (int i = 0; i < 8; i++) {
+                  final start = (i * 3) % list.length;
+                  final bundle = <Exercise>[];
+                  for (int j = 0; j < 8; j++) {
+                    bundle.add(list[(start + j) % list.length]);
+                  }
+                  collections.add(
+                    WorkoutCollection(
+                      id: 'w_${idCounter.toString().padLeft(3, '0')}',
+                      title: '${category.label} Program ${i + 1}',
+                      subtitle: 'Focused ${category.label.toLowerCase()} routine',
+                      goal: 'Improve ${category.label.toLowerCase()} performance',
+                      difficulty: bundle.first.difficulty,
+                      exercises: bundle,
+                    ),
+                  );
+                  idCounter++;
+                }
+              }
+
+              while (collections.length < 100) {
+                final start = (collections.length * 7) % all.length;
+                final bundle = <Exercise>[];
+                for (int j = 0; j < 12; j++) {
+                  bundle.add(all[(start + j) % all.length]);
+                }
+                collections.add(
+                  WorkoutCollection(
+                    id: 'w_${idCounter.toString().padLeft(3, '0')}',
+                    title: 'Smart Mix Program ${collections.length + 1}',
+                    subtitle: 'Auto-generated balanced workout',
+                    goal: 'General fat burn and conditioning',
+                    difficulty: bundle.first.difficulty,
+                    exercises: bundle,
+                  ),
+                );
+                idCounter++;
+              }
+
+              return collections.take(100).toList();
+            }
+          }
+
+          class MainShell extends StatefulWidget {
+            const MainShell({super.key});
+
+            @override
+            State<MainShell> createState() => _MainShellState();
+          }
+
+          class _MainShellState extends State<MainShell> {
+            int currentIndex = 0;
+            final allExercises = ExerciseRepository.allExercises;
+            late final List<WorkoutCollection> collections =
+                WorkoutRepository.buildCollections(allExercises);
+
+            @override
+            Widget build(BuildContext context) {
+              final pages = [
+                HomePage(exerciseCount: allExercises.length, collections: collections),
+                WorkoutCollectionsPage(collections: collections),
+                ExerciseCatalogPage(exercises: allExercises),
+                const ProfilePage(),
+              ];
+
+              return Scaffold(
+                body: SafeArea(child: pages[currentIndex]),
+                bottomNavigationBar: NavigationBar(
+                  selectedIndex: currentIndex,
+                  backgroundColor: const Color(0xFF111111),
+                  indicatorColor: const Color(0x2239FF14),
+                  onDestinationSelected: (value) {
+                    setState(() => currentIndex = value);
+                  },
+                  destinations: const [
+                    NavigationDestination(
+                      icon: Icon(Icons.home_outlined),
+                      selectedIcon: Icon(Icons.home),
+                      label: 'Home',
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.fitness_center_outlined),
+                      selectedIcon: Icon(Icons.fitness_center),
+                      label: 'Workouts',
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.grid_view_outlined),
+                      selectedIcon: Icon(Icons.grid_view),
+                      label: 'Exercises',
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.person_outline),
+                      selectedIcon: Icon(Icons.person),
+                      label: 'Profile',
+                    ),
+                  ],
+                ),
+              );
+            }
+          }
+
+          class HomePage extends StatelessWidget {
+            final int exerciseCount;
+            final List<WorkoutCollection> collections;
+
+            const HomePage({
+              super.key,
+              required this.exerciseCount,
+              required this.collections,
+            });
+
+            @override
+            Widget build(BuildContext context) {
+              return ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  const Text(
+                    'Trink Weight Loss',
+                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    '200+ exercises • 100 workout programs • animated trainer',
+                    style: TextStyle(color: Colors.white70),
+                  ),
+                  const SizedBox(height: 18),
+                  _heroCard(
+                    icon: Icons.local_fire_department,
+                    title: 'Ultra Workout Engine',
+                    subtitle: 'Animated exercise details and workout runner ready',
+                    trailing: '$exerciseCount+',
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _statCard(Icons.grid_view, 'Exercises', '$exerciseCount'),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _statCard(Icons.view_list, 'Programs', '${collections.length}'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Featured Programs',
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 10),
+                  ...collections.take(5).map((collection) => _programTile(context, collection)),
+                ],
+              );
+            }
+
+            Widget _heroCard({
+              required IconData icon,
+              required String title,
+              required String subtitle,
+              required String trailing,
+            }) {
+              return Container(
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF171717),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: const Color(0x2239FF14)),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 58,
+                      height: 58,
+                      decoration: const BoxDecoration(
+                        color: Color(0x2239FF14),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(icon, color: const Color(0xFF39FF14)),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 4),
+                          Text(subtitle, style: const TextStyle(color: Colors.white70)),
+                        ],
+                      ),
+                    ),
+                    Text(
+                      trailing,
+                      style: const TextStyle(
+                        color: Color(0xFF39FF14),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            Widget _statCard(IconData icon, String title, String value) {
+              return Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF171717),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0x2239FF14)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(icon, color: const Color(0xFF39FF14)),
+                    const SizedBox(height: 12),
+                    Text(title, style: const TextStyle(color: Colors.white70)),
+                    const SizedBox(height: 4),
+                    Text(value, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                  ],
+                ),
+              );
+            }
+
+            Widget _programTile(BuildContext context, WorkoutCollection collection) {
+              return InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => WorkoutDetailPage(collection: collection),
+                    ),
+                  );
+                },
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF171717),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: const Color(0x2239FF14)),
+                  ),
+                  child: Row(
+                    children: [
+                      const CircleAvatar(
+                        backgroundColor: Color(0x2239FF14),
+                        child: Icon(Icons.play_arrow, color: Color(0xFF39FF14)),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(collection.title, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 4),
+                            Text(collection.subtitle, style: const TextStyle(color: Colors.white70)),
+                          ],
+                        ),
+                      ),
+                      const Icon(Icons.chevron_right, color: Colors.white54),
+                    ],
+                  ),
+                ),
+              );
+            }
+          }
+
+          class WorkoutCollectionsPage extends StatelessWidget {
+            final List<WorkoutCollection> collections;
+
+            const WorkoutCollectionsPage({
+              super.key,
+              required this.collections,
+            });
+
+            @override
+            Widget build(BuildContext context) {
+              return ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  const Text(
+                    'Workout Collections',
+                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 6),
+                  Text('${collections.length} programs available', style: const TextStyle(color: Colors.white70)),
+                  const SizedBox(height: 16),
+                  ...collections.map(
+                    (collection) => InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => WorkoutDetailPage(collection: collection),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF171717),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: const Color(0x2239FF14)),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(collection.title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 4),
+                            Text(collection.subtitle, style: const TextStyle(color: Colors.white70)),
+                            const SizedBox(height: 10),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: [
+                                _chip(collection.goal),
+                                _chip(collection.difficulty.label),
+                                _chip(collection.formattedDuration),
+                                _chip('${collection.totalCalories} kcal'),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }
+
+            Widget _chip(String label) {
+              return Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: const Color(0x2239FF14),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Text(label),
+              );
+            }
+          }
+
+          class WorkoutDetailPage extends StatelessWidget {
+            final WorkoutCollection collection;
+
+            const WorkoutDetailPage({
+              super.key,
+              required this.collection,
+            });
+
+            @override
+            Widget build(BuildContext context) {
+              return Scaffold(
+                appBar: AppBar(title: Text(collection.title)),
+                body: ListView(
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(18),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF171717),
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(color: const Color(0x2239FF14)),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(collection.subtitle, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 6),
+                          Text(collection.goal, style: const TextStyle(color: Colors.white70)),
+                          const SizedBox(height: 12),
+                          Text('Exercises: ${collection.exercises.length}'),
+                          Text('Duration: ${collection.formattedDuration}'),
+                          Text('Estimated calories: ${collection.totalCalories} kcal'),
+                          const SizedBox(height: 16),
+                          SizedBox(
+                            width: double.infinity,
+                            child: FilledButton(
+                              style: FilledButton.styleFrom(
+                                backgroundColor: const Color(0xFF39FF14),
+                                foregroundColor: Colors.black,
+                              ),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => WorkoutRunnerPage(collection: collection),
+                                  ),
+                                );
+                              },
+                              child: const Text('Start Workout'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+                    ...collection.exercises.map(
+                      (exercise) => InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ExerciseDetailPage(exercise: exercise),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF171717),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: const Color(0x2239FF14)),
+                          ),
+                          child: Row(
+                            children: [
+                              const CircleAvatar(
+                                backgroundColor: Color(0x2239FF14),
+                                child: Icon(Icons.fitness_center, color: Color(0xFF39FF14)),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(exercise.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      '${exercise.category.label} • ${exercise.difficulty.label} • ${exercise.formattedDuration}',
+                                      style: const TextStyle(color: Colors.white70),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Text('${exercise.calories} kcal', style: const TextStyle(color: Color(0xFF39FF14))),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+          }
+
+          class ExerciseCatalogPage extends StatelessWidget {
+            final List<Exercise> exercises;
+
+            const ExerciseCatalogPage({
+              super.key,
+              required this.exercises,
+            });
+
+            @override
+            Widget build(BuildContext context) {
+              return ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  const Text(
+                    'Exercise Catalog',
+                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 6),
+                  Text('${exercises.length} exercises ready', style: const TextStyle(color: Colors.white70)),
+                  const SizedBox(height: 16),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: ExerciseCategory.values
+                        .map(
+                          (category) => Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: const Color(0x2239FF14),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Text(category.label),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                  const SizedBox(height: 16),
+                  ...exercises.map(
+                    (exercise) => InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ExerciseDetailPage(exercise: exercise),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF171717),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: const Color(0x2239FF14)),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 50,
+                              height: 50,
+                              decoration: const BoxDecoration(
+                                color: Color(0x2239FF14),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(Icons.fitness_center, color: Color(0xFF39FF14)),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(exercise.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '${exercise.category.label} • ${exercise.difficulty.label} • ${exercise.formattedDuration}',
+                                    style: const TextStyle(color: Colors.white70),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Text(
+                              '${exercise.calories} kcal',
+                              style: const TextStyle(color: Color(0xFF39FF14), fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }
+          }
+
+          class ExerciseDetailPage extends StatelessWidget {
+            final Exercise exercise;
+
+            const ExerciseDetailPage({
+              super.key,
+              required this.exercise,
+            });
+
+            @override
+            Widget build(BuildContext context) {
+              return Scaffold(
+                appBar: AppBar(title: Text(exercise.name)),
+                body: ListView(
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    AnimatedTrainerPanel(exercise: exercise),
+                    const SizedBox(height: 16),
+                    Text(exercise.name, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 6),
+                    Text(exercise.description, style: const TextStyle(color: Colors.white70)),
+                    const SizedBox(height: 16),
+                    _infoTile('Category', exercise.category.label),
+                    _infoTile('Difficulty', exercise.difficulty.label),
+                    _infoTile('Duration', exercise.formattedDuration),
+                    _infoTile('Calories', '${exercise.calories} kcal'),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Target Muscles',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 10),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: exercise.targetMuscles
+                          .map(
+                            (muscle) => Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: const Color(0x2239FF14),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Text(muscle),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton(
+                        style: FilledButton.styleFrom(
+                          backgroundColor: const Color(0xFF39FF14),
+                          foregroundColor: Colors.black,
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => SingleExerciseRunnerPage(exercise: exercise),
+                            ),
+                          );
+                        },
+                        child: const Text('Start Exercise'),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            Widget _infoTile(String title, String value) {
+              return Container(
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF171717),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0x2239FF14)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    Text(value, style: const TextStyle(color: Colors.white70)),
+                  ],
+                ),
+              );
+            }
+          }
+
+          class SingleExerciseRunnerPage extends StatefulWidget {
+            final Exercise exercise;
+
+            const SingleExerciseRunnerPage({
+              super.key,
+              required this.exercise,
+            });
+
+            @override
+            State<SingleExerciseRunnerPage> createState() => _SingleExerciseRunnerPageState();
+          }
+
+          class _SingleExerciseRunnerPageState extends State<SingleExerciseRunnerPage> {
+            Timer? timer;
+            late int remainingSeconds;
+            bool running = false;
+            bool finished = false;
+
+            @override
+            void initState() {
+              super.initState();
+              remainingSeconds = widget.exercise.durationSeconds;
+            }
+
+            @override
+            void dispose() {
+              timer?.cancel();
+              super.dispose();
+            }
+
+            void start() {
+              if (running) return;
+              running = true;
+              timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+                if (!mounted) return;
+                setState(() {
+                  if (remainingSeconds > 0) {
+                    remainingSeconds--;
+                  } else {
+                    timer.cancel();
+                    running = false;
+                    finished = true;
+                  }
+                });
+              });
+            }
+
+            void pause() {
+              timer?.cancel();
+              running = false;
+              setState(() {});
+            }
+
+            String formatSeconds(int seconds) {
+              final minutes = seconds ~/ 60;
+              final remain = seconds % 60;
+              return '${minutes.toString().padLeft(2, '0')}:${remain.toString().padLeft(2, '0')}';
+            }
+
+            @override
+            Widget build(BuildContext context) {
+              return Scaffold(
+                appBar: AppBar(title: Text(widget.exercise.name)),
+                body: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: finished
+                      ? Container(
+                          padding: const EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF171717),
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(color: const Color(0x2239FF14)),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.check_circle, color: Color(0xFF39FF14), size: 72),
+                              const SizedBox(height: 16),
+                              const Text(
+                                'Exercise Completed',
+                                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(widget.exercise.name),
+                            ],
+                          ),
+                        )
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Expanded(child: AnimatedTrainerPanel(exercise: widget.exercise)),
+                            const SizedBox(height: 16),
+                            Text(
+                              formatSeconds(remainingSeconds),
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 48,
+                                fontWeight: FontWeight.w900,
+                                color: Color(0xFF39FF14),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Wrap(
+                              spacing: 10,
+                              runSpacing: 10,
+                              alignment: WrapAlignment.center,
+                              children: [
+                                FilledButton(
+                                  style: FilledButton.styleFrom(
+                                    backgroundColor: const Color(0xFF39FF14),
+                                    foregroundColor: Colors.black,
+                                  ),
+                                  onPressed: start,
+                                  child: const Text('Start'),
+                                ),
+                                OutlinedButton(
+                                  onPressed: pause,
+                                  child: const Text('Pause'),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                ),
+              );
+            }
+          }
+
+          class WorkoutRunnerPage extends StatefulWidget {
+            final WorkoutCollection collection;
+
+            const WorkoutRunnerPage({
+              super.key,
+              required this.collection,
+            });
+
+            @override
+            State<WorkoutRunnerPage> createState() => _WorkoutRunnerPageState();
+          }
+
+          class _WorkoutRunnerPageState extends State<WorkoutRunnerPage> {
+            Timer? timer;
+            int currentIndex = 0;
+            late int remainingSeconds;
+            bool started = false;
+            bool completed = false;
+
+            Exercise get currentExercise => widget.collection.exercises[currentIndex];
+
+            @override
+            void initState() {
+              super.initState();
+              remainingSeconds = widget.collection.exercises.first.durationSeconds;
+            }
+
+            @override
+            void dispose() {
+              timer?.cancel();
+              super.dispose();
+            }
+
+            void startTimer() {
+              if (started) return;
+              started = true;
+              timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+                if (!mounted) return;
+                setState(() {
+                  if (remainingSeconds > 0) {
+                    remainingSeconds--;
+                  } else {
+                    nextExercise();
+                  }
+                });
+              });
+            }
+
+            void pauseTimer() {
+              timer?.cancel();
+              timer = null;
+              started = false;
+              setState(() {});
+            }
+
+            void nextExercise() {
+              if (currentIndex < widget.collection.exercises.length - 1) {
+                currentIndex++;
+                remainingSeconds = widget.collection.exercises[currentIndex].durationSeconds;
+              } else {
+                timer?.cancel();
+                started = false;
+                completed = true;
+              }
+            }
+
+            void previousExercise() {
+              if (currentIndex > 0) {
+                currentIndex--;
+                remainingSeconds = widget.collection.exercises[currentIndex].durationSeconds;
+                completed = false;
+              }
+            }
+
+            String formatSeconds(int seconds) {
+              final minutes = seconds ~/ 60;
+              final remain = seconds % 60;
+              return '${minutes.toString().padLeft(2, '0')}:${remain.toString().padLeft(2, '0')}';
+            }
+
+            @override
+            Widget build(BuildContext context) {
+              return Scaffold(
+                appBar: AppBar(title: Text(widget.collection.title)),
+                body: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: completed
+                      ? Container(
+                          padding: const EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF171717),
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(color: const Color(0x2239FF14)),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.check_circle, color: Color(0xFF39FF14), size: 72),
+                              const SizedBox(height: 16),
+                              const Text(
+                                'Workout Completed',
+                                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'You finished ${widget.collection.title}',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(color: Colors.white70),
+                              ),
+                              const SizedBox(height: 18),
+                              Text(
+                                'Total estimated calories: ${widget.collection.totalCalories} kcal',
+                                style: const TextStyle(fontSize: 18),
+                              ),
+                            ],
+                          ),
+                        )
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Expanded(child: AnimatedTrainerPanel(exercise: currentExercise)),
+                            const SizedBox(height: 16),
+                            Container(
+                              padding: const EdgeInsets.all(18),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF171717),
+                                borderRadius: BorderRadius.circular(24),
+                                border: Border.all(color: const Color(0x2239FF14)),
+                              ),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    'Exercise ${currentIndex + 1} / ${widget.collection.exercises.length}',
+                                    style: const TextStyle(color: Colors.white70),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    currentExercise.name,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    currentExercise.description,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(color: Colors.white70),
+                                  ),
+                                  const SizedBox(height: 20),
+                                  Text(
+                                    formatSeconds(remainingSeconds),
+                                    style: const TextStyle(
+                                      fontSize: 48,
+                                      fontWeight: FontWeight.w900,
+                                      color: Color(0xFF39FF14),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Wrap(
+                                    spacing: 10,
+                                    runSpacing: 10,
+                                    alignment: WrapAlignment.center,
+                                    children: [
+                                      FilledButton(
+                                        style: FilledButton.styleFrom(
+                                          backgroundColor: const Color(0xFF39FF14),
+                                          foregroundColor: Colors.black,
+                                        ),
+                                        onPressed: startTimer,
+                                        child: const Text('Start'),
+                                      ),
+                                      OutlinedButton(
+                                        onPressed: pauseTimer,
+                                        child: const Text('Pause'),
+                                      ),
+                                      OutlinedButton(
+                                        onPressed: previousExercise,
+                                        child: const Text('Previous'),
+                                      ),
+                                      OutlinedButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            nextExercise();
+                                          });
+                                        },
+                                        child: const Text('Next'),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                ),
+              );
+            }
+          }
+
+          class AnimatedTrainerPanel extends StatefulWidget {
+            final Exercise exercise;
+
+            const AnimatedTrainerPanel({
+              super.key,
+              required this.exercise,
+            });
+
+            @override
+            State<AnimatedTrainerPanel> createState() => _AnimatedTrainerPanelState();
+          }
+
+          class _AnimatedTrainerPanelState extends State<AnimatedTrainerPanel>
+              with SingleTickerProviderStateMixin {
+            late final AnimationController controller;
+
+            @override
+            void initState() {
+              super.initState();
+              controller = AnimationController(
+                vsync: this,
+                duration: const Duration(milliseconds: 1800),
+              )..repeat();
+            }
+
+            @override
+            void dispose() {
+              controller.dispose();
+              super.dispose();
+            }
+
+            @override
+            Widget build(BuildContext context) {
+              final pattern = resolvePattern(widget.exercise.baseName);
+
+              return ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFF171717), Color(0xFF101010)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  child: Stack(
+                    children: [
+                      Positioned.fill(
+                        child: widget.exercise.animationUrl.isEmpty
+                            ? const SizedBox.shrink()
+                            : Image.network(
+                                widget.exercise.animationUrl,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                              ),
+                      ),
+                      Positioned.fill(
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Color(0xCC0B0B0B),
+                                Color(0x660B0B0B),
+                                Color(0xCC0B0B0B),
+                              ],
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Center(
+                        child: AnimatedBuilder(
+                          animation: controller,
+                          builder: (context, _) {
+                            return CustomPaint(
+                              size: const Size(190, 270),
+                              painter: HumanTrainerPainter(
+                                progress: controller.value,
+                                pattern: pattern,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      Positioned(
+                        left: 16,
+                        right: 16,
+                        bottom: 16,
+                        child: Container(
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.35),
+                            borderRadius: BorderRadius.circular(18),
+                            border: Border.all(color: const Color(0x2239FF14)),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                widget.exercise.baseName,
+                                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '${widget.exercise.category.label} • ${widget.exercise.difficulty.label}',
+                                style: const TextStyle(color: Colors.white70),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+          }
+
+          class HumanTrainerPainter extends CustomPainter {
+            final double progress;
+            final MovementPattern pattern;
+
+            HumanTrainerPainter({
+              required this.progress,
+              required this.pattern,
+            });
+
+            @override
+            void paint(Canvas canvas, Size size) {
+              final neon = Paint()
+                ..color = const Color(0xFF39FF14)
+                ..strokeWidth = 5.5
+                ..style = PaintingStyle.stroke
+                ..strokeCap = StrokeCap.round
+                ..strokeJoin = StrokeJoin.round;
+
+              final glow = Paint()
+                ..color = const Color(0x5539FF14)
+                ..strokeWidth = 14
+                ..style = PaintingStyle.stroke
+                ..strokeCap = StrokeCap.round
+                ..strokeJoin = StrokeJoin.round
+                ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10);
+
+              final fill = Paint()
+                ..color = const Color(0x1139FF14)
+                ..style = PaintingStyle.fill;
+
+              final t = math.sin(progress * math.pi * 2);
+              final cx = size.width / 2;
+
+              double headY = 34;
+              double shoulderY = 74;
+              double chestY = 96;
+              double waistY = 136;
+              double hipY = 156;
+              double kneeY = 205;
+              double footY = 244;
+
+              double shoulderWidth = 38;
+              double waistWidth = 24;
+              double hipWidth = 28;
+
+              double leftElbowX = cx - 42;
+              double rightElbowX = cx + 42;
+              double leftElbowY = 112;
+              double rightElbowY = 112;
+
+              double leftHandX = cx - 50;
+              double rightHandX = cx + 50;
+              double leftHandY = 142;
+              double rightHandY = 142;
+
+              double leftKneeX = cx - 18;
+              double rightKneeX = cx + 18;
+              double leftFootX = cx - 28;
+              double rightFootX = cx + 28;
+
+              switch (pattern) {
+                case MovementPattern.jumping:
+                  shoulderY = 72;
+                  leftElbowX = cx - 58 - (t * 10);
+                  rightElbowX = cx + 58 + (t * 10);
+                  leftElbowY = 86 - (t * 18);
+                  rightElbowY = 86 - (t * 18);
+                  leftHandX = cx - 72 - (t * 14);
+                  rightHandX = cx + 72 + (t * 14);
+                  leftHandY = 54 - (t * 18);
+                  rightHandY = 54 - (t * 18);
+                  leftFootX = cx - 42 - (t * 12);
+                  rightFootX = cx + 42 + (t * 12);
+                  break;
+
+                case MovementPattern.squat:
+                  final down = t > 0 ? t : 0.0;
+                  headY += down * 12;
+                  shoulderY += down * 18;
+                  chestY += down * 20;
+                  waistY += down * 26;
+                  hipY += down * 30;
+                  kneeY += down * 18;
+                  leftFootX = cx - 38;
+                  rightFootX = cx + 38;
+                  leftKneeX = cx - 28;
+                  rightKneeX = cx + 28;
+                  leftElbowY = 118 + down * 10;
+                  rightElbowY = 118 + down * 10;
+                  leftHandY = 148 + down * 8;
+                  rightHandY = 148 + down * 8;
+                  break;
+
+                case MovementPattern.push:
+                  headY += t * 7;
+                  shoulderY += t * 9;
+                  chestY += t * 10;
+                  waistY += t * 8;
+                  hipY += t * 7;
+                  leftElbowX = cx - 56;
+                  rightElbowX = cx + 56;
+                  leftElbowY = 142 + t * 6;
+                  rightElbowY = 142 + t * 6;
+                  leftHandX = cx - 72;
+                  rightHandX = cx + 72;
+                  leftHandY = 174 + t * 6;
+                  rightHandY = 174 + t * 6;
+                  leftFootX = cx - 34;
+                  rightFootX = cx + 34;
+                  footY = 228;
+                  break;
+
+                case MovementPattern.plank:
+                  headY = 62;
+                  shoulderY = 92;
+                  chestY = 106;
+                  waistY = 126;
+                  hipY = 142;
+                  kneeY = 160;
+                  footY = 176;
+                  leftElbowX = cx - 62;
+                  rightElbowX = cx + 62;
+                  leftElbowY = 104;
+                  rightElbowY = 104;
+                  leftHandX = cx - 82;
+                  rightHandX = cx + 82;
+                  leftHandY = 118;
+                  rightHandY = 118;
+                  leftKneeX = cx - 54;
+                  rightKneeX = cx + 54;
+                  leftFootX = cx - 88;
+                  rightFootX = cx + 88;
+                  break;
+
+                case MovementPattern.lunge:
+                  leftFootX = cx - 48 - t * 6;
+                  rightFootX = cx + 26;
+                  leftKneeX = cx - 34;
+                  rightKneeX = cx + 18;
+                  rightElbowX = cx + 34;
+                  leftElbowX = cx - 34;
+                  break;
+
+                case MovementPattern.crunch:
+                  headY += t * 14;
+                  shoulderY += t * 16;
+                  chestY += t * 18;
+                  waistY -= t * 6;
+                  hipY -= t * 8;
+                  leftElbowX = cx - 26;
+                  rightElbowX = cx + 26;
+                  leftElbowY = 78 + t * 8;
+                  rightElbowY = 78 + t * 8;
+                  leftHandX = cx - 18;
+                  rightHandX = cx + 18;
+                  leftHandY = 60 + t * 10;
+                  rightHandY = 60 + t * 10;
+                  kneeY = 188 - t * 16;
+                  footY = 214 - t * 12;
+                  break;
+
+                case MovementPattern.bridge:
+                  final up = t > 0 ? t : 0.0;
+                  shoulderY += up * 4;
+                  chestY += up * 4;
+                  waistY -= up * 8;
+                  hipY -= up * 18;
+                  kneeY -= up * 4;
+                  leftFootX = cx - 34;
+                  rightFootX = cx + 34;
+                  break;
+
+                case MovementPattern.stretch:
+                  leftElbowX = cx - 56 - t * 10;
+                  rightElbowX = cx + 56 + t * 10;
+                  leftElbowY = 84 - t * 8;
+                  rightElbowY = 84 + t * 8;
+                  leftHandX = cx - 72 - t * 10;
+                  rightHandX = cx + 72 + t * 10;
+                  leftHandY = 62 - t * 6;
+                  rightHandY = 126 + t * 6;
+                  break;
+
+                case MovementPattern.run:
+                  leftElbowX = cx - 28 - t * 18;
+                  rightElbowX = cx + 28 + t * 18;
+                  leftElbowY = 92 - t * 10;
+                  rightElbowY = 118 + t * 10;
+                  leftHandX = cx - 42 - t * 18;
+                  rightHandX = cx + 42 + t * 18;
+                  leftHandY = 68 - t * 10;
+                  rightHandY = 144 + t * 10;
+                  leftKneeX = cx - 12 - t * 14;
+                  rightKneeX = cx + 12 + t * 14;
+                  leftFootX = cx - 26 - t * 16;
+                  rightFootX = cx + 26 + t * 16;
+                  footY = 236;
+                  break;
+
+                case MovementPattern.twist:
+                  leftElbowX = cx - 46 - t * 8;
+                  rightElbowX = cx + 46 + t * 8;
+                  leftHandX = cx - 60 - t * 10;
+                  rightHandX = cx + 60 + t * 10;
+                  leftShoulderXOffset = -shoulderWidth - t * 4;
+                  rightShoulderXOffset = shoulderWidth + t * 4;
+                  break;
+
+                case MovementPattern.kick:
+                  rightKneeX = cx + 24 + t * 8;
+                  rightFootX = cx + 44 + t * 20;
+                  footY = 238 - (t > 0 ? t * 18 : 0);
+                  break;
+
+                case MovementPattern.raise:
+                  leftElbowY = 90 - t * 10;
+                  rightElbowY = 90 - t * 10;
+                  leftHandY = 56 - t * 18;
+                  rightHandY = 56 - t * 18;
+                  break;
+
+                case MovementPattern.generic:
+                  leftElbowX = cx - 42 - (t * 4);
+                  rightElbowX = cx + 42 + (t * 4);
+                  leftHandX = cx - 50 - (t * 5);
+                  rightHandX = cx + 50 + (t * 5);
+                  leftFootX = cx - 28 - (t * 4);
+                  rightFootX = cx + 28 + (t * 4);
+                  break;
+              }
+
+              double leftShoulderXOffset = -shoulderWidth;
+              double rightShoulderXOffset = shoulderWidth;
+
+              final headCenter = Offset(cx, headY);
+              final neck = Offset(cx, headY + 22);
+
+              final leftShoulder = Offset(cx + leftShoulderXOffset, shoulderY);
+              final rightShoulder = Offset(cx + rightShoulderXOffset, shoulderY);
+
+              final leftWaist = Offset(cx - waistWidth, waistY);
+              final rightWaist = Offset(cx + waistWidth, waistY);
+
+              final leftHip = Offset(cx - hipWidth, hipY);
+              final rightHip = Offset(cx + hipWidth, hipY);
+
+              final torsoPath = Path()
+                ..moveTo(leftShoulder.dx, leftShoulder.dy)
+                ..lineTo(rightShoulder.dx, rightShoulder.dy)
+                ..lineTo(rightWaist.dx, rightWaist.dy)
+                ..lineTo(rightHip.dx, rightHip.dy)
+                ..lineTo(leftHip.dx, leftHip.dy)
+                ..lineTo(leftWaist.dx, leftWaist.dy)
+                ..close();
+
+              canvas.drawPath(torsoPath, fill);
+
+              canvas.drawCircle(headCenter, 18, glow);
+              canvas.drawCircle(headCenter, 18, neon);
+              canvas.drawLine(neck, Offset(cx, shoulderY + 4), glow);
+              canvas.drawLine(neck, Offset(cx, shoulderY + 4), neon);
+
+              final spineTop = Offset(cx, chestY);
+              final spineBottom = Offset(cx, hipY - 2);
+              canvas.drawLine(spineTop, spineBottom, glow);
+              canvas.drawLine(spineTop, spineBottom, neon);
+
+              canvas.drawPath(torsoPath, glow);
+              canvas.drawPath(torsoPath, neon);
+
+              final leftElbow = Offset(leftElbowX, leftElbowY);
+              final rightElbow = Offset(rightElbowX, rightElbowY);
+              final leftHand = Offset(leftHandX, leftHandY);
+              final rightHand = Offset(rightHandX, rightHandY);
+
+              final leftKnee = Offset(leftKneeX, kneeY);
+              final rightKnee = Offset(rightKneeX, kneeY);
+              final leftFoot = Offset(leftFootX, footY);
+              final rightFoot = Offset(rightFootX, footY);
+
+              void limb(Offset a, Offset b, Offset c) {
+                final path = Path()
+                  ..moveTo(a.dx, a.dy)
+                  ..lineTo(b.dx, b.dy)
+                  ..lineTo(c.dx, c.dy);
+                canvas.drawPath(path, glow);
+                canvas.drawPath(path, neon);
+                canvas.drawCircle(b, 4, glow);
+                canvas.drawCircle(b, 3, neon);
+              }
+
+              limb(leftShoulder, leftElbow, leftHand);
+              limb(rightShoulder, rightElbow, rightHand);
+              limb(leftHip, leftKnee, leftFoot);
+              limb(rightHip, rightKnee, rightFoot);
+            }
+
+            @override
+            bool shouldRepaint(covariant HumanTrainerPainter oldDelegate) {
+              return oldDelegate.progress != progress || oldDelegate.pattern != pattern;
+            }
+          }
+
+          class ProfilePage extends StatelessWidget {
+            const ProfilePage({super.key});
+
+            @override
+            Widget build(BuildContext context) {
+              return ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  const Text(
+                    'Profile',
+                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    'Ultra private build in progress',
+                    style: TextStyle(color: Colors.white70),
+                  ),
+                  const SizedBox(height: 16),
+                  _infoCard('Goal', 'Weight loss and workout consistency'),
+                  _infoCard('Workout Engine', 'Active'),
+                  _infoCard('Exercise Catalog', '200+ exercises'),
+                  _infoCard('Collections', '100 workout bundles'),
+                  _infoCard('Timer System', 'Running'),
+                  _infoCard('Human Trainer', 'Enabled'),
+                ],
+              );
+            }
+
+            Widget _infoCard(String title, String value) {
+              return Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF171717),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0x2239FF14)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    Text(value, style: const TextStyle(color: Colors.white70)),
+                  ],
+                ),
+              );
+            }
+          }
+
+          class _Template {
+            final String baseName;
+            final String description;
+            final ExerciseCategory category;
+            final List<String> muscles;
+            final int calories;
+
+            const _Template({
+              required this.baseName,
+              required this.description,
+              required this.category,
+              required this.muscles,
+              required this.calories,
+            });
+          }
+
+          class _Variation {
+            final String suffix;
+            final ExerciseDifficulty difficulty;
+            final int durationSeconds;
+            final double multiplier;
+
+            const _Variation({
+              required this.suffix,
+              required this.difficulty,
+              required this.durationSeconds,
+              required this.multiplier,
+            });
+          }
+          EOF
+
+      - name: Build APK
+        script: |
+          cd trink_app
+          flutter build apk --release
+
+    artifacts:
+      - trink_app/build/app/outputs/flutter-apk/app-release.apk
