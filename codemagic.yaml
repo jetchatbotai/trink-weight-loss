@@ -1,0 +1,1910 @@
+workflows:
+  android-build:
+    name: Trink Ultimate Build
+    max_build_duration: 45
+
+    environment:
+      flutter: stable
+
+    scripts:
+      - name: Create Flutter project
+        script: |
+          flutter create app --platforms=android --project-name trink_weight_loss --org com.trink
+
+      - name: Replace main.dart
+        script: |
+          cd app
+          cat > lib/main.dart << 'EOF'
+          import 'dart:async';
+          import 'dart:math' as math;
+          import 'package:flutter/material.dart';
+
+          void main() {
+            runApp(const TrinkApp());
+          }
+
+          class TrinkApp extends StatelessWidget {
+            const TrinkApp({super.key});
+
+            @override
+            Widget build(BuildContext context) {
+              return MaterialApp(
+                debugShowCheckedModeBanner: false,
+                title: 'Trink Weight Loss',
+                theme: ThemeData(
+                  brightness: Brightness.dark,
+                  scaffoldBackgroundColor: const Color(0xFF090909),
+                  useMaterial3: true,
+                  colorScheme: const ColorScheme.dark(
+                    primary: Color(0xFF39FF14),
+                    secondary: Color(0xFF39FF14),
+                    surface: Color(0xFF171717),
+                  ),
+                ),
+                home: const MainShell(),
+              );
+            }
+          }
+
+          enum ExerciseCategory {
+            abs('Abs'),
+            legs('Legs'),
+            glutes('Glutes'),
+            arms('Arms'),
+            shoulders('Shoulders'),
+            chest('Chest'),
+            back('Back'),
+            fullBody('Full Body'),
+            cardio('Cardio'),
+            stretching('Stretching'),
+            hiit('HIIT'),
+            mobility('Mobility');
+
+            const ExerciseCategory(this.label);
+            final String label;
+          }
+
+          enum ExerciseDifficulty {
+            beginner('Beginner'),
+            intermediate('Intermediate'),
+            advanced('Advanced');
+
+            const ExerciseDifficulty(this.label);
+            final String label;
+          }
+
+          enum MovementPattern {
+            jumping,
+            squat,
+            push,
+            plank,
+            lunge,
+            crunch,
+            bridge,
+            stretch,
+            run,
+            twist,
+            kick,
+            raise,
+            generic,
+          }
+
+          MovementPattern resolvePattern(String baseName) {
+            final name = baseName.toLowerCase();
+
+            if (name.contains('jumping jack') || name.contains('burpee')) return MovementPattern.jumping;
+            if (name.contains('squat')) return MovementPattern.squat;
+            if (name.contains('push up') || name.contains('dip') || name.contains('pike')) return MovementPattern.push;
+            if (name.contains('plank')) return MovementPattern.plank;
+            if (name.contains('lunge')) return MovementPattern.lunge;
+            if (name.contains('crunch')) return MovementPattern.crunch;
+            if (name.contains('bridge')) return MovementPattern.bridge;
+            if (name.contains('stretch') || name.contains('cat cow') || name.contains('hip opener')) return MovementPattern.stretch;
+            if (name.contains('high knees') || name.contains('fast feet') || name.contains('mountain climbers')) return MovementPattern.run;
+            if (name.contains('twist') || name.contains('skaters')) return MovementPattern.twist;
+            if (name.contains('donkey kick') || name.contains('fire hydrant')) return MovementPattern.kick;
+            if (name.contains('raise') || name.contains('arm circles') || name.contains('superman') || name.contains('bird dog')) return MovementPattern.raise;
+
+            return MovementPattern.generic;
+          }
+
+          class Exercise {
+            final String id;
+            final String baseName;
+            final String name;
+            final String description;
+            final ExerciseCategory category;
+            final ExerciseDifficulty difficulty;
+            final int durationSeconds;
+            final int calories;
+            final List<String> targetMuscles;
+
+            const Exercise({
+              required this.id,
+              required this.baseName,
+              required this.name,
+              required this.description,
+              required this.category,
+              required this.difficulty,
+              required this.durationSeconds,
+              required this.calories,
+              required this.targetMuscles,
+            });
+
+            String get formattedDuration {
+              final minutes = durationSeconds ~/ 60;
+              final seconds = durationSeconds % 60;
+              if (minutes > 0 && seconds == 0) return '$minutes min';
+              if (minutes > 0) return '$minutes min $seconds sec';
+              return '$seconds sec';
+            }
+          }
+
+          class WorkoutCollection {
+            final String id;
+            final String title;
+            final String subtitle;
+            final String goal;
+            final ExerciseDifficulty difficulty;
+            final List<Exercise> exercises;
+            final bool isPremium;
+
+            const WorkoutCollection({
+              required this.id,
+              required this.title,
+              required this.subtitle,
+              required this.goal,
+              required this.difficulty,
+              required this.exercises,
+              required this.isPremium,
+            });
+
+            int get totalDuration =>
+                exercises.fold(0, (sum, item) => sum + item.durationSeconds);
+
+            int get totalCalories =>
+                exercises.fold(0, (sum, item) => sum + item.calories);
+
+            String get formattedDuration {
+              final minutes = totalDuration ~/ 60;
+              final seconds = totalDuration % 60;
+              if (seconds == 0) return '$minutes min';
+              return '$minutes min $seconds sec';
+            }
+          }
+
+          class AppState extends ChangeNotifier {
+            double currentWeight = 78.4;
+            double targetWeight = 72.0;
+            double dailyWaterGoal = 2.5;
+            double waterToday = 1.2;
+            bool isPremiumUnlocked = false;
+
+            final List<double> weightHistory = [82.0, 81.2, 80.3, 79.5, 78.9, 78.4];
+            final List<double> waterHistory = [1.5, 2.1, 2.3, 2.0, 1.8, 1.2];
+
+            void addWater(double value) {
+              waterToday = (waterToday + value).clamp(0, 10);
+              notifyListeners();
+            }
+
+            void resetWater() {
+              waterToday = 0;
+              notifyListeners();
+            }
+
+            void updateWeight(double value) {
+              currentWeight = value;
+              weightHistory.add(value);
+              notifyListeners();
+            }
+
+            void updateTargetWeight(double value) {
+              targetWeight = value;
+              notifyListeners();
+            }
+
+            void unlockPremiumDemo() {
+              isPremiumUnlocked = true;
+              notifyListeners();
+            }
+
+            double get remainingWeight => (currentWeight - targetWeight).clamp(0, 999);
+            double get waterProgress =>
+                dailyWaterGoal == 0 ? 0 : (waterToday / dailyWaterGoal).clamp(0, 1);
+          }
+
+          class ExerciseRepository {
+            static final List<Exercise> allExercises = _buildExercises();
+
+            static List<Exercise> _buildExercises() {
+              final templates = <_Template>[
+                _Template('Jumping Jacks', 'Classic cardio warm-up and fat burn.', ExerciseCategory.cardio, ['Full Body', 'Legs', 'Shoulders'], 18),
+                _Template('Mountain Climbers', 'Core and cardio endurance builder.', ExerciseCategory.fullBody, ['Core', 'Shoulders', 'Legs'], 22),
+                _Template('Plank Hold', 'Static core stability exercise.', ExerciseCategory.abs, ['Core', 'Shoulders'], 12),
+                _Template('Bicycle Crunch', 'Dynamic abs and oblique movement.', ExerciseCategory.abs, ['Abs', 'Obliques'], 16),
+                _Template('Leg Raises', 'Lower abdominal strengthening movement.', ExerciseCategory.abs, ['Lower Abs', 'Hip Flexors'], 13),
+                _Template('Bodyweight Squat', 'Foundational lower-body strength exercise.', ExerciseCategory.legs, ['Quads', 'Glutes', 'Hamstrings'], 16),
+                _Template('Jump Squat', 'Explosive leg movement for power.', ExerciseCategory.legs, ['Glutes', 'Quads', 'Calves'], 24),
+                _Template('Forward Lunge', 'Balance and unilateral strength movement.', ExerciseCategory.legs, ['Quads', 'Glutes', 'Hamstrings'], 15),
+                _Template('Reverse Lunge', 'Joint-friendly lunge variation.', ExerciseCategory.legs, ['Glutes', 'Quads', 'Hamstrings'], 15),
+                _Template('Glute Bridge', 'Hip extension focused on glutes.', ExerciseCategory.glutes, ['Glutes', 'Hamstrings'], 11),
+                _Template('Donkey Kick', 'Glute shaping activation movement.', ExerciseCategory.glutes, ['Glutes'], 10),
+                _Template('Fire Hydrant', 'Outer glute and hip activation.', ExerciseCategory.glutes, ['Glutes', 'Hips'], 10),
+                _Template('Push Up', 'Classic upper-body bodyweight exercise.', ExerciseCategory.chest, ['Chest', 'Triceps', 'Shoulders'], 16),
+                _Template('Knee Push Up', 'Beginner-friendly chest press.', ExerciseCategory.chest, ['Chest', 'Triceps'], 11),
+                _Template('Pike Push Up', 'Bodyweight shoulder pressing movement.', ExerciseCategory.shoulders, ['Shoulders', 'Triceps'], 17),
+                _Template('Arm Circles', 'Shoulder warm-up and endurance drill.', ExerciseCategory.shoulders, ['Shoulders'], 8),
+                _Template('Tricep Dip', 'Chair dip for triceps and shoulders.', ExerciseCategory.arms, ['Triceps', 'Shoulders'], 13),
+                _Template('Superman Hold', 'Posterior chain movement for back and glutes.', ExerciseCategory.back, ['Lower Back', 'Glutes', 'Upper Back'], 9),
+                _Template('Bird Dog', 'Core stability and posture exercise.', ExerciseCategory.back, ['Core', 'Lower Back', 'Glutes'], 9),
+                _Template('Burpee', 'High-intensity full-body fat burn.', ExerciseCategory.hiit, ['Full Body'], 28),
+                _Template('High Knees', 'Fast drill to elevate heart rate.', ExerciseCategory.hiit, ['Core', 'Legs'], 20),
+                _Template('Fast Feet', 'Footwork cardio movement.', ExerciseCategory.cardio, ['Legs', 'Calves'], 18),
+                _Template('Skaters', 'Lateral cardio drill for agility.', ExerciseCategory.cardio, ['Glutes', 'Legs', 'Core'], 19),
+                _Template('Cat Cow Stretch', 'Spinal mobility recovery movement.', ExerciseCategory.stretching, ['Spine', 'Core'], 5),
+                _Template('Hamstring Stretch', 'Back-of-leg recovery stretch.', ExerciseCategory.stretching, ['Hamstrings'], 4),
+                _Template('Hip Opener', 'Mobility drill for hips.', ExerciseCategory.mobility, ['Hips', 'Glutes'], 6),
+                _Template('Torso Twist', 'Rotational mobility for trunk and core.', ExerciseCategory.mobility, ['Core', 'Spine'], 6),
+              ];
+
+              final variations = <_Variation>[
+                _Variation('Beginner', ExerciseDifficulty.beginner, 30, 1.0),
+                _Variation('Intermediate', ExerciseDifficulty.intermediate, 45, 1.2),
+                _Variation('Advanced', ExerciseDifficulty.advanced, 60, 1.5),
+                _Variation('Quick Burn', ExerciseDifficulty.intermediate, 40, 1.15),
+                _Variation('Endurance', ExerciseDifficulty.advanced, 90, 1.9),
+                _Variation('Power', ExerciseDifficulty.advanced, 50, 1.35),
+                _Variation('Lite', ExerciseDifficulty.beginner, 25, 0.85),
+                _Variation('Tempo', ExerciseDifficulty.intermediate, 55, 1.25),
+              ];
+
+              final exercises = <Exercise>[];
+              int index = 1;
+
+              for (final template in templates) {
+                for (final variation in variations) {
+                  exercises.add(
+                    Exercise(
+                      id: 'ex_${index.toString().padLeft(3, '0')}',
+                      baseName: template.baseName,
+                      name: '${template.baseName} ${variation.suffix}',
+                      description: template.description,
+                      category: template.category,
+                      difficulty: variation.difficulty,
+                      durationSeconds: variation.durationSeconds,
+                      calories: (template.calories * variation.multiplier).round(),
+                      targetMuscles: template.muscles,
+                    ),
+                  );
+                  index++;
+                }
+              }
+
+              return exercises;
+            }
+          }
+
+          class WorkoutRepository {
+            static List<WorkoutCollection> buildCollections(List<Exercise> all) {
+              final collections = <WorkoutCollection>[];
+              final groupedByCategory = <ExerciseCategory, List<Exercise>>{};
+
+              for (final category in ExerciseCategory.values) {
+                groupedByCategory[category] =
+                    all.where((e) => e.category == category).toList();
+              }
+
+              int idCounter = 1;
+
+              for (final category in ExerciseCategory.values) {
+                final list = groupedByCategory[category]!;
+                for (int i = 0; i < 8; i++) {
+                  final start = (i * 3) % list.length;
+                  final bundle = <Exercise>[];
+                  for (int j = 0; j < 8; j++) {
+                    bundle.add(list[(start + j) % list.length]);
+                  }
+                  collections.add(
+                    WorkoutCollection(
+                      id: 'w_${idCounter.toString().padLeft(3, '0')}',
+                      title: '${category.label} Program ${i + 1}',
+                      subtitle: 'Focused ${category.label.toLowerCase()} routine',
+                      goal: 'Improve ${category.label.toLowerCase()} performance',
+                      difficulty: bundle.first.difficulty,
+                      exercises: bundle,
+                      isPremium: idCounter > 10,
+                    ),
+                  );
+                  idCounter++;
+                }
+              }
+
+              while (collections.length < 100) {
+                final start = (collections.length * 7) % all.length;
+                final bundle = <Exercise>[];
+                for (int j = 0; j < 12; j++) {
+                  bundle.add(all[(start + j) % all.length]);
+                }
+                collections.add(
+                  WorkoutCollection(
+                    id: 'w_${idCounter.toString().padLeft(3, '0')}',
+                    title: 'Smart Mix Program ${collections.length + 1}',
+                    subtitle: 'Auto-generated balanced workout',
+                    goal: 'General fat burn and conditioning',
+                    difficulty: bundle.first.difficulty,
+                    exercises: bundle,
+                    isPremium: idCounter > 10,
+                  ),
+                );
+                idCounter++;
+              }
+
+              return collections.take(100).toList();
+            }
+          }
+
+          class MainShell extends StatefulWidget {
+            const MainShell({super.key});
+
+            @override
+            State<MainShell> createState() => _MainShellState();
+          }
+
+          class _MainShellState extends State<MainShell> {
+            final appState = AppState();
+            final allExercises = ExerciseRepository.allExercises;
+            late final List<WorkoutCollection> collections =
+                WorkoutRepository.buildCollections(allExercises);
+            int currentIndex = 0;
+
+            @override
+            void initState() {
+              super.initState();
+              appState.addListener(_refresh);
+            }
+
+            @override
+            void dispose() {
+              appState.removeListener(_refresh);
+              super.dispose();
+            }
+
+            void _refresh() {
+              if (mounted) setState(() {});
+            }
+
+            @override
+            Widget build(BuildContext context) {
+              final pages = [
+                HomePage(appState: appState, exerciseCount: allExercises.length, collections: collections),
+                WorkoutCollectionsPage(appState: appState, collections: collections),
+                ExerciseCatalogPage(exercises: allExercises),
+                ProgressPage(appState: appState),
+                PremiumPage(appState: appState),
+              ];
+
+              return Scaffold(
+                body: SafeArea(child: pages[currentIndex]),
+                bottomNavigationBar: NavigationBar(
+                  selectedIndex: currentIndex,
+                  backgroundColor: const Color(0xFF111111),
+                  indicatorColor: const Color(0x2239FF14),
+                  onDestinationSelected: (value) => setState(() => currentIndex = value),
+                  destinations: const [
+                    NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'Home'),
+                    NavigationDestination(icon: Icon(Icons.fitness_center_outlined), selectedIcon: Icon(Icons.fitness_center), label: 'Workouts'),
+                    NavigationDestination(icon: Icon(Icons.grid_view_outlined), selectedIcon: Icon(Icons.grid_view), label: 'Exercises'),
+                    NavigationDestination(icon: Icon(Icons.show_chart_outlined), selectedIcon: Icon(Icons.show_chart), label: 'Progress'),
+                    NavigationDestination(icon: Icon(Icons.workspace_premium_outlined), selectedIcon: Icon(Icons.workspace_premium), label: 'Premium'),
+                  ],
+                ),
+              );
+            }
+          }
+
+          class HomePage extends StatelessWidget {
+            final AppState appState;
+            final int exerciseCount;
+            final List<WorkoutCollection> collections;
+
+            const HomePage({
+              super.key,
+              required this.appState,
+              required this.exerciseCount,
+              required this.collections,
+            });
+
+            @override
+            Widget build(BuildContext context) {
+              return ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  Row(
+                    children: const [
+                      CircleAvatar(
+                        radius: 26,
+                        backgroundColor: Color(0x2239FF14),
+                        child: Icon(Icons.sports_gymnastics, color: Color(0xFF39FF14), size: 30),
+                      ),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Trink Weight Loss',
+                          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Ultimate build: workouts, progress, premium, animated coaching',
+                    style: TextStyle(color: Colors.white70),
+                  ),
+                  const SizedBox(height: 18),
+                  _heroCard(
+                    icon: Icons.flag,
+                    title: 'Goal',
+                    subtitle: '${appState.remainingWeight.toStringAsFixed(1)} kg remaining',
+                    trailing: '${appState.currentWeight.toStringAsFixed(1)} kg',
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(child: _statCard(Icons.grid_view, 'Exercises', '$exerciseCount')),
+                      const SizedBox(width: 12),
+                      Expanded(child: _statCard(Icons.view_list, 'Programs', '${collections.length}')),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(child: _statCard(Icons.water_drop, 'Water', '${appState.waterToday.toStringAsFixed(1)} / ${appState.dailyWaterGoal.toStringAsFixed(1)} L')),
+                      const SizedBox(width: 12),
+                      Expanded(child: _statCard(Icons.workspace_premium, 'Premium', appState.isPremiumUnlocked ? 'Unlocked' : 'Locked')),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  const Text('Quick Actions', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 10),
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: [
+                      _actionChip(context, 'Add 250 ml', () => appState.addWater(0.25)),
+                      _actionChip(context, 'Add 500 ml', () => appState.addWater(0.5)),
+                      _actionChip(context, 'Weight -0.2', () => appState.updateWeight((appState.currentWeight - 0.2).clamp(30, 300))),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  const Text('Featured Programs', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 10),
+                  ...collections.take(5).map((c) => _programTile(context, c, appState)),
+                ],
+              );
+            }
+
+            Widget _heroCard({
+              required IconData icon,
+              required String title,
+              required String subtitle,
+              required String trailing,
+            }) {
+              return Container(
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF171717),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: const Color(0x2239FF14)),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 58,
+                      height: 58,
+                      decoration: const BoxDecoration(
+                        color: Color(0x2239FF14),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(icon, color: const Color(0xFF39FF14)),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 4),
+                          Text(subtitle, style: const TextStyle(color: Colors.white70)),
+                        ],
+                      ),
+                    ),
+                    Text(
+                      trailing,
+                      style: const TextStyle(color: Color(0xFF39FF14), fontWeight: FontWeight.bold, fontSize: 22),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            Widget _statCard(IconData icon, String title, String value) {
+              return Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF171717),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0x2239FF14)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(icon, color: const Color(0xFF39FF14)),
+                    const SizedBox(height: 12),
+                    Text(title, style: const TextStyle(color: Colors.white70)),
+                    const SizedBox(height: 4),
+                    Text(value, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  ],
+                ),
+              );
+            }
+
+            Widget _actionChip(BuildContext context, String text, VoidCallback onTap) {
+              return ActionChip(
+                backgroundColor: const Color(0x2239FF14),
+                label: Text(text),
+                onPressed: onTap,
+              );
+            }
+
+            Widget _programTile(BuildContext context, WorkoutCollection collection, AppState appState) {
+              final locked = collection.isPremium && !appState.isPremiumUnlocked;
+              return InkWell(
+                onTap: () {
+                  if (locked) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => PremiumPage(appState: appState)),
+                    );
+                  } else {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => WorkoutDetailPage(collection: collection)),
+                    );
+                  }
+                },
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF171717),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: locked ? Colors.amber : const Color(0x2239FF14)),
+                  ),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundColor: locked ? const Color(0x22FFC107) : const Color(0x2239FF14),
+                        child: Icon(locked ? Icons.lock : Icons.play_arrow, color: locked ? Colors.amber : const Color(0xFF39FF14)),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(collection.title, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 4),
+                            Text(collection.subtitle, style: const TextStyle(color: Colors.white70)),
+                          ],
+                        ),
+                      ),
+                      if (locked)
+                        const Icon(Icons.workspace_premium, color: Colors.amber)
+                      else
+                        const Icon(Icons.chevron_right, color: Colors.white54),
+                    ],
+                  ),
+                ),
+              );
+            }
+          }
+
+          class WorkoutCollectionsPage extends StatelessWidget {
+            final AppState appState;
+            final List<WorkoutCollection> collections;
+
+            const WorkoutCollectionsPage({
+              super.key,
+              required this.appState,
+              required this.collections,
+            });
+
+            @override
+            Widget build(BuildContext context) {
+              return ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  const Text('Workout Collections', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 6),
+                  Text('${collections.length} programs available', style: const TextStyle(color: Colors.white70)),
+                  const SizedBox(height: 16),
+                  ...collections.map(
+                    (collection) {
+                      final locked = collection.isPremium && !appState.isPremiumUnlocked;
+                      return InkWell(
+                        onTap: () {
+                          if (locked) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => PremiumPage(appState: appState)),
+                            );
+                          } else {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => WorkoutDetailPage(collection: collection)),
+                            );
+                          }
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF171717),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: locked ? Colors.amber : const Color(0x2239FF14)),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(collection.title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                                  ),
+                                  if (locked)
+                                    const Icon(Icons.workspace_premium, color: Colors.amber),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              Text(collection.subtitle, style: const TextStyle(color: Colors.white70)),
+                              const SizedBox(height: 10),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: [
+                                  _chip(collection.goal),
+                                  _chip(collection.difficulty.label),
+                                  _chip(collection.formattedDuration),
+                                  _chip('${collection.totalCalories} kcal'),
+                                  if (locked) _chip('Premium'),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              );
+            }
+
+            Widget _chip(String label) {
+              return Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: const Color(0x2239FF14),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Text(label),
+              );
+            }
+          }
+
+          class ExerciseCatalogPage extends StatelessWidget {
+            final List<Exercise> exercises;
+
+            const ExerciseCatalogPage({super.key, required this.exercises});
+
+            @override
+            Widget build(BuildContext context) {
+              return ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  const Text('Exercise Catalog', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 6),
+                  Text('${exercises.length} exercises ready', style: const TextStyle(color: Colors.white70)),
+                  const SizedBox(height: 16),
+                  ...exercises.map(
+                    (exercise) => InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => ExerciseDetailPage(exercise: exercise)),
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF171717),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: const Color(0x2239FF14)),
+                        ),
+                        child: Row(
+                          children: [
+                            const CircleAvatar(
+                              backgroundColor: Color(0x2239FF14),
+                              child: Icon(Icons.fitness_center, color: Color(0xFF39FF14)),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(exercise.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '${exercise.category.label} • ${exercise.difficulty.label} • ${exercise.formattedDuration}',
+                                    style: const TextStyle(color: Colors.white70),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Text(
+                              '${exercise.calories} kcal',
+                              style: const TextStyle(color: Color(0xFF39FF14), fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }
+          }
+
+          class ProgressPage extends StatelessWidget {
+            final AppState appState;
+
+            const ProgressPage({super.key, required this.appState});
+
+            @override
+            Widget build(BuildContext context) {
+              return ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  const Text('Progress', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 6),
+                  const Text('Weight, water and target overview', style: TextStyle(color: Colors.white70)),
+                  const SizedBox(height: 16),
+                  _sectionCard(
+                    title: 'Water Tracker',
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('${appState.waterToday.toStringAsFixed(1)} / ${appState.dailyWaterGoal.toStringAsFixed(1)} L'),
+                        const SizedBox(height: 10),
+                        LinearProgressIndicator(
+                          value: appState.waterProgress,
+                          minHeight: 12,
+                          backgroundColor: const Color(0xFF222222),
+                          color: const Color(0xFF39FF14),
+                        ),
+                        const SizedBox(height: 12),
+                        Wrap(
+                          spacing: 10,
+                          runSpacing: 10,
+                          children: [
+                            FilledButton(onPressed: () => appState.addWater(0.25), child: const Text('+250 ml')),
+                            FilledButton(onPressed: () => appState.addWater(0.5), child: const Text('+500 ml')),
+                            OutlinedButton(onPressed: appState.resetWater, child: const Text('Reset')),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  _sectionCard(
+                    title: 'Weight Tracker',
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _miniRow('Current Weight', '${appState.currentWeight.toStringAsFixed(1)} kg'),
+                        _miniRow('Target Weight', '${appState.targetWeight.toStringAsFixed(1)} kg'),
+                        _miniRow('Remaining', '${appState.remainingWeight.toStringAsFixed(1)} kg'),
+                        const SizedBox(height: 12),
+                        Wrap(
+                          spacing: 10,
+                          runSpacing: 10,
+                          children: [
+                            FilledButton(
+                              onPressed: () => appState.updateWeight((appState.currentWeight - 0.2).clamp(30, 300)),
+                              child: const Text('-0.2 kg'),
+                            ),
+                            FilledButton(
+                              onPressed: () => appState.updateWeight((appState.currentWeight + 0.2).clamp(30, 300)),
+                              child: const Text('+0.2 kg'),
+                            ),
+                            OutlinedButton(
+                              onPressed: () => appState.updateTargetWeight((appState.targetWeight - 0.5).clamp(30, 300)),
+                              child: const Text('Lower Goal'),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  _chartCard('Weight Trend', appState.weightHistory, suffix: 'kg'),
+                  const SizedBox(height: 16),
+                  _chartCard('Water Trend', appState.waterHistory, suffix: 'L'),
+                ],
+              );
+            }
+
+            Widget _sectionCard({required String title, required Widget child}) {
+              return Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF171717),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: const Color(0x2239FF14)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 12),
+                    child,
+                  ],
+                ),
+              );
+            }
+
+            Widget _miniRow(String title, String value) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    Text(value, style: const TextStyle(color: Colors.white70)),
+                  ],
+                ),
+              );
+            }
+
+            Widget _chartCard(String title, List<double> values, {required String suffix}) {
+              final maxValue = values.reduce(math.max);
+              return Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF171717),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: const Color(0x2239FF14)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      height: 180,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: values.map((v) {
+                          final h = maxValue == 0 ? 0.0 : (v / maxValue) * 140;
+                          return Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 4),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Text(v.toStringAsFixed(1), style: const TextStyle(fontSize: 11, color: Colors.white70)),
+                                  const SizedBox(height: 4),
+                                  Container(
+                                    height: h,
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF39FF14),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text('Unit: $suffix', style: const TextStyle(color: Colors.white70)),
+                  ],
+                ),
+              );
+            }
+          }
+
+          class PremiumPage extends StatelessWidget {
+            final AppState appState;
+
+            const PremiumPage({super.key, required this.appState});
+
+            @override
+            Widget build(BuildContext context) {
+              return ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF2B2B00), Color(0xFF171717)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(color: Colors.amber),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Row(
+                          children: [
+                            Icon(Icons.workspace_premium, color: Colors.amber, size: 32),
+                            SizedBox(width: 10),
+                            Text(
+                              'Premium Ready',
+                              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          appState.isPremiumUnlocked
+                              ? 'Premium is unlocked in this demo build.'
+                              : 'Unlock premium programs, advanced plans and exclusive workouts.',
+                          style: const TextStyle(color: Colors.white70),
+                        ),
+                        const SizedBox(height: 16),
+                        _benefit('All 100 workout programs'),
+                        _benefit('Exclusive premium bundles'),
+                        _benefit('Advanced progress roadmap'),
+                        _benefit('Future billing-ready structure'),
+                        const SizedBox(height: 18),
+                        if (!appState.isPremiumUnlocked)
+                          SizedBox(
+                            width: double.infinity,
+                            child: FilledButton(
+                              style: FilledButton.styleFrom(
+                                backgroundColor: Colors.amber,
+                                foregroundColor: Colors.black,
+                              ),
+                              onPressed: appState.unlockPremiumDemo,
+                              child: const Text('Unlock Premium Demo'),
+                            ),
+                          )
+                        else
+                          SizedBox(
+                            width: double.infinity,
+                            child: FilledButton(
+                              style: FilledButton.styleFrom(
+                                backgroundColor: const Color(0xFF39FF14),
+                                foregroundColor: Colors.black,
+                              ),
+                              onPressed: () {},
+                              child: const Text('Premium Active'),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  _priceCard('Monthly Plan', '₺149 / month', 'Good for testing premium UX'),
+                  const SizedBox(height: 12),
+                  _priceCard('Yearly Plan', '₺999 / year', 'Best value plan UI'),
+                  const SizedBox(height: 12),
+                  _priceCard('Lifetime Plan', '₺2499 one-time', 'Premium forever UI plan'),
+                ],
+              );
+            }
+
+            Widget _benefit(String text) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(
+                  children: [
+                    const Icon(Icons.check_circle, color: Colors.amber, size: 18),
+                    const SizedBox(width: 8),
+                    Expanded(child: Text(text)),
+                  ],
+                ),
+              );
+            }
+
+            Widget _priceCard(String title, String price, String subtitle) {
+              return Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF171717),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.amber.withOpacity(0.4)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 6),
+                    Text(price, style: const TextStyle(color: Colors.amber, fontSize: 18, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 6),
+                    Text(subtitle, style: const TextStyle(color: Colors.white70)),
+                  ],
+                ),
+              );
+            }
+          }
+
+          class WorkoutDetailPage extends StatelessWidget {
+            final WorkoutCollection collection;
+
+            const WorkoutDetailPage({super.key, required this.collection});
+
+            @override
+            Widget build(BuildContext context) {
+              return Scaffold(
+                appBar: AppBar(title: Text(collection.title)),
+                body: ListView(
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(18),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF171717),
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(color: const Color(0x2239FF14)),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(collection.subtitle, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 6),
+                          Text(collection.goal, style: const TextStyle(color: Colors.white70)),
+                          const SizedBox(height: 12),
+                          Text('Exercises: ${collection.exercises.length}'),
+                          Text('Duration: ${collection.formattedDuration}'),
+                          Text('Estimated calories: ${collection.totalCalories} kcal'),
+                          const SizedBox(height: 16),
+                          SizedBox(
+                            width: double.infinity,
+                            child: FilledButton(
+                              style: FilledButton.styleFrom(
+                                backgroundColor: const Color(0xFF39FF14),
+                                foregroundColor: Colors.black,
+                              ),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (_) => WorkoutRunnerPage(collection: collection)),
+                                );
+                              },
+                              child: const Text('Start Workout'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+                    ...collection.exercises.map(
+                      (exercise) => InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => ExerciseDetailPage(exercise: exercise)),
+                          );
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF171717),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: const Color(0x2239FF14)),
+                          ),
+                          child: Row(
+                            children: [
+                              const CircleAvatar(
+                                backgroundColor: Color(0x2239FF14),
+                                child: Icon(Icons.fitness_center, color: Color(0xFF39FF14)),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(exercise.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      '${exercise.category.label} • ${exercise.difficulty.label} • ${exercise.formattedDuration}',
+                                      style: const TextStyle(color: Colors.white70),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Text('${exercise.calories} kcal', style: const TextStyle(color: Color(0xFF39FF14))),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+          }
+
+          class ExerciseDetailPage extends StatelessWidget {
+            final Exercise exercise;
+
+            const ExerciseDetailPage({super.key, required this.exercise});
+
+            @override
+            Widget build(BuildContext context) {
+              return Scaffold(
+                appBar: AppBar(title: Text(exercise.name)),
+                body: ListView(
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    AnimatedTrainerPanel(exercise: exercise),
+                    const SizedBox(height: 16),
+                    Text(exercise.name, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 6),
+                    Text(exercise.description, style: const TextStyle(color: Colors.white70)),
+                    const SizedBox(height: 16),
+                    _infoTile('Category', exercise.category.label),
+                    _infoTile('Difficulty', exercise.difficulty.label),
+                    _infoTile('Duration', exercise.formattedDuration),
+                    _infoTile('Calories', '${exercise.calories} kcal'),
+                    const SizedBox(height: 16),
+                    const Text('Target Muscles', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 10),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: exercise.targetMuscles.map(
+                        (muscle) => Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: const Color(0x2239FF14),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Text(muscle),
+                        ),
+                      ).toList(),
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton(
+                        style: FilledButton.styleFrom(
+                          backgroundColor: const Color(0xFF39FF14),
+                          foregroundColor: Colors.black,
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => SingleExerciseRunnerPage(exercise: exercise)),
+                          );
+                        },
+                        child: const Text('Start Exercise'),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            Widget _infoTile(String title, String value) {
+              return Container(
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF171717),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0x2239FF14)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    Text(value, style: const TextStyle(color: Colors.white70)),
+                  ],
+                ),
+              );
+            }
+          }
+
+          class SingleExerciseRunnerPage extends StatefulWidget {
+            final Exercise exercise;
+
+            const SingleExerciseRunnerPage({super.key, required this.exercise});
+
+            @override
+            State<SingleExerciseRunnerPage> createState() => _SingleExerciseRunnerPageState();
+          }
+
+          class _SingleExerciseRunnerPageState extends State<SingleExerciseRunnerPage> {
+            Timer? timer;
+            late int remainingSeconds;
+            bool running = false;
+            bool finished = false;
+
+            @override
+            void initState() {
+              super.initState();
+              remainingSeconds = widget.exercise.durationSeconds;
+            }
+
+            @override
+            void dispose() {
+              timer?.cancel();
+              super.dispose();
+            }
+
+            void start() {
+              if (running) return;
+              running = true;
+              timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+                if (!mounted) return;
+                setState(() {
+                  if (remainingSeconds > 0) {
+                    remainingSeconds--;
+                  } else {
+                    timer.cancel();
+                    running = false;
+                    finished = true;
+                  }
+                });
+              });
+            }
+
+            void pause() {
+              timer?.cancel();
+              running = false;
+              setState(() {});
+            }
+
+            String formatSeconds(int seconds) {
+              final minutes = seconds ~/ 60;
+              final remain = seconds % 60;
+              return '${minutes.toString().padLeft(2, '0')}:${remain.toString().padLeft(2, '0')}';
+            }
+
+            @override
+            Widget build(BuildContext context) {
+              return Scaffold(
+                appBar: AppBar(title: Text(widget.exercise.name)),
+                body: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: finished
+                      ? Container(
+                          padding: const EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF171717),
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(color: const Color(0x2239FF14)),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.check_circle, color: Color(0xFF39FF14), size: 72),
+                              const SizedBox(height: 16),
+                              const Text('Exercise Completed', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+                              const SizedBox(height: 8),
+                              Text(widget.exercise.name),
+                            ],
+                          ),
+                        )
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Expanded(child: AnimatedTrainerPanel(exercise: widget.exercise)),
+                            const SizedBox(height: 16),
+                            Text(
+                              formatSeconds(remainingSeconds),
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(fontSize: 48, fontWeight: FontWeight.w900, color: Color(0xFF39FF14)),
+                            ),
+                            const SizedBox(height: 16),
+                            Wrap(
+                              spacing: 10,
+                              runSpacing: 10,
+                              alignment: WrapAlignment.center,
+                              children: [
+                                FilledButton(
+                                  style: FilledButton.styleFrom(backgroundColor: const Color(0xFF39FF14), foregroundColor: Colors.black),
+                                  onPressed: start,
+                                  child: const Text('Start'),
+                                ),
+                                OutlinedButton(onPressed: pause, child: const Text('Pause')),
+                              ],
+                            ),
+                          ],
+                        ),
+                ),
+              );
+            }
+          }
+
+          class WorkoutRunnerPage extends StatefulWidget {
+            final WorkoutCollection collection;
+
+            const WorkoutRunnerPage({super.key, required this.collection});
+
+            @override
+            State<WorkoutRunnerPage> createState() => _WorkoutRunnerPageState();
+          }
+
+          class _WorkoutRunnerPageState extends State<WorkoutRunnerPage> {
+            Timer? timer;
+            int currentIndex = 0;
+            late int remainingSeconds;
+            bool started = false;
+            bool completed = false;
+
+            Exercise get currentExercise => widget.collection.exercises[currentIndex];
+
+            @override
+            void initState() {
+              super.initState();
+              remainingSeconds = widget.collection.exercises.first.durationSeconds;
+            }
+
+            @override
+            void dispose() {
+              timer?.cancel();
+              super.dispose();
+            }
+
+            void startTimer() {
+              if (started) return;
+              started = true;
+              timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+                if (!mounted) return;
+                setState(() {
+                  if (remainingSeconds > 0) {
+                    remainingSeconds--;
+                  } else {
+                    nextExercise();
+                  }
+                });
+              });
+            }
+
+            void pauseTimer() {
+              timer?.cancel();
+              timer = null;
+              started = false;
+              setState(() {});
+            }
+
+            void nextExercise() {
+              if (currentIndex < widget.collection.exercises.length - 1) {
+                currentIndex++;
+                remainingSeconds = widget.collection.exercises[currentIndex].durationSeconds;
+              } else {
+                timer?.cancel();
+                started = false;
+                completed = true;
+              }
+            }
+
+            void previousExercise() {
+              if (currentIndex > 0) {
+                currentIndex--;
+                remainingSeconds = widget.collection.exercises[currentIndex].durationSeconds;
+                completed = false;
+              }
+            }
+
+            String formatSeconds(int seconds) {
+              final minutes = seconds ~/ 60;
+              final remain = seconds % 60;
+              return '${minutes.toString().padLeft(2, '0')}:${remain.toString().padLeft(2, '0')}';
+            }
+
+            @override
+            Widget build(BuildContext context) {
+              return Scaffold(
+                appBar: AppBar(title: Text(widget.collection.title)),
+                body: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: completed
+                      ? Container(
+                          padding: const EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF171717),
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(color: const Color(0x2239FF14)),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.check_circle, color: Color(0xFF39FF14), size: 72),
+                              const SizedBox(height: 16),
+                              const Text('Workout Completed', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+                              const SizedBox(height: 8),
+                              Text('You finished ${widget.collection.title}', textAlign: TextAlign.center, style: const TextStyle(color: Colors.white70)),
+                              const SizedBox(height: 18),
+                              Text('Total estimated calories: ${widget.collection.totalCalories} kcal', style: const TextStyle(fontSize: 18)),
+                            ],
+                          ),
+                        )
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Expanded(child: AnimatedTrainerPanel(exercise: currentExercise)),
+                            const SizedBox(height: 16),
+                            Container(
+                              padding: const EdgeInsets.all(18),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF171717),
+                                borderRadius: BorderRadius.circular(24),
+                                border: Border.all(color: const Color(0x2239FF14)),
+                              ),
+                              child: Column(
+                                children: [
+                                  Text('Exercise ${currentIndex + 1} / ${widget.collection.exercises.length}', style: const TextStyle(color: Colors.white70)),
+                                  const SizedBox(height: 12),
+                                  Text(currentExercise.name, textAlign: TextAlign.center, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                                  const SizedBox(height: 8),
+                                  Text(currentExercise.description, textAlign: TextAlign.center, style: const TextStyle(color: Colors.white70)),
+                                  const SizedBox(height: 20),
+                                  Text(
+                                    formatSeconds(remainingSeconds),
+                                    style: const TextStyle(fontSize: 48, fontWeight: FontWeight.w900, color: Color(0xFF39FF14)),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Wrap(
+                                    spacing: 10,
+                                    runSpacing: 10,
+                                    alignment: WrapAlignment.center,
+                                    children: [
+                                      FilledButton(
+                                        style: FilledButton.styleFrom(backgroundColor: const Color(0xFF39FF14), foregroundColor: Colors.black),
+                                        onPressed: startTimer,
+                                        child: const Text('Start'),
+                                      ),
+                                      OutlinedButton(onPressed: pauseTimer, child: const Text('Pause')),
+                                      OutlinedButton(onPressed: previousExercise, child: const Text('Previous')),
+                                      OutlinedButton(
+                                        onPressed: () => setState(() => nextExercise()),
+                                        child: const Text('Next'),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                ),
+              );
+            }
+          }
+
+          class AnimatedTrainerPanel extends StatefulWidget {
+            final Exercise exercise;
+
+            const AnimatedTrainerPanel({super.key, required this.exercise});
+
+            @override
+            State<AnimatedTrainerPanel> createState() => _AnimatedTrainerPanelState();
+          }
+
+          class _AnimatedTrainerPanelState extends State<AnimatedTrainerPanel>
+              with SingleTickerProviderStateMixin {
+            late final AnimationController controller;
+
+            @override
+            void initState() {
+              super.initState();
+              controller = AnimationController(
+                vsync: this,
+                duration: const Duration(milliseconds: 1800),
+              )..repeat();
+            }
+
+            @override
+            void dispose() {
+              controller.dispose();
+              super.dispose();
+            }
+
+            @override
+            Widget build(BuildContext context) {
+              final pattern = resolvePattern(widget.exercise.baseName);
+
+              return ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFF171717), Color(0xFF101010)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  child: Stack(
+                    children: [
+                      Positioned.fill(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: RadialGradient(
+                              colors: [
+                                const Color(0x2239FF14),
+                                Colors.transparent,
+                              ],
+                              radius: 0.85,
+                              center: Alignment.topCenter,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Center(
+                        child: AnimatedBuilder(
+                          animation: controller,
+                          builder: (context, _) {
+                            return CustomPaint(
+                              size: const Size(190, 270),
+                              painter: HumanTrainerPainter(
+                                progress: controller.value,
+                                pattern: pattern,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      Positioned(
+                        left: 16,
+                        right: 16,
+                        bottom: 16,
+                        child: Container(
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.35),
+                            borderRadius: BorderRadius.circular(18),
+                            border: Border.all(color: const Color(0x2239FF14)),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(widget.exercise.baseName, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                              const SizedBox(height: 4),
+                              Text(
+                                '${widget.exercise.category.label} • ${widget.exercise.difficulty.label}',
+                                style: const TextStyle(color: Colors.white70),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+          }
+
+          class HumanTrainerPainter extends CustomPainter {
+            final double progress;
+            final MovementPattern pattern;
+
+            HumanTrainerPainter({
+              required this.progress,
+              required this.pattern,
+            });
+
+            @override
+            void paint(Canvas canvas, Size size) {
+              final neon = Paint()
+                ..color = const Color(0xFF39FF14)
+                ..strokeWidth = 5.2
+                ..style = PaintingStyle.stroke
+                ..strokeCap = StrokeCap.round
+                ..strokeJoin = StrokeJoin.round;
+
+              final glow = Paint()
+                ..color = const Color(0x5539FF14)
+                ..strokeWidth = 13
+                ..style = PaintingStyle.stroke
+                ..strokeCap = StrokeCap.round
+                ..strokeJoin = StrokeJoin.round
+                ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10);
+
+              final fill = Paint()
+                ..color = const Color(0x1439FF14)
+                ..style = PaintingStyle.fill;
+
+              final t = math.sin(progress * math.pi * 2);
+              final cx = size.width / 2;
+
+              double headY = 34;
+              double shoulderY = 76;
+              double waistY = 138;
+              double hipY = 156;
+              double kneeY = 208;
+              double footY = 244;
+
+              double shoulderWidth = 36;
+              double waistWidth = 22;
+              double hipWidth = 28;
+
+              double leftShoulderOffset = -shoulderWidth;
+              double rightShoulderOffset = shoulderWidth;
+
+              double leftElbowX = cx - 42;
+              double rightElbowX = cx + 42;
+              double leftElbowY = 112;
+              double rightElbowY = 112;
+
+              double leftHandX = cx - 50;
+              double rightHandX = cx + 50;
+              double leftHandY = 142;
+              double rightHandY = 142;
+
+              double leftKneeX = cx - 18;
+              double rightKneeX = cx + 18;
+              double leftFootX = cx - 28;
+              double rightFootX = cx + 28;
+
+              switch (pattern) {
+                case MovementPattern.jumping:
+                  leftElbowX = cx - 58 - (t * 10);
+                  rightElbowX = cx + 58 + (t * 10);
+                  leftElbowY = 86 - (t * 18);
+                  rightElbowY = 86 - (t * 18);
+                  leftHandX = cx - 72 - (t * 14);
+                  rightHandX = cx + 72 + (t * 14);
+                  leftHandY = 54 - (t * 18);
+                  rightHandY = 54 - (t * 18);
+                  leftFootX = cx - 42 - (t * 12);
+                  rightFootX = cx + 42 + (t * 12);
+                  break;
+
+                case MovementPattern.squat:
+                  final down = t > 0 ? t : 0.0;
+                  headY += down * 10;
+                  shoulderY += down * 16;
+                  waistY += down * 24;
+                  hipY += down * 28;
+                  kneeY += down * 14;
+                  leftFootX = cx - 38;
+                  rightFootX = cx + 38;
+                  leftKneeX = cx - 28;
+                  rightKneeX = cx + 28;
+                  break;
+
+                case MovementPattern.push:
+                  headY += t * 6;
+                  shoulderY += t * 8;
+                  waistY += t * 8;
+                  hipY += t * 8;
+                  leftElbowX = cx - 56;
+                  rightElbowX = cx + 56;
+                  leftElbowY = 144 + t * 6;
+                  rightElbowY = 144 + t * 6;
+                  leftHandX = cx - 72;
+                  rightHandX = cx + 72;
+                  leftHandY = 176 + t * 6;
+                  rightHandY = 176 + t * 6;
+                  leftFootX = cx - 34;
+                  rightFootX = cx + 34;
+                  footY = 230;
+                  break;
+
+                case MovementPattern.plank:
+                  headY = 62;
+                  shoulderY = 92;
+                  waistY = 132;
+                  hipY = 146;
+                  kneeY = 162;
+                  footY = 178;
+                  leftElbowX = cx - 62;
+                  rightElbowX = cx + 62;
+                  leftElbowY = 104;
+                  rightElbowY = 104;
+                  leftHandX = cx - 82;
+                  rightHandX = cx + 82;
+                  leftHandY = 118;
+                  rightHandY = 118;
+                  leftKneeX = cx - 54;
+                  rightKneeX = cx + 54;
+                  leftFootX = cx - 88;
+                  rightFootX = cx + 88;
+                  break;
+
+                case MovementPattern.lunge:
+                  leftFootX = cx - 48 - t * 6;
+                  rightFootX = cx + 26;
+                  leftKneeX = cx - 34;
+                  rightKneeX = cx + 18;
+                  break;
+
+                case MovementPattern.crunch:
+                  headY += t * 14;
+                  shoulderY += t * 14;
+                  waistY -= t * 6;
+                  hipY -= t * 8;
+                  leftElbowX = cx - 26;
+                  rightElbowX = cx + 26;
+                  leftElbowY = 80 + t * 8;
+                  rightElbowY = 80 + t * 8;
+                  leftHandX = cx - 18;
+                  rightHandX = cx + 18;
+                  leftHandY = 60 + t * 10;
+                  rightHandY = 60 + t * 10;
+                  kneeY = 188 - t * 16;
+                  footY = 214 - t * 12;
+                  break;
+
+                case MovementPattern.bridge:
+                  final up = t > 0 ? t : 0.0;
+                  waistY -= up * 8;
+                  hipY -= up * 18;
+                  kneeY -= up * 4;
+                  leftFootX = cx - 34;
+                  rightFootX = cx + 34;
+                  break;
+
+                case MovementPattern.stretch:
+                  leftElbowX = cx - 56 - t * 10;
+                  rightElbowX = cx + 56 + t * 10;
+                  leftElbowY = 84 - t * 8;
+                  rightElbowY = 84 + t * 8;
+                  leftHandX = cx - 72 - t * 10;
+                  rightHandX = cx + 72 + t * 10;
+                  leftHandY = 62 - t * 6;
+                  rightHandY = 126 + t * 6;
+                  break;
+
+                case MovementPattern.run:
+                  leftElbowX = cx - 28 - t * 18;
+                  rightElbowX = cx + 28 + t * 18;
+                  leftElbowY = 92 - t * 10;
+                  rightElbowY = 118 + t * 10;
+                  leftHandX = cx - 42 - t * 18;
+                  rightHandX = cx + 42 + t * 18;
+                  leftHandY = 68 - t * 10;
+                  rightHandY = 144 + t * 10;
+                  leftKneeX = cx - 12 - t * 14;
+                  rightKneeX = cx + 12 + t * 14;
+                  leftFootX = cx - 26 - t * 16;
+                  rightFootX = cx + 26 + t * 16;
+                  footY = 236;
+                  break;
+
+                case MovementPattern.twist:
+                  leftShoulderOffset = -shoulderWidth - t * 4;
+                  rightShoulderOffset = shoulderWidth + t * 4;
+                  leftElbowX = cx - 46 - t * 8;
+                  rightElbowX = cx + 46 + t * 8;
+                  leftHandX = cx - 60 - t * 10;
+                  rightHandX = cx + 60 + t * 10;
+                  break;
+
+                case MovementPattern.kick:
+                  rightKneeX = cx + 24 + t * 8;
+                  rightFootX = cx + 44 + t * 20;
+                  footY = 238 - (t > 0 ? t * 18 : 0);
+                  break;
+
+                case MovementPattern.raise:
+                  leftElbowY = 90 - t * 10;
+                  rightElbowY = 90 - t * 10;
+                  leftHandY = 56 - t * 18;
+                  rightHandY = 56 - t * 18;
+                  break;
+
+                case MovementPattern.generic:
+                  leftElbowX = cx - 42 - (t * 4);
+                  rightElbowX = cx + 42 + (t * 4);
+                  leftHandX = cx - 50 - (t * 5);
+                  rightHandX = cx + 50 + (t * 5);
+                  leftFootX = cx - 28 - (t * 4);
+                  rightFootX = cx + 28 + (t * 4);
+                  break;
+              }
+
+              final headCenter = Offset(cx, headY);
+              final neck = Offset(cx, headY + 22);
+
+              final leftShoulder = Offset(cx + leftShoulderOffset, shoulderY);
+              final rightShoulder = Offset(cx + rightShoulderOffset, shoulderY);
+
+              final leftWaist = Offset(cx - waistWidth, waistY);
+              final rightWaist = Offset(cx + waistWidth, waistY);
+
+              final leftHip = Offset(cx - hipWidth, hipY);
+              final rightHip = Offset(cx + hipWidth, hipY);
+
+              final torsoPath = Path()
+                ..moveTo(leftShoulder.dx, leftShoulder.dy)
+                ..lineTo(rightShoulder.dx, rightShoulder.dy)
+                ..lineTo(rightWaist.dx, rightWaist.dy)
+                ..lineTo(rightHip.dx, rightHip.dy)
+                ..lineTo(leftHip.dx, leftHip.dy)
+                ..lineTo(leftWaist.dx, leftWaist.dy)
+                ..close();
+
+              canvas.drawPath(torsoPath, fill);
+              canvas.drawCircle(headCenter, 18, glow);
+              canvas.drawCircle(headCenter, 18, neon);
+
+              canvas.drawLine(neck, Offset(cx, shoulderY + 4), glow);
+              canvas.drawLine(neck, Offset(cx, shoulderY + 4), neon);
+
+              final spineTop = Offset(cx, shoulderY + 10);
+              final spineBottom = Offset(cx, hipY - 2);
+              canvas.drawLine(spineTop, spineBottom, glow);
+              canvas.drawLine(spineTop, spineBottom, neon);
+              canvas.drawPath(torsoPath, glow);
+              canvas.drawPath(torsoPath, neon);
+
+              final leftElbow = Offset(leftElbowX, leftElbowY);
+              final rightElbow = Offset(rightElbowX, rightElbowY);
+              final leftHand = Offset(leftHandX, leftHandY);
+              final rightHand = Offset(rightHandX, rightHandY);
+              final leftKnee = Offset(leftKneeX, kneeY);
+              final rightKnee = Offset(rightKneeX, kneeY);
+              final leftFoot = Offset(leftFootX, footY);
+              final rightFoot = Offset(rightFootX, footY);
+
+              void limb(Offset a, Offset b, Offset c) {
+                final path = Path()
+                  ..moveTo(a.dx, a.dy)
+                  ..lineTo(b.dx, b.dy)
+                  ..lineTo(c.dx, c.dy);
+                canvas.drawPath(path, glow);
+                canvas.drawPath(path, neon);
+              }
+
+              limb(leftShoulder, leftElbow, leftHand);
+              limb(rightShoulder, rightElbow, rightHand);
+              limb(leftHip, leftKnee, leftFoot);
+              limb(rightHip, rightKnee, rightFoot);
+            }
+
+            @override
+            bool shouldRepaint(covariant HumanTrainerPainter oldDelegate) {
+              return oldDelegate.progress != progress || oldDelegate.pattern != pattern;
+            }
+          }
+
+          class _Template {
+            final String baseName;
+            final String description;
+            final ExerciseCategory category;
+            final List<String> muscles;
+            final int calories;
+
+            const _Template(this.baseName, this.description, this.category, this.muscles, this.calories);
+          }
+
+          class _Variation {
+            final String suffix;
+            final ExerciseDifficulty difficulty;
+            final int durationSeconds;
+            final double multiplier;
+
+            const _Variation(this.suffix, this.difficulty, this.durationSeconds, this.multiplier);
+          }
+          EOF
+
+      - name: Build APK
+        script: |
+          cd app
+          flutter build apk --release
+
+    artifacts:
+      - app/build/app/outputs/flutter-apk/*.apk
