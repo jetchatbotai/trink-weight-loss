@@ -1,376 +1,263 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const TrinkFitApp());
-}
+void main() { runApp(const TrinkFitApp()); }
 
-class TrinkFitApp extends StatelessWidget {
-  const TrinkFitApp({super.key});
+enum AppLang { en, tr, de, fr, es, it, pt, ar, hi, zh, ja, ko, }
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Trink Fit',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+enum GoalType { loseWeight, buildMuscle, stayFit, improveCardio } enum EquipmentType { all, noEquipment, dumbbell, resistanceBand, gym }
+
+class TrinkFitApp extends StatefulWidget { const TrinkFitApp({super.key});
+
+@override State<TrinkFitApp> createState() => _TrinkFitAppState(); }
+
+class _TrinkFitAppState extends State<TrinkFitApp> { ThemeMode themeMode = ThemeMode.system; AppLang lang = AppLang.en;
+
+@override Widget build(BuildContext context) { return MaterialApp( debugShowCheckedModeBanner: false, title: 'Trink Fit', themeMode: themeMode, theme: AppTheme.light, darkTheme: AppTheme.dark, home: MainShell( lang: lang, themeMode: themeMode, onLangChanged: (value) => setState(() => lang = value), onThemeModeChanged: (value) => setState(() => themeMode = value), ), ); } }
+
+class AppTheme { static const Color primary = Color(0xFF2D7FF9); static const Color accent = Color(0xFF21C97A); static const Color lightBg = Color(0xFFF4F7FB); static const Color darkBg = Color(0xFF0E1726); static const Color lightCard = Colors.white; static const Color darkCard = Color(0xFF172235); static const Color textDark = Color(0xFF111827);
+
+static ThemeData get light => ThemeData( useMaterial3: true, scaffoldBackgroundColor: lightBg, colorScheme: ColorScheme.fromSeed(seedColor: primary), appBarTheme: const AppBarTheme( backgroundColor: Colors.transparent, foregroundColor: textDark, elevation: 0, centerTitle: false, ), cardTheme: CardThemeData( color: lightCard, elevation: 0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)), ), );
+
+static ThemeData get dark => ThemeData( useMaterial3: true, scaffoldBackgroundColor: darkBg, colorScheme: ColorScheme.fromSeed( seedColor: primary, brightness: Brightness.dark, ), appBarTheme: const AppBarTheme( backgroundColor: Colors.transparent, foregroundColor: Colors.white, elevation: 0, centerTitle: false, ), cardTheme: CardThemeData( color: darkCard, elevation: 0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)), ), ); }
+
+class MainShell extends StatefulWidget { final AppLang lang; final ThemeMode themeMode; final ValueChanged<AppLang> onLangChanged; final ValueChanged<ThemeMode> onThemeModeChanged;
+
+const MainShell({ super.key, required this.lang, required this.themeMode, required this.onLangChanged, required this.onThemeModeChanged, });
+
+@override State<MainShell> createState() => _MainShellState(); }
+
+class _MainShellState extends State<MainShell> { int index = 0; GoalType goal = GoalType.loseWeight; EquipmentType equipment = EquipmentType.all; int waterGlasses = 5; int dailySteps = 6842; int caloriesLogged = 1280; int targetCalories = 1800;
+
+@override Widget build(BuildContext context) { final t = Strings(widget.lang); final screens = [ HomeScreen( t: t, goal: goal, onGoalChanged: (v) => setState(() => goal = v), waterGlasses: waterGlasses, dailySteps: dailySteps, caloriesLogged: caloriesLogged, targetCalories: targetCalories, ), WorkoutsScreen( t: t, equipment: equipment, onEquipmentChanged: (v) => setState(() => equipment = v), ), ProgramsScreen(t: t), ProgressScreen( t: t, waterGlasses: waterGlasses, onAddWater: () => setState(() => waterGlasses++), dailySteps: dailySteps, ), ProfileScreen( t: t, lang: widget.lang, onLangChanged: widget.onLangChanged, themeMode: widget.themeMode, onThemeModeChanged: widget.onThemeModeChanged, ), ];
+
+return Scaffold(
+  body: SafeArea(child: screens[index]),
+  bottomNavigationBar: NavigationBar(
+    selectedIndex: index,
+    onDestinationSelected: (i) => setState(() => index = i),
+    destinations: [
+      NavigationDestination(icon: const Icon(Icons.home_outlined), selectedIcon: const Icon(Icons.home), label: t.home),
+      NavigationDestination(icon: const Icon(Icons.fitness_center_outlined), selectedIcon: const Icon(Icons.fitness_center), label: t.workouts),
+      NavigationDestination(icon: const Icon(Icons.dashboard_outlined), selectedIcon: const Icon(Icons.dashboard), label: t.programs),
+      NavigationDestination(icon: const Icon(Icons.show_chart_outlined), selectedIcon: const Icon(Icons.show_chart), label: t.progress),
+      NavigationDestination(icon: const Icon(Icons.person_outline), selectedIcon: const Icon(Icons.person), label: t.profile),
+    ],
+  ),
+);
+
+} }
+
+class HomeScreen extends StatelessWidget { final Strings t; final GoalType goal; final ValueChanged<GoalType> onGoalChanged; final int waterGlasses; final int dailySteps; final int caloriesLogged; final int targetCalories;
+
+const HomeScreen({ super.key, required this.t, required this.goal, required this.onGoalChanged, required this.waterGlasses, required this.dailySteps, required this.caloriesLogged, required this.targetCalories, });
+
+@override Widget build(BuildContext context) { final isDark = Theme.of(context).brightness == Brightness.dark; final textColor = isDark ? Colors.white : AppTheme.textDark;
+
+return ListView(
+  padding: const EdgeInsets.all(16),
+  children: [
+    Row(
+      children: [
+        Container(
+          width: 54,
+          height: 54,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            gradient: const LinearGradient(colors: [AppTheme.primary, AppTheme.accent]),
+          ),
+          child: const Icon(Icons.accessibility_new, color: Colors.white),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Trink Fit', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800, color: textColor)),
+              Text(t.appSubtitle, style: TextStyle(color: textColor.withOpacity(.65))),
+            ],
+          ),
+        ),
+        const Icon(Icons.notifications_none),
+      ],
+    ),
+    const SizedBox(height: 18),
+    Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(28),
+        gradient: const LinearGradient(colors: [AppTheme.primary, AppTheme.accent]),
       ),
-      home: const HomePage(),
-    );
-  }
-}
-
-class Exercise {
-  final String name;
-  final String image;
-  final int duration;
-  final int calories;
-
-  Exercise({
-    required this.name,
-    required this.image,
-    required this.duration,
-    required this.calories,
-  });
-}
-
-List<Exercise> exercises = [
-  Exercise(
-    name: "Jumping Jacks",
-    image: "assets/exercises/jumping.jpg",
-    duration: 60,
-    calories: 27,
-  ),
-  Exercise(
-    name: "Push Up",
-    image: "assets/exercises/pushup.jpg",
-    duration: 45,
-    calories: 18,
-  ),
-  Exercise(
-    name: "Squat",
-    image: "assets/exercises/squat.jpg",
-    duration: 50,
-    calories: 22,
-  ),
-  Exercise(
-    name: "Plank",
-    image: "assets/exercises/plank.jpg",
-    duration: 40,
-    calories: 14,
-  ),
-];
-
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Trink Fit"),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
-          const Text(
-            "AI Koç Önerisi",
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-          ),
-
-          const SizedBox(height: 10),
-
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.blue.shade100,
-              borderRadius: BorderRadius.circular(16),
+          Text(t.todaysWorkout, style: const TextStyle(color: Colors.white70)),
+          const SizedBox(height: 6),
+          const Text('15 min Fat Burn', style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w800)),
+          const SizedBox(height: 8),
+          Text(t.fiveExercisesVoiceCoach, style: const TextStyle(color: Colors.white70)),
+          const SizedBox(height: 14),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: AppTheme.primary,
             ),
-            child: const Text(
-              "Bugün 20 dakikalık kardiyo ve core egzersizi öneriyorum.",
-              style: TextStyle(fontSize: 16),
-            ),
+            onPressed: () {},
+            child: Text(t.startWorkout),
           ),
-
-          const SizedBox(height: 20),
-
-          const Text(
-            "Egzersizler",
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-          ),
-
-          const SizedBox(height: 10),
-
-          SizedBox(
-            height: 300,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: exercises.length,
-              itemBuilder: (context, index) {
-
-                final exercise = exercises[index];
-
-                return GestureDetector(
-                  onTap: () {
-
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ExercisePage(exercise: exercise),
-                      ),
-                    );
-
-                  },
-                  child: Container(
-                    width: 250,
-                    margin: const EdgeInsets.only(right: 16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          blurRadius: 10,
-                          color: Colors.black12,
-                        )
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-
-                        ClipRRect(
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-                          child: Image.asset(
-                            exercise.image,
-                            height: 170,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-
-                        Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-
-                              Text(
-                                exercise.name,
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-
-                              const SizedBox(height: 6),
-
-                              Text(
-                                "${exercise.duration} sn",
-                              ),
-
-                              Text(
-                                "${exercise.calories} kcal",
-                              ),
-
-                            ],
-                          ),
-                        )
-
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-
-          const SizedBox(height: 30),
-
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-
-                Text(
-                  "Kilo Takibi",
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                ),
-
-                SizedBox(height: 10),
-
-                Text("Başlangıç: 84 kg"),
-
-                Text("Hedef: 78 kg"),
-
-                SizedBox(height: 10),
-
-                LinearProgressIndicator(
-                  value: 0.45,
-                ),
-
-              ],
-            ),
-          ),
-
         ],
       ),
-    );
-  }
-}
+    ),
+    const SizedBox(height: 16),
+    Row(
+      children: [
+        Expanded(child: StatCard(title: t.dailyStreak, value: '7 🔥')),
+        const SizedBox(width: 12),
+        Expanded(child: StatCard(title: t.steps, value: '$dailySteps')),
+      ],
+    ),
+    const SizedBox(height: 12),
+    Row(
+      children: [
+        Expanded(child: StatCard(title: t.water, value: '${(waterGlasses * 0.25).toStringAsFixed(2)}L / 2L')),
+        const SizedBox(width: 12),
+        Expanded(child: StatCard(title: t.bmi, value: '24.1')),
+      ],
+    ),
+    const SizedBox(height: 20),
+    SectionTitle(title: t.goalSelection),
+    const SizedBox(height: 10),
+    Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: GoalType.values.map((g) {
+        return ChoiceChip(
+          label: Text(goalLabel(t, g)),
+          selected: goal == g,
+          onSelected: (_) => onGoalChanged(g),
+        );
+      }).toList(),
+    ),
+    const SizedBox(height: 20),
+    SectionTitle(title: t.quickWorkout),
+    const SizedBox(height: 10),
+    Row(
+      children: [
+        Expanded(child: DashboardTile(title: t.challenge30Day, subtitle: t.fatBurnPlan, icon: Icons.local_fire_department)),
+        const SizedBox(width: 12),
+        Expanded(child: DashboardTile(title: t.aiTrainer, subtitle: t.createWorkoutForBellyFat, icon: Icons.auto_awesome)),
+      ],
+    ),
+    const SizedBox(height: 12),
+    Row(
+      children: [
+        Expanded(child: DashboardTile(title: t.calorieTracker, subtitle: '$caloriesLogged / $targetCalories kcal', icon: Icons.restaurant_menu)),
+        const SizedBox(width: 12),
+        Expanded(child: DashboardTile(title: t.smartReminder, subtitle: t.timeForWorkout, icon: Icons.notifications_active)),
+      ],
+    ),
+    const SizedBox(height: 20),
+    SectionTitle(title: t.premiumPlans),
+    const SizedBox(height: 10),
+    const PremiumCard(),
+  ],
+);
 
-class ExercisePage extends StatefulWidget {
+} }
 
-  final Exercise exercise;
+class WorkoutsScreen extends StatelessWidget { final Strings t; final EquipmentType equipment; final ValueChanged<EquipmentType> onEquipmentChanged;
 
-  const ExercisePage({super.key, required this.exercise});
+const WorkoutsScreen({ super.key, required this.t, required this.equipment, required this.onEquipmentChanged, });
 
-  @override
-  State<ExercisePage> createState() => _ExercisePageState();
-}
+@override Widget build(BuildContext context) { final filtered = equipment == EquipmentType.all ? FakeData.exercises : FakeData.exercises.where((e) => e.equipment == equipment).toList();
 
-class _ExercisePageState extends State<ExercisePage> {
+return ListView(
+  padding: const EdgeInsets.all(16),
+  children: [
+    SectionTitle(title: t.workouts),
+    const SizedBox(height: 10),
+    Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: EquipmentType.values.map((e) {
+        return ChoiceChip(
+          label: Text(equipmentLabel(t, e)),
+          selected: equipment == e,
+          onSelected: (_) => onEquipmentChanged(e),
+        );
+      }).toList(),
+    ),
+    const SizedBox(height: 16),
+    ...filtered.map((e) => Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: ExerciseCard(exercise: e),
+        )),
+  ],
+);
 
-  late int remaining;
+} }
 
-  Timer? timer;
+class ProgramsScreen extends StatelessWidget { final Strings t;
 
-  bool running = false;
+const ProgramsScreen({super.key, required this.t});
 
-  @override
-  void initState() {
-    super.initState();
-    remaining = widget.exercise.duration;
-  }
+@override Widget build(BuildContext context) { return ListView( padding: const EdgeInsets.all(16), children: [ SectionTitle(title: t.programs), const SizedBox(height: 16), GridView.builder( shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), itemCount: FakeData.programs.length, gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount( crossAxisCount: 2, crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: .95, ), itemBuilder: (context, index) { final p = FakeData.programs[index]; return ProgramCard(program: p); }, ), ], ); } }
 
-  void startTimer() {
+class ProgressScreen extends StatelessWidget { final Strings t; final int waterGlasses; final VoidCallback onAddWater; final int dailySteps;
 
-    if (running) return;
+const ProgressScreen({ super.key, required this.t, required this.waterGlasses, required this.onAddWater, required this.dailySteps, });
 
-    running = true;
+@override Widget build(BuildContext context) { return ListView( padding: const EdgeInsets.all(16), children: [ SectionTitle(title: t.progress), const SizedBox(height: 16), DashboardTile(title: t.beforeAfter, subtitle: t.trackTransformation, icon: Icons.photo_library_outlined), const SizedBox(height: 12), DashboardTile(title: t.achievements, subtitle: 'First Workout • 7 Day Streak', icon: Icons.emoji_events_outlined), const SizedBox(height: 12), DashboardTile(title: t.waterTracker, subtitle: '${(waterGlasses * 0.25).toStringAsFixed(2)} L', icon: Icons.water_drop_outlined), const SizedBox(height: 12), FilledButton(onPressed: onAddWater, child: Text(t.addWaterGlass)), const SizedBox(height: 12), DashboardTile(title: t.stepCounter, subtitle: '$dailySteps ${t.steps}', icon: Icons.directions_walk_outlined), const SizedBox(height: 12), DashboardTile(title: t.healthIntegration, subtitle: 'Google Fit • Apple Health', icon: Icons.favorite_border), ], ); } }
 
-    timer = Timer.periodic(
-      const Duration(seconds: 1),
-      (t) {
+class ProfileScreen extends StatelessWidget { final Strings t; final AppLang lang; final ValueChanged<AppLang> onLangChanged; final ThemeMode themeMode; final ValueChanged<ThemeMode> onThemeModeChanged;
 
-        if (remaining > 0) {
-          setState(() {
-            remaining--;
-          });
-        } else {
-          t.cancel();
-        }
+const ProfileScreen({ super.key, required this.t, required this.lang, required this.onLangChanged, required this.themeMode, required this.onThemeModeChanged, });
 
-      },
-    );
+@override Widget build(BuildContext context) { return ListView( padding: const EdgeInsets.all(16), children: [ SectionTitle(title: t.profile), const SizedBox(height: 16), DashboardTile(title: t.theme, subtitle: themeModeLabel(t, themeMode), icon: Icons.palette_outlined), const SizedBox(height: 10), Wrap( spacing: 8, children: [ ChoiceChip(label: Text(t.lightMode), selected: themeMode == ThemeMode.light, onSelected: () => onThemeModeChanged(ThemeMode.light)), ChoiceChip(label: Text(t.darkMode), selected: themeMode == ThemeMode.dark, onSelected: () => onThemeModeChanged(ThemeMode.dark)), ChoiceChip(label: Text(t.systemMode), selected: themeMode == ThemeMode.system, onSelected: (_) => onThemeModeChanged(ThemeMode.system)), ], ), const SizedBox(height: 16), DashboardTile(title: t.language, subtitle: langLabel(lang), icon: Icons.language_outlined), const SizedBox(height: 10), DropdownButtonFormField<AppLang>( value: lang, items: AppLang.values .map((e) => DropdownMenuItem<AppLang>( value: e, child: Text(langLabel(e)), )) .toList(), onChanged: (value) { if (value != null) onLangChanged(value); }, ), const SizedBox(height: 16), DashboardTile(title: t.bmiCalculator, subtitle: 'BMI = 24.1 • Normal', icon: Icons.monitor_weight_outlined), const SizedBox(height: 12), DashboardTile(title: t.widgetTitle, subtitle: t.todaysWorkout, icon: Icons.widgets_outlined), const SizedBox(height: 12), DashboardTile(title: t.adsPremium, subtitle: t.premiumAndAdsModel, icon: Icons.workspace_premium_outlined), ], ); } }
 
-  }
+class StatCard extends StatelessWidget { final String title; final String value;
 
-  void resetTimer() {
+const StatCard({super.key, required this.title, required this.value});
 
-    timer?.cancel();
+@override Widget build(BuildContext context) { return Card( child: Padding( padding: const EdgeInsets.all(18), child: Column( crossAxisAlignment: CrossAxisAlignment.start, children: [ Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)), const SizedBox(height: 8), Text(value, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800)), ], ), ), ); } }
 
-    setState(() {
-      remaining = widget.exercise.duration;
-      running = false;
-    });
+class DashboardTile extends StatelessWidget { final String title; final String subtitle; final IconData icon;
 
-  }
+const DashboardTile({ super.key, required this.title, required this.subtitle, required this.icon, });
 
-  String formatTime(int sec) {
+@override Widget build(BuildContext context) { return Card( child: Padding( padding: const EdgeInsets.all(16), child: Row( children: [ Container( width: 46, height: 46, decoration: BoxDecoration( color: AppTheme.primary.withOpacity(.12), borderRadius: BorderRadius.circular(14), ), child: Icon(icon, color: AppTheme.primary), ), const SizedBox(width: 12), Expanded( child: Column( crossAxisAlignment: CrossAxisAlignment.start, children: [ Text(title, style: const TextStyle(fontWeight: FontWeight.w800)), const SizedBox(height: 4), Text(subtitle, style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(.7))), ], ), ), ], ), ), ); } }
 
-    final m = sec ~/ 60;
+class ExerciseCard extends StatelessWidget { final WorkoutExercise exercise;
 
-    final s = sec % 60;
+const ExerciseCard({super.key, required this.exercise});
 
-    return "$m:${s.toString().padLeft(2, '0')}";
+@override Widget build(BuildContext context) { return Card( child: Padding( padding: const EdgeInsets.all(16), child: Row( children: [ Container( width: 56, height: 56, decoration: BoxDecoration( gradient: const LinearGradient(colors: [AppTheme.primary, AppTheme.accent]), borderRadius: BorderRadius.circular(16), ), child: const Icon(Icons.play_circle_outline, color: Colors.white), ), const SizedBox(width: 12), Expanded( child: Column( crossAxisAlignment: CrossAxisAlignment.start, children: [ Text(exercise.name, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)), const SizedBox(height: 4), Text('${exercise.category} • ${exercise.seconds}s • ${exercise.calories} kcal'), const SizedBox(height: 4), Text(exercise.cue, style: const TextStyle(fontSize: 12)), ], ), ), ], ), ), ); } }
 
-  }
+class ProgramCard extends StatelessWidget { final WorkoutProgram program;
 
-  @override
-  Widget build(BuildContext context) {
+const ProgramCard({super.key, required this.program});
 
-    final exercise = widget.exercise;
+@override Widget build(BuildContext context) { return Card( child: Padding( padding: const EdgeInsets.all(16), child: Column( crossAxisAlignment: CrossAxisAlignment.start, children: [ Row( children: [ Expanded( child: Text( program.title, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16), ), ), if (program.premium) const Icon(Icons.workspace_premium, color: Colors.amber), ], ), const SizedBox(height: 8), Text(program.subtitle), const Spacer(), Text('${program.days} days'), const SizedBox(height: 4), Text('${program.exercises.length} exercises'), ], ), ), ); } }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(exercise.name),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
+class PremiumCard extends StatelessWidget { const PremiumCard({super.key});
 
-          children: [
+@override Widget build(BuildContext context) { return Card( child: Padding( padding: const EdgeInsets.all(18), child: Column( crossAxisAlignment: CrossAxisAlignment.start, children: const [ Text('Premium + Ads Model', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)), SizedBox(height: 10), Text('Monthly   179 TL'), Text('3 Months  399 TL'), Text('6 Months  599 TL'), Text('Yearly    899 TL ⭐'), ], ), ), ); } }
 
-            ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: Image.asset(
-                exercise.image,
-                height: 220,
-                fit: BoxFit.cover,
-              ),
-            ),
+class SectionTitle extends StatelessWidget { final String title;
 
-            const SizedBox(height: 20),
+const SectionTitle({super.key, required this.title});
 
-            Text(
-              exercise.name,
-              style: const TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+@override Widget build(BuildContext context) { return Text(title, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800)); } }
 
-            const SizedBox(height: 10),
+String goalLabel(Strings t, GoalType g) { switch (g) { case GoalType.loseWeight: return t.loseWeight; case GoalType.buildMuscle: return t.buildMuscle; case GoalType.stayFit: return t.stayFit; case GoalType.improveCardio: return t.improveCardio; } }
 
-            Text("${exercise.duration} saniye"),
+String equipmentLabel(Strings t, EquipmentType e) { switch (e) { case EquipmentType.all: return t.all; case EquipmentType.noEquipment: return t.noEquipment; case EquipmentType.dumbbell: return t.dumbbell; case EquipmentType.resistanceBand: return t.resistanceBand; case EquipmentType.gym: return t.gymEquipment; } }
 
-            Text("${exercise.calories} kcal"),
+String themeModeLabel(Strings t, ThemeMode mode) { switch (mode) { case ThemeMode.light: return t.lightMode; case ThemeMode.dark: return t.darkMode; case ThemeMode.system: return t.systemMode; } }
 
-            const SizedBox(height: 30),
+String langLabel(AppLang lang) { switch (lang) { case AppLang.en: return 'English'; case AppLang.tr: return 'Türkçe'; case AppLang.de: return 'Deutsch'; case AppLang.fr: return 'Français'; case AppLang.es: return 'Español'; case AppLang.it: return 'Italiano'; case AppLang.pt: return 'Português'; case AppLang.ar: return 'العربية'; case AppLang.hi: return 'हिन्दी'; case AppLang.zh: return '中文'; case AppLang.ja: return '日本語'; case AppLang.ko: return '한국어'; } }
 
-            Text(
-              formatTime(remaining),
-              style: const TextStyle(
-                fontSize: 40,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+class Strings { final AppLang lang; Strings(this.lang);
 
-            const SizedBox(height: 20),
+String get home => _pick('Home', 'Ana Sayfa', 'Start', 'Accueil', 'Inicio', 'Home', 'Início', 'الرئيسية', 'होम', '首页', 'ホーム', '홈'); String get workouts => _pick('Workouts', 'Antrenmanlar', 'Workouts', 'Séances', 'Entrenos', 'Allenamenti', 'Treinos', 'التمارين', 'वर्कआउट्स', '训练', 'ワークアウト', '운동'); String get programs => _pick('Programs', 'Programlar', 'Programme', 'Programmes', 'Programas', 'Programmi', 'Programas', 'البرامج', 'प्रोग्राम', '计划', 'プログラム', '프로그램'); String get progress => _pick('Progress', 'İlerleme', 'Fortschritt', 'Progrès', 'Progreso', 'Progressi', 'Progresso', 'التقدم', 'प्रगति', '进度', '進捗', '진행'); String get profile => _pick('Profile', 'Profil', 'Profil', 'Profil', 'Perfil', 'Profilo', 'Perfil', 'الملف الشخصي', 'प्रोफ़ाइल', '我的', 'プロフィール', '프로필'); String get appSubtitle => _pick('Home Workout, Weight Loss & Fitness', 'Evde Egzersiz, Kilo Verme ve Fitness', 'Home Workout, Abnehmen & Fitness', 'Exercices à la maison, perte de poids et fitness', 'Ejercicio en casa, pérdida de peso y fitness', 'Allenamento a casa, perdita di peso e fitness', 'Treino em casa, perda de peso e fitness', 'تمارين منزلية وفقدان الوزن واللياقة', 'होम वर्कआउट, वजन घटाना और फिटनेस', '居家锻炼、减脂与健身', 'ホームワークアウト・減量・フィットネス', '홈트, 체중 감량 & 피트니스'); String get todaysWorkout => _pick('Today's Workout', 'Bugünün Antrenmanı', 'Training des Tages', 'Entraînement du jour', 'Entrenamiento de hoy', 'Allenamento di oggi', 'Treino de hoje', 'تمرين اليوم', 'आज का वर्कआउट', '今日训练', '今日のワークアウト', '오늘의 운동'); String get fiveExercisesVoiceCoach => _pick('5 exercises • Voice Coach enabled', '5 egzersiz • Sesli koç açık', '5 Übungen • Sprachcoach aktiv', '5 exercices • Coach vocal actif', '5 ejercicios • Voz activa', '5 esercizi • Coach vocale attivo', '5 exercícios • Coach de voz ativo', '5 تمارين • المدرب الصوتي مفعل', '5 एक्सरसाइज़ • वॉइस कोच चालू', '5个动作 • 语音教练已启用', '5種目 • ボイスコーチ有効', '5개 운동 • 보이스 코치 사용'); String get startWorkout => _pick('Start Workout', 'Antrenmanı Başlat', 'Training starten', 'Démarrer', 'Comenzar', 'Avvia allenamento', 'Começar treino', 'ابدأ التمرين', 'वर्कआउट शुरू करें', '开始训练', '開始', '운동 시작'); String get dailyStreak => _pick('Daily Streak', 'Günlük Seri', 'Tagesserie', 'Série quotidienne', 'Racha diaria', 'Serie giornaliera', 'Sequência diária', 'السلسلة اليومية', 'डेली स्ट्रीक', '每日连击', 'デイリーストリーク', '데일리 스트릭'); String get steps => _pick('Steps', 'Adım', 'Schritte', 'Pas', 'Pasos', 'Passi', 'Passos', 'الخطوات', 'कदम', '步数', '歩数', '걸음'); String get water => _pick('Water', 'Su', 'Wasser', 'Eau', 'Agua', 'Acqua', 'Água', 'الماء', 'पानी', '喝水', '水分', '물'); String get bmi => _pick('BMI', 'BMI', 'BMI', 'IMC', 'IMC', 'BMI', 'IMC', 'مؤشر كتلة الجسم', 'बीएमआई', 'BMI', 'BMI', 'BMI'); String get goalSelection => _pick('Goal Selection', 'Hedef Seçimi', 'Zielauswahl', 'Choix de l'objectif', 'Selección de objetivo', 'Selezione obiettivo', 'Seleção de meta', 'اختيار الهدف', 'लक्ष्य चयन', '目标选择', '目標選択', '목표 선택'); String get loseWeight => _pick('Lose Weight', 'Kilo Ver', 'Abnehmen', 'Perdre du poids', 'Perder peso', 'Perdere peso', 'Perder peso', 'فقدان الوزن', 'वजन कम करें', '减重', '減量', '체중 감량'); String get buildMuscle => _pick('Build Muscle', 'Kas Yap', 'Muskeln aufbauen', 'Prendre du muscle', 'Ganar músculo', 'Aumentare massa', 'Ganhar músculo', 'بناء العضلات', 'मसल बनाएं', '增肌', '筋肉をつける', '근육 만들기'); String get stayFit => _pick('Stay Fit', 'Formda Kal', 'Fit bleiben', 'Rester en forme', 'Mantenerse en forma', 'Restare in forma', 'Manter a forma', 'ابقَ رشيقًا', 'फिट रहें', '保持身材', '体型維持', '건강 유지'); String get improveCardio => _pick('Improve Cardio', 'Kardiyoyu Geliştir', 'Kondition verbessern', 'Améliorer le cardio', 'Mejorar cardio', 'Migliorare cardio', 'Melhorar cardio', 'تحسين الكارديو', 'कार्डियो सुधारें', '提升有氧', '有酸素を強化', '심폐 강화'); String get quickWorkout => _pick('Quick Workout', 'Hızlı Antrenman', 'Schnelltraining', 'Séance rapide', 'Entreno rápido', 'Allenamento rapido', 'Treino rápido', 'تمرين سريع', 'क्विक वर्कआउट', '快速训练', 'クイックワークアウト', '빠른 운동'); String get challenge30Day => _pick('30 Day Challenge', '30 Gün Challenge', '30-Tage-Challenge', 'Défi 30 jours', 'Reto 30 días', 'Sfida 30 giorni', 'Desafio 30 dias', 'تحدي 30 يومًا', '30 दिन चैलेंज', '30天挑战', '30日チャレンジ', '30일 챌린지'); String get fatBurnPlan => _pick('Fat Burn Plan', 'Yağ Yakma Planı', 'Fatburn-Plan', 'Plan brûle-graisse', 'Plan quema grasa', 'Piano brucia grassi', 'Plano queima gordura', 'خطة حرق الدهون', 'फैट बर्न प्लान', '燃脂计划', '脂肪燃焼プラン', '지방 연소 플랜'); String get aiTrainer => _pick('AI Personal Trainer', 'AI Kişisel Koç', 'KI Personal Trainer', 'Coach IA', 'Entrenador IA', 'Trainer IA', 'Treinador IA', 'مدرب ذكي', 'AI पर्सनल ट्रेनर', 'AI私教', 'AIパーソナルトレーナー', 'AI 퍼스널 트레이너'); String get createWorkoutForBellyFat => _pick('Create a workout for belly fat', 'Karın yağı için antrenman oluştur', 'Workout gegen Bauchfett erstellen', 'Créer un entraînement ventre plat', 'Crear rutina para grasa abdominal', 'Crea allenamento per pancia', 'Criar treino para barriga', 'أنشئ تمرينًا لدهون البطن', 'बेली फैट के लिए वर्कआउट बनाएँ', '生成减肚子训练', 'お腹脂肪向けメニュー作成', '복부 지방 운동 만들기'); String get calorieTracker => _pick('Calorie Tracker', 'Kalori Takibi', 'Kalorienzähler', 'Suivi calories', 'Seguimiento calorías', 'Traccia calorie', 'Rastreador de calorias', 'متتبع السعرات', 'कैलोरी ट्रैकर', '卡路里追踪', 'カロリートラッカー', '칼로리 추적'); String get smartReminder => _pick('Smart Reminder', 'Akıllı Hatırlatıcı', 'Smart Reminder', 'Rappel intelligent', 'Recordatorio inteligente', 'Promemoria smart', 'Lembrete inteligente', 'تذكير ذكي', 'स्मार्ट रिमाइंडर', '智能提醒', 'スマートリマインダー', '스마트 리마인더'); String get timeForWorkout => _pick('Time for your workout 💪', 'Antrenman zamanı 💪', 'Zeit fürs Training 💪', 'L'heure du sport 💪', 'Hora de entrenar 💪', 'È il momento di allenarti 💪', 'Hora do treino 💪', 'حان وقت التمرين 💪', 'वर्कआउट का समय 💪', '该锻炼了💪', 'ワークアウトの時間です💪', '운동할 시간입니다 💪'); String get premiumPlans => _pick('Premium Plans', 'Premium Planlar', 'Premium-Pläne', 'Offres premium', 'Planes premium', 'Piani premium', 'Planos premium', 'خطط بريميوم', 'प्रीमियम प्लान', '高级计划', 'プレミアムプラン', '프리미엄 플랜'); String get beforeAfter => _pick('Before / After', 'Önce / Sonra', 'Vorher / Nachher', 'Avant / Après', 'Antes / Después', 'Prima / Dopo', 'Antes / Depois', 'قبل / بعد', 'पहले / बाद', '前后对比', 'ビフォーアフター', '전후 비교'); String get trackTransformation => _pick('Track your transformation photos', 'Değişim fotoğraflarını takip et', 'Verfolge deine Fortschrittsfotos', 'Suivez vos photos de transformation', 'Sigue tus fotos de transformación', 'Monitora le foto trasformazione', 'Acompanhe suas fotos', 'تابع صور التحول', 'प्रोग्रेस फोटो ट्रैक करें', '记录你的变化照片', '変化の写真を追跡', '변화 사진 추적'); String get achievements => _pick('Achievements', 'Rozetler', 'Erfolge', 'Succès', 'Logros', 'Obiettivi', 'Conquistas', 'الإنجازات', 'उपलब्धियाँ', '成就', '実績', '업적'); String get waterTracker => _pick('Water Tracker', 'Su Takibi', 'Wasser-Tracker', 'Suivi eau', 'Seguimiento de agua', 'Traccia acqua', 'Controle de água', 'متتبع الماء', 'वॉटर ट्रैकर', '喝水追踪', '水分トラッカー', '물 추적'); String get addWaterGlass => _pick('Add Water Glass', 'Bir Bardak Su Ekle', 'Wasserglas hinzufügen', 'Ajouter un verre d'eau', 'Agregar vaso de agua', 'Aggiungi bicchiere', 'Adicionar copo d'água', 'أضف كوب ماء', 'एक गिलास पानी जोड़ें', '添加一杯水', '水を追加', '물 한잔 추가'); String get stepCounter => _pick('Step Counter', 'Adım Sayacı', 'Schrittzähler', 'Compteur de pas', 'Contador de pasos', 'Contapassi', 'Contador de passos', 'عداد الخطوات', 'स्टेप काउंटर', '计步器', '歩数計', '걸음 수'); String get healthIntegration => _pick('Health Integration', 'Sağlık Entegrasyonu', 'Health-Integration', 'Intégration santé', 'Integración salud', 'Integrazione salute', 'Integração saúde', 'تكامل الصحة', 'हेल्थ इंटीग्रेशन', '健康集成', 'ヘルス連携', '헬스 연동'); String get theme => _pick('Theme', 'Tema', 'Design', 'Thème', 'Tema', 'Tema', 'Tema', 'السمة', 'थीम', '主题', 'テーマ', '테마'); String get lightMode => _pick('Light Mode', 'Açık Mod', 'Hell', 'Mode clair', 'Modo claro', 'Tema chiaro', 'Modo claro', 'الوضع الفاتح', 'लाइट मोड', '浅色模式', 'ライトモード', '라이트 모드'); String get darkMode => _pick('Dark Mode', 'Karanlık Mod', 'Dunkel', 'Mode sombre', 'Modo oscuro', 'Tema scuro', 'Modo escuro', 'الوضع الداكن', 'डार्क मोड', '深色模式', 'ダークモード', '다크 모드'); String get systemMode => _pick('System Mode', 'Sistem Modu', 'System', 'Mode système', 'Modo sistema', 'Sistema', 'Sistema', 'وضع النظام', 'सिस्टम मोड', '跟随系统', 'システムモード', '시스템 모드'); String get language => _pick('Language', 'Dil', 'Sprache', 'Langue', 'Idioma', 'Lingua', 'Idioma', 'اللغة', 'भाषा', '语言', '言語', '언어'); String get bmiCalculator => _pick('BMI Calculator', 'BMI Hesaplayıcı', 'BMI-Rechner', 'Calcul IMC', 'Calculadora IMC', 'Calcolatore BMI', 'Calculadora IMC', 'حاسبة BMI', 'BMI कैलकुलेटर', 'BMI计算器', 'BMI計算機', 'BMI 계산기'); String get widgetTitle => _pick('Widget', 'Widget', 'Widget', 'Widget', 'Widget', 'Widget', 'Widget', 'أداة', 'विजेट', '小组件', 'ウィジェット', '위젯'); String get adsPremium => _pick('Monetization', 'Gelir Modeli', 'Monetarisierung', 'Monétisation', 'Monetización', 'Monetizzazione', 'Monetização', 'تحقيق الدخل', 'मॉनिटाइजेशन', '变现', '収益化', '수익화'); String get premiumAndAdsModel => _pick('Premium + Ads', 'Premium + Reklam', 'Premium + Werbung', 'Premium + publicités', 'Premium + anuncios', 'Premium + ads', 'Premium + anúncios', 'بريميوم + إعلانات', 'प्रीमियम + विज्ञापन', '会员+广告', 'プレミアム + 広告', '프리미엄 + 광고'); String get all => _pick('All', 'Tümü', 'Alle', 'Tous', 'Todos', 'Tutti', 'Todos', 'الكل', 'सभी', '全部', 'すべて', '전체'); String get noEquipment => _pick('No Equipment', 'Ekipmansız', 'Ohne Geräte', 'Sans équipement', 'Sin equipamiento', 'Senza attrezzi', 'Sem equipamento', 'بدون معدات', 'बिना उपकरण', '无器械', '器具なし', '장비 없음'); String get dumbbell => _pick('Dumbbell', 'Dambıl', 'Hantel', 'Haltère', 'Mancuerna', 'Manubrio', 'Halter', 'دمبل', 'डम्बल', '哑铃', 'ダンベル', '덤벨'); String get resistanceBand => _pick('Resistance Band', 'Direnç Bandı', 'Widerstandsband', 'Bande élastique', 'Banda de resistencia', 'Elastico', 'Faixa elástica', 'شريط مقاومة', 'रेजिस्टेंस बैंड', '阻力带', 'レジスタンスバンド', '저항 밴드'); String get gymEquipment => _pick('Gym Equipment', 'Spor Salonu Ekipmanı', 'Fitnessgeräte', 'Équipement de gym', 'Equipo de gimnasio', 'Attrezzi palestra', 'Equipamento de academia', 'معدات الجيم', 'जिम उपकरण', '健身房器械', 'ジム器具', '헬스장 장비');
 
-            Row(
-              children: [
-
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: startTimer,
-                    child: const Text("Başlat"),
-                  ),
-                ),
-
-                const SizedBox(width: 10),
-
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: resetTimer,
-                    child: const Text("Sıfırla"),
-                  ),
-                ),
-
-              ],
-            )
-
-          ],
-        ),
-      ),
-    );
-  }
-}
+String _pick(String en, String tr, String de, String fr, String es, String it, String pt, String ar, String hi, String zh, String ja, String ko) { switch (lang) { case AppLang.en: return en; case AppLang.tr: return tr; case AppLang.de: return de; case AppLang.fr: return fr; case AppLang.es: return es; case AppLang.it: return it; case AppLang.pt: return pt; case AppLang.ar: return ar; case AppLang.hi: return hi; case AppLang.zh: return zh; case AppLang.ja: return ja; case AppLang.ko: return ko; } } }
