@@ -1,0 +1,25 @@
+workflows:
+  android-apk:
+    name: Trink Fit Build
+    max_build_duration: 60
+
+    environment:
+      flutter: stable
+
+    scripts:
+      - name: Get Flutter packages
+        script: |
+          flutter pub get
+
+      - name: Create Android folder if missing
+        script: |
+          if [ ! -d "android" ]; then
+            flutter create --project-name trink_fit .
+          fi
+
+      - name: Build APK
+        script: |
+          flutter build apk --release
+
+    artifacts:
+      - build/app/outputs/flutter-apk/app-release.apk
