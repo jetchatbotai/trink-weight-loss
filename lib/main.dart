@@ -168,7 +168,8 @@ class WorkoutsScreen extends StatelessWidget { final Strings t; final EquipmentT
 
 const WorkoutsScreen({ super.key, required this.t, required this.equipment, required this.onEquipmentChanged, });
 
-@override Widget build(BuildContext context) { final filtered = equipment == EquipmentType.all ? FakeData.exercises : FakeData.exercises.where((e) => e.equipment == equipment).toList();
+@override Widget build(BuildContext context) { final filtered = equipment == EquipmentType.all ? trinkExercises
+:trinkExercises.where((e) => e.equipment == equipment).toList();
 
 return ListView(
   padding: const EdgeInsets.all(16),
