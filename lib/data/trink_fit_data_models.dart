@@ -4384,7 +4384,18 @@ ProgramItem(
 ),  
 ];  
 List<ExerciseItem> byCategory(ExerciseCategory category) { return trinkExercises.where((e) => e.category == category).toList(); }
+List<ExerciseItem> byEquipment(EquipmentType equipment) {
+  if (equipment == EquipmentType.none) {
+    return trinkExercises
+        .where((e) => (e as ExerciseItem).equipment == EquipmentType.none)
+        .cast<ExerciseItem>()
+        .toList();
+  }
 
-List<ExerciseItem> byEquipment(EquipmentType equipment) { if (equipment == EquipmentType.none) { return trinkExercises.where((e) => e.equipment == EquipmentType.none).toList(); } return trinkExercises.where((e) => e.equipment == equipment).toList(); }
-
+  return trinkExercises
+      .where((e) => (e as ExerciseItem).equipment == equipment)
+      .cast<ExerciseItem>()
+      .toList();
+}
 List<ProgramItem> programsByGroup(String group) { return trinkPrograms.where((p) => p.group == group).toList(); }
+
