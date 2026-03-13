@@ -388,7 +388,20 @@ String get programs => _pick('Programs', 'Programlar', 'Programme', 'Programmes'
 String get progress => _pick('Progress', 'İlerleme', 'Fortschritt', 'Progrès', 'Progreso', 'Progressi', 'Progresso', 'التقدم', 'प्रगति', '进度', '進捗', '진행');
 
 String get profile => _pick('Profile', 'Profil', 'Profil', 'Profil', 'Perfil', 'Profilo', 'Perfil', 'الملف الشخصي', 'प्रोफाइल', '我的', 'プロフィール', '프로필');
-
+String get improveCardio => _pick(
+  'Improve Cardio',
+  'Kardiyoyu Geliştir',
+  'Kondition verbessern',
+  'Améliorer le cardio',
+  'Mejorar cardio',
+  'Migliora il cardio',
+  'Melhorar cardio',
+  'تحسين الكارديو',
+  'कार्डियो सुधारें',
+  '提升心肺功能',
+  '有酸素能力を向上',
+  '유산소 능력 향상',
+);
 String get appSubtitle => _pick(
   'Home Workout, Weight Loss & Fitness',
   'Evde Egzersiz, Kilo Verme ve Fitness',
