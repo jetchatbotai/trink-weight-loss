@@ -4383,7 +4383,12 @@ ProgramItem(
   ],
 ),  
 ];  
-List<ExerciseItem> byCategory(ExerciseCategory category) { return trinkExercises.where((e) => e.category == category).toList(); }
+List<ExerciseItem> byCategory(ExerciseCategory category) {
+  return trinkExercises
+      .where((e) => (e as ExerciseItem).category == category)
+      .cast<ExerciseItem>()
+      .toList();
+}
 List<ExerciseItem> byEquipment(EquipmentType equipment) {
   if (equipment == EquipmentType.none) {
     return trinkExercises
