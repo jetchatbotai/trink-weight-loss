@@ -233,11 +233,53 @@ const ExerciseCard({super.key, required this.exercise});
 
 @override Widget build(BuildContext context) { return Card( child: Padding( padding: const EdgeInsets.all(16), child: Row( children: [ Container( width: 56, height: 56, decoration: BoxDecoration( gradient: const LinearGradient(colors: [AppTheme.primary, AppTheme.accent]), borderRadius: BorderRadius.circular(16), ), child: const Icon(Icons.play_circle_outline, color: Colors.white), ), const SizedBox(width: 12), Expanded( child: Column( crossAxisAlignment: CrossAxisAlignment.start, children: [ Text(exercise.name, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)), const SizedBox(height: 4), Text('${exercise.category} • ${exercise.seconds}s • ${exercise.calories} kcal'), const SizedBox(height: 4), Text(exercise.cue, style: const TextStyle(fontSize: 12)), ], ), ), ], ), ), ); } }
 
-final ExerciseItem exercise;
 
-const ProgramCard({super.key, required this.program});
+class ProgramCard extends StatelessWidget {
+  final ProgramItem program;
 
-@override Widget build(BuildContext context) { return Card( child: Padding( padding: const EdgeInsets.all(16), child: Column( crossAxisAlignment: CrossAxisAlignment.start, children: [ Row( children: [ Expanded( child: Text( program.title, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16), ), ), if (program.premium) const Icon(Icons.workspace_premium, color: Colors.amber), ], ), const SizedBox(height: 8), Text(program.subtitle), const Spacer(), Text('${program.days} days'), const SizedBox(height: 4), Text('${program.exercises.length} exercises'), ], ), ), ); } }
+  const ProgramCard({
+    super.key,
+    required this.program,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    program.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+                if (program.isPremium)
+                  const Icon(Icons.workspace_premium, color: Colors.amber),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(program.group),
+            const Spacer(),
+            Text('${program.totalDays} days'),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+
 
 class PremiumCard extends StatelessWidget { const PremiumCard({super.key});
 
