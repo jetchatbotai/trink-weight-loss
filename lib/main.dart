@@ -305,6 +305,80 @@ class Strings {
     'ダークモード',
     '다크 모드',
   );
+ String get all => _pick(
+  'All',
+  'Tümü',
+  'Alle',
+  'Tous',
+  'Todos',
+  'Tutti',
+  'Todos',
+  'الكل',
+  'सभी',
+  '全部',
+  'すべて',
+  '전체',
+);
+
+String get noEquipment => _pick(
+  'No Equipment',
+  'Ekipmansız',
+  'Ohne Geräte',
+  'Sans équipement',
+  'Sin equipo',
+  'Senza attrezzi',
+  'Sem equipamento',
+  'بدون معدات',
+  'बिना उपकरण',
+  '无器械',
+  '器具なし',
+  '장비 없음',
+);
+
+String get dumbbell => _pick(
+  'Dumbbell',
+  'Dambıl',
+  'Hantel',
+  'Haltère',
+  'Mancuerna',
+  'Manubrio',
+  'Halter',
+  'دمبل',
+  'डम्बल',
+  '哑铃',
+  'ダンベル',
+  '덤벨',
+);
+
+String get resistanceBand => _pick(
+  'Resistance Band',
+  'Direnç Bandı',
+  'Widerstandsband',
+  'Bande élastique',
+  'Banda de resistencia',
+  'Fascia elastica',
+  'Faixa elástica',
+  'شريط مقاومة',
+  'रेज़िस्टेंस बैंड',
+  '阻力带',
+  'レジスタンスバンド',
+  '저항 밴드',
+);
+
+String get gymEquipment => _pick(
+  'Gym Equipment',
+  'Spor Salonu Ekipmanı',
+  'Fitnessgeräte',
+  'Équipement de gym',
+  'Equipo de gimnasio',
+  'Attrezzi palestra',
+  'Equipamento de academia',
+  'معدات الجيم',
+  'जिम उपकरण',
+  '健身器械',
+  'ジム器具',
+  '헬스장 장비',
+); 
 String get home => _pick('Home', 'Ana Sayfa', 'Start', 'Accueil', 'Inicio', 'Home', 'Início', 'الرئيسية', 'होम', '首页', 'ホーム', '홈');
 
 String get workouts => _pick('Workouts', 'Antrenmanlar', 'Workouts', 'Séances', 'Entrenos', 'Allenamenti', 'Treinos', 'التمارين', 'वर्कआउट', '训练', 'ワークアウト', '운동');
