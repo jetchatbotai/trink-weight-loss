@@ -256,36 +256,95 @@ String equipmentLabel(Strings t, EquipmentType e) { switch (e) { case EquipmentT
 String themeModeLabel(Strings t, ThemeMode mode) { switch (mode) { case ThemeMode.light: return t.lightMode; case ThemeMode.dark: return t.darkMode; case ThemeMode.system: return t.systemMode; } }
 
 String langLabel(AppLang lang) { switch (lang) { case AppLang.en: return 'English'; case AppLang.tr: return 'Türkçe'; case AppLang.de: return 'Deutsch'; case AppLang.fr: return 'Français'; case AppLang.es: return 'Español'; case AppLang.it: return 'Italiano'; case AppLang.pt: return 'Português'; case AppLang.ar: return 'العربية'; case AppLang.hi: return 'हिन्दी'; case AppLang.zh: return '中文'; case AppLang.ja: return '日本語'; case AppLang.ko: return '한국어'; } }
+ 
+class Strings {
+  final AppLang lang;
+  Strings(this.lang);
 
-class Strings { final AppLang lang; Strings(this.lang);String get systemMode => _pick('System Mode', 'Sistem Modu', 'Systemmodus', 'Mode système', 'Modo del sistema', 'Modalità sistema', 'Modo do sistema', 'وضع النظام', 'सिस्टम मोड', '系统模式', 'システムモード', '시스템 모드');
-String _pick(String en, String tr, String de, String fr, String es, String it, String pt, String ar, String hi, String zh, String ja, String ko) { String get lightMode => _pick('Light Mode', 'Açık Mod', 'Heller Modus', 'Mode clair', 'Modo claro', 'Modalità chiara', 'Modo claro', 'الوضع الفاتح', 'लाइट मोड', '浅色模式', 'ライトモード', '라이트 모드');
+  String get systemMode => _pick(
+    'System Mode',
+    'Sistem Modu',
+    'Systemmodus',
+    'Mode système',
+    'Modo del sistema',
+    'Modalità sistema',
+    'Modo do sistema',
+    'وضع النظام',
+    'सिस्टम मोड',
+    '系统模式',
+    'システムモード',
+    '시스템 모드',
+  );
 
-String get darkMode => _pick('Dark Mode', 'Koyu Mod', 'Dunkler Modus', 'Mode sombre', 'Modo oscuro', 'Modalità scura', 'Modo escuro', 'الوضع الداكن', 'डार्क मोड', '深色模式', 'ダークモード', '다크 모드');
-  switch (lang) {
-    case AppLang.en:
-      return en;
-    case AppLang.tr:
-      return tr;
-    case AppLang.de:
-      return de;
-    case AppLang.fr:
-      return fr;
-    case AppLang.es:
-      return es;
-    case AppLang.it:
-      return it;
-    case AppLang.pt:
-      return pt;
-    case AppLang.ar:
-      return ar;
-    case AppLang.hi:
-      return hi;
-    case AppLang.zh:
-      return zh;
-    case AppLang.ja:
-      return ja;
-    case AppLang.ko:
-      return ko;
+  String get lightMode => _pick(
+    'Light Mode',
+    'Açık Mod',
+    'Heller Modus',
+    'Mode clair',
+    'Modo claro',
+    'Modalità chiara',
+    'Modo claro',
+    'الوضع الفاتح',
+    'लाइट मोड',
+    '浅色模式',
+    'ライトモード',
+    '라이트 모드',
+  );
+
+  String get darkMode => _pick(
+    'Dark Mode',
+    'Koyu Mod',
+    'Dunkler Modus',
+    'Mode sombre',
+    'Modo oscuro',
+    'Modalità scura',
+    'Modo escuro',
+    'الوضع الداكن',
+    'डार्क मोड',
+    '深色模式',
+    'ダークモード',
+    '다크 모드',
+  );
+
+  String _pick(
+    String en,
+    String tr,
+    String de,
+    String fr,
+    String es,
+    String it,
+    String pt,
+    String ar,
+    String hi,
+    String zh,
+    String ja,
+    String ko,
+  ) {
+    switch (lang) {
+      case AppLang.en:
+        return en;
+      case AppLang.tr:
+        return tr;
+      case AppLang.de:
+        return de;
+      case AppLang.fr:
+        return fr;
+      case AppLang.es:
+        return es;
+      case AppLang.it:
+        return it;
+      case AppLang.pt:
+        return pt;
+      case AppLang.ar:
+        return ar;
+      case AppLang.hi:
+        return hi;
+      case AppLang.zh:
+        return zh;
+      case AppLang.ja:
+        return ja;
+      case AppLang.ko:
+        return ko;
+    }
   }
-  return en;
 }
