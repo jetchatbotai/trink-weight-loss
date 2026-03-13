@@ -402,6 +402,50 @@ String get improveCardio => _pick(
   '有酸素能力を向上',
   '유산소 능력 향상',
 );
+  String get loseWeight => _pick(
+  'Lose Weight',
+  'Kilo Ver',
+  'Gewicht verlieren',
+  'Perdre du poids',
+  'Perder peso',
+  'Perdere peso',
+  'Perder peso',
+  'إنقاص الوزن',
+  'वजन घटाएं',
+  '减肥',
+  '減量',
+  '체중 감량',
+);
+
+String get buildMuscle => _pick(
+  'Build Muscle',
+  'Kas Yap',
+  'Muskeln aufbauen',
+  'Développer les muscles',
+  'Ganar músculo',
+  'Sviluppare muscoli',
+  'Ganhar músculos',
+  'بناء العضلات',
+  'मांसपेशियां बनाएं',
+  '增肌',
+  '筋肉をつける',
+  '근육 만들기',
+);
+
+String get stayFit => _pick(
+  'Stay Fit',
+  'Formda Kal',
+  'Fit bleiben',
+  'Rester en forme',
+  'Mantenerse en forma',
+  'Rimani in forma',
+  'Manter a forma',
+  'ابقَ لائقًا',
+  'फिट रहें',
+  '保持健康',
+  '健康を保つ',
+  '몸매 유지',
+);
 String get appSubtitle => _pick(
   'Home Workout, Weight Loss & Fitness',
   'Evde Egzersiz, Kilo Verme ve Fitness',
