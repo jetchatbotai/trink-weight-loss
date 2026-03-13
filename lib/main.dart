@@ -258,7 +258,32 @@ String themeModeLabel(Strings t, ThemeMode mode) { switch (mode) { case ThemeMod
 String langLabel(AppLang lang) { switch (lang) { case AppLang.en: return 'English'; case AppLang.tr: return 'Türkçe'; case AppLang.de: return 'Deutsch'; case AppLang.fr: return 'Français'; case AppLang.es: return 'Español'; case AppLang.it: return 'Italiano'; case AppLang.pt: return 'Português'; case AppLang.ar: return 'العربية'; case AppLang.hi: return 'हिन्दी'; case AppLang.zh: return '中文'; case AppLang.ja: return '日本語'; case AppLang.ko: return '한국어'; } }
 
 class Strings { final AppLang lang; Strings(this.lang);
-
-String get home => _pick('Home', 'Ana Sayfa', 'Start', 'Accueil', 'Inicio', 'Home', 'Início', 'الرئيسية', 'होम', '首页', 'ホーム', '홈');
-  String _pick(String en, String tr, String de, String fr, String es, String it, String pt, String ar, String hi, String zh, String ja, String ko) {             
-String _pick(String en, String tr, String de, String fr, String es, String it, String pt, String ar, String hi, String zh, String ja, String ko) { switch (lang) { case AppLang.en: return en; case AppLang.tr: return tr; case AppLang.de: return de; case AppLang.fr: return fr; case AppLang.es: return es; case AppLang.it: return it; case AppLang.pt: return pt; case AppLang.ar: return ar; case AppLang.hi: return hi; case AppLang.zh: return zh; case AppLang.ja: return ja; case AppLang.ko: return ko; } } }
+String _pick(String en, String tr, String de, String fr, String es, String it, String pt, String ar, String hi, String zh, String ja, String ko) {
+  switch (lang) {
+    case AppLang.en:
+      return en;
+    case AppLang.tr:
+      return tr;
+    case AppLang.de:
+      return de;
+    case AppLang.fr:
+      return fr;
+    case AppLang.es:
+      return es;
+    case AppLang.it:
+      return it;
+    case AppLang.pt:
+      return pt;
+    case AppLang.ar:
+      return ar;
+    case AppLang.hi:
+      return hi;
+    case AppLang.zh:
+      return zh;
+    case AppLang.ja:
+      return ja;
+    case AppLang.ko:
+      return ko;
+  }
+  return en;
+}
