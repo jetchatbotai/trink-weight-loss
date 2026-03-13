@@ -260,7 +260,65 @@ String langLabel(AppLang lang) { switch (lang) { case AppLang.en: return 'Englis
 class Strings {
   final AppLang lang;
   Strings(this.lang);
+String get widgetTitle => _pick(
+  'Widgets',
+  'Widgetler',
+  'Widgets',
+  'Widgets',
+  'Widgets',
+  'Widget',
+  'Widgets',
+  'الويدجت',
+  'विजेट्स',
+  '小组件',
+  'ウィジェット',
+  '위젯',
+);
 
+String get todaysWorkout => _pick(
+  "Today's Workout",
+  'Bugünün Antrenmanı',
+  'Heutiges Training',
+  "Entraînement d'aujourd'hui",
+  'Entrenamiento de hoy',
+  'Allenamento di oggi',
+  'Treino de hoje',
+  'تمرين اليوم',
+  'आज का वर्कआउट',
+  '今日训练',
+  '今日のワークアウト',
+  '오늘의 운동',
+);
+
+String get adsPremium => _pick(
+  'Ads Premium',
+  'Reklam Premium',
+  'Werbe-Premium',
+  'Premium pubs',
+  'Premium con anuncios',
+  'Premium con pubblicità',
+  'Premium com anúncios',
+  'بريميوم مع إعلانات',
+  'विज्ञापन प्रीमियम',
+  '广告高级版',
+  '広告付きプレミアム',
+  '광고 포함 프리미엄',
+);
+
+String get premiumAndAdsModel => _pick(
+  'Premium + Ads Model',
+  'Premium + Reklam Modeli',
+  'Premium + Werbemodell',
+  'Modèle Premium + pubs',
+  'Modelo Premium + anuncios',
+  'Modello Premium + pubblicità',
+  'Modelo Premium + anúncios',
+  'نموذج بريميوم + إعلانات',
+  'प्रीमियम + विज्ञापन मॉडल',
+  '高级版 + 广告模式',
+  'プレミアム + 広告モデル',
+  '프리미엄 + 광고 모델',
+);
   String get systemMode => _pick(
     'System Mode',
     'Sistem Modu',
