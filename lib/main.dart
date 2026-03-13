@@ -346,5 +346,5 @@ class Strings {
       case AppLang.ko:
         return ko;
     }
-  }
+  return en;
 }
