@@ -2219,7 +2219,7 @@ description: 'Lift heels to work calf muscles.',
 ExerciseItem(
 id: 'ex_172',
 name: 'Single Leg Balance',
-category: ExerciseCategory.balance,
+category: ExerciseCategory.stretch,
 level: LevelType.beginner,
 durationSec: 30,
 calories: 2,
