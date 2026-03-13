@@ -305,7 +305,30 @@ class Strings {
     'ダークモード',
     '다크 모드',
   );
+String get home => _pick('Home', 'Ana Sayfa', 'Start', 'Accueil', 'Inicio', 'Home', 'Início', 'الرئيسية', 'होम', '首页', 'ホーム', '홈');
 
+String get workouts => _pick('Workouts', 'Antrenmanlar', 'Workouts', 'Séances', 'Entrenos', 'Allenamenti', 'Treinos', 'التمارين', 'वर्कआउट', '训练', 'ワークアウト', '운동');
+
+String get programs => _pick('Programs', 'Programlar', 'Programme', 'Programmes', 'Programas', 'Programmi', 'Programas', 'البرامج', 'प्रोग्राम', '计划', 'プログラム', '프로그램');
+
+String get progress => _pick('Progress', 'İlerleme', 'Fortschritt', 'Progrès', 'Progreso', 'Progressi', 'Progresso', 'التقدم', 'प्रगति', '进度', '進捗', '진행');
+
+String get profile => _pick('Profile', 'Profil', 'Profil', 'Profil', 'Perfil', 'Profilo', 'Perfil', 'الملف الشخصي', 'प्रोफाइल', '我的', 'プロフィール', '프로필');
+
+String get appSubtitle => _pick(
+  'Home Workout, Weight Loss & Fitness',
+  'Evde Egzersiz, Kilo Verme ve Fitness',
+  'Home Training, Gewichtsverlust & Fitness',
+  'Entraînement à domicile, perte de poids et fitness',
+  'Entrenamiento en casa, pérdida de peso y fitness',
+  'Allenamento a casa, perdita di peso e fitness',
+  'Treino em casa, perda de peso e fitness',
+  'تمارين منزلية، خسارة الوزن واللياقة',
+  'होम वर्कआउट, वजन घटाना और फिटनेस',
+  '居家锻炼、减重与健身',
+  'ホームワークアウト、減量とフィットネス',
+  '홈트레이닝, 체중 감량 및 피트니스',
+);
   String _pick(
     String en,
     String tr,
