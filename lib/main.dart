@@ -227,13 +227,13 @@ const DashboardTile({ super.key, required this.title, required this.subtitle, re
 
 @override Widget build(BuildContext context) { return Card( child: Padding( padding: const EdgeInsets.all(16), child: Row( children: [ Container( width: 46, height: 46, decoration: BoxDecoration( color: AppTheme.primary.withOpacity(.12), borderRadius: BorderRadius.circular(14), ), child: Icon(icon, color: AppTheme.primary), ), const SizedBox(width: 12), Expanded( child: Column( crossAxisAlignment: CrossAxisAlignment.start, children: [ Text(title, style: const TextStyle(fontWeight: FontWeight.w800)), const SizedBox(height: 4), Text(subtitle, style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(.7))), ], ), ), ], ), ), ); } }
 
-class ExerciseCard extends StatelessWidget { final WorkoutExercise exercise;
-
+class ExerciseCard extends StatelessWidget { 
+  final ExerciseItem exercise;
 const ExerciseCard({super.key, required this.exercise});
 
 @override Widget build(BuildContext context) { return Card( child: Padding( padding: const EdgeInsets.all(16), child: Row( children: [ Container( width: 56, height: 56, decoration: BoxDecoration( gradient: const LinearGradient(colors: [AppTheme.primary, AppTheme.accent]), borderRadius: BorderRadius.circular(16), ), child: const Icon(Icons.play_circle_outline, color: Colors.white), ), const SizedBox(width: 12), Expanded( child: Column( crossAxisAlignment: CrossAxisAlignment.start, children: [ Text(exercise.name, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)), const SizedBox(height: 4), Text('${exercise.category} • ${exercise.seconds}s • ${exercise.calories} kcal'), const SizedBox(height: 4), Text(exercise.cue, style: const TextStyle(fontSize: 12)), ], ), ), ], ), ), ); } }
 
-class ProgramCard extends StatelessWidget { final WorkoutProgram program;
+final ExerciseItem exercise;
 
 const ProgramCard({super.key, required this.program});
 
