@@ -381,7 +381,125 @@ String get widgetTitle => _pick(
   'スマートリマインダー',
   '스마트 알림',
 );
+String get challenge30Day => _pick(
+  '30-Day Challenge',
+  '30 Günlük Meydan Okuma',
+  '30-Tage-Challenge',
+  'Défi de 30 jours',
+  'Desafío de 30 días',
+  'Sfida di 30 giorni',
+  'Desafio de 30 dias',
+  'تحدي 30 يومًا',
+  '30-दिवसीय चैलेंज',
+  '30天挑战',
+  '30日間チャレンジ',
+  '30일 챌린지',
+);
 
+String get fatBurnPlan => _pick(
+  'Fat Burn Plan',
+  'Yağ Yakma Planı',
+  'Fettverbrennungsplan',
+  'Plan brûle-graisse',
+  'Plan para quemar grasa',
+  'Piano brucia grassi',
+  'Plano de queima de gordura',
+  'خطة حرق الدهون',
+  'फैट बर्न प्लान',
+  '燃脂计划',
+  '脂肪燃焼プラン',
+  '지방 연소 플랜',
+);
+
+String get aiTrainer => _pick(
+  'AI Trainer',
+  'Yapay Zekâ Antrenörü',
+  'KI-Trainer',
+  'Coach IA',
+  'Entrenador IA',
+  'Allenatore IA',
+  'Treinador IA',
+  'مدرب الذكاء الاصطناعي',
+  'एआई ट्रेनर',
+  'AI教练',
+  'AIトレーナー',
+  'AI 트레이너',
+);
+
+String get createWorkoutForBellyFat => _pick(
+  'Create workout for belly fat',
+  'Göbek yağı için antrenman oluştur',
+  'Training gegen Bauchfett erstellen',
+  'Créer un entraînement pour la graisse du ventre',
+  'Crear entrenamiento para grasa abdominal',
+  'Crea allenamento per il grasso addominale',
+  'Criar treino para gordura abdominal',
+  'أنشئ تمرينًا لدهون البطن',
+  'पेट की चर्बी के लिए वर्कआउट बनाएं',
+  '为腹部脂肪创建训练',
+  'お腹の脂肪向けワークアウトを作成',
+  '복부 지방용 운동 만들기',
+);
+
+String get calorieTracker => _pick(
+  'Calorie Tracker',
+  'Kalori Takibi',
+  'Kalorien-Tracker',
+  'Suivi des calories',
+  'Seguimiento de calorías',
+  'Monitor calorie',
+  'Rastreador de calorias',
+  'متتبع السعرات الحرارية',
+  'कैलोरी ट्रैकर',
+  '卡路里追踪',
+  'カロリートラッカー',
+  '칼로리 추적기',
+);
+
+String get smartReminder => _pick(
+  'Smart Reminder',
+  'Akıllı Hatırlatıcı',
+  'Intelligente Erinnerung',
+  'Rappel intelligent',
+  'Recordatorio inteligente',
+  'Promemoria intelligente',
+  'Lembrete inteligente',
+  'تذكير ذكي',
+  'स्मार्ट रिमाइंडर',
+  '智能提醒',
+  'スマートリマインダー',
+  '스마트 알림',
+);
+
+String get timeForWorkout => _pick(
+  'Time for workout',
+  'Antrenman zamanı',
+  'Zeit fürs Training',
+  "C'est l'heure de s'entraîner",
+  'Hora de entrenar',
+  'È ora di allenarsi',
+  'Hora do treino',
+  'حان وقت التمرين',
+  'वर्कआउट का समय',
+  '该锻炼了',
+  'ワークアウトの時間',
+  '운동할 시간',
+);
+
+String get premiumPlans => _pick(
+  'Premium Plans',
+  'Premium Planlar',
+  'Premium-Pläne',
+  'Plans premium',
+  'Planes premium',
+  'Piani premium',
+  'Planos premium',
+  'خطط بريميوم',
+  'प्रीमियम प्लान',
+  '高级计划',
+  'プレミアムプラン',
+  '프리미엄 플랜',
+);
 String get timeForWorkout => _pick(
   'Time for Workout',
   'Antrenman Zamanı',
