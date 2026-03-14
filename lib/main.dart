@@ -363,7 +363,34 @@ String get widgetTitle => _pick(
   'ウィジェット',
   '위젯',
 );
-
+String get beforeAfter => _pick(
+  'Before & After',
+  'Öncesi ve Sonrası',
+  'Vorher & Nachher',
+  'Avant / Après',
+  'Antes y Después',
+  'Prima e Dopo',
+  'Antes e Depois',
+  'قبل وبعد',
+  'पहले और बाद में',
+  '前后对比',
+  'ビフォーアフター',
+  '전후 비교',
+);
+  String get trackTransformation => _pick(
+  'Track Transformation',
+  'Değişimi Takip Et',
+  'Transformation verfolgen',
+  'Suivre la transformation',
+  'Seguir transformación',
+  'Monitora trasformazione',
+  'Acompanhar transformação',
+  'تتبع التغيير',
+  'परिवर्तन ट्रैक करें',
+  '追踪变化',
+  '変化を追跡',
+  '변화 추적',
+);
 String get todaysWorkout => _pick(
   "Today's Workout",
   'Bugünün Antrenmanı',
