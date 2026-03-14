@@ -395,7 +395,65 @@ String get challenge30Day => _pick(
   '30日間チャレンジ',
   '30일 챌린지',
 );
+String get water => _pick(
+  'Water',
+  'Su',
+  'Wasser',
+  'Eau',
+  'Agua',
+  'Acqua',
+  'Água',
+  'الماء',
+  'पानी',
+  '水',
+  '水',
+  '물',
+);
 
+String get bmi => _pick(
+  'BMI',
+  'BMI',
+  'BMI',
+  'IMC',
+  'IMC',
+  'BMI',
+  'IMC',
+  'مؤشر كتلة الجسم',
+  'बीएमआई',
+  'BMI',
+  'BMI',
+  'BMI',
+);
+
+String get goalSelection => _pick(
+  'Goal Selection',
+  'Hedef Seçimi',
+  'Zielauswahl',
+  'Sélection d’objectif',
+  'Selección de objetivo',
+  'Selezione obiettivo',
+  'Seleção de objetivo',
+  'اختيار الهدف',
+  'लक्ष्य चयन',
+  '目标选择',
+  '目標選択',
+  '목표 선택',
+);
+
+String get quickWorkout => _pick(
+  'Quick Workout',
+  'Hızlı Antrenman',
+  'Schnelles Training',
+  'Entraînement rapide',
+  'Entrenamiento rápido',
+  'Allenamento rapido',
+  'Treino rápido',
+  'تمرين سريع',
+  'त्वरित कसरत',
+  '快速训练',
+  'クイックワークアウト',
+  '빠른 운동',
+);
 String get fatBurnPlan => _pick(
   'Fat Burn Plan',
   'Yağ Yakma Planı',
