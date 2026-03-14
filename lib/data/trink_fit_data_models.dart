@@ -18,7 +18,6 @@ class ProgramDay {
     required this.exerciseIds,
   });
 }
-class ProgramItem { final String id; final String title; final String group; final LevelType level; final int totalDays; final EquipmentType equipment; final bool isPremium; final List<String> exerciseIds;
 class ProgramItem {
   final String id;
   final String title;
@@ -40,7 +39,6 @@ class ProgramItem {
     required this.days,
   });
 }
-const ProgramItem({ required this.id, required this.title, required this.group, required this.level, required this.totalDays, required this.equipment, required this.isPremium, required this.exerciseIds, }); }
 const List<ExerciseItem> trinkExercises = [
   ExerciseItem(
     id: 'ex_001',
