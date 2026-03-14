@@ -190,7 +190,7 @@ return ListView(
     const SizedBox(height: 16),
     ...filtered.map((e) => Padding(
           padding: const EdgeInsets.only(bottom: 12),
-          child: ExerciseCard(exercise: e),
+          child: ExerciseCard(exercise: e),final ExerciseItem e = filtered[index];
         )),
   ],
 );
