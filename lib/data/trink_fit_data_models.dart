@@ -4375,12 +4375,13 @@ ProgramItem(
   totalDays: 30,
   equipment: EquipmentType.none,
   isPremium: true,
-  days: [
-    ProgramDay(day: 1, exerciseIds: ['ex_097','ex_109','ex_121','ex_133']),
-    ProgramDay(day: 2, exerciseIds: ['ex_098','ex_110','ex_122','ex_134']),
-    ProgramDay(day: 3, exerciseIds: ['ex_099','ex_111','ex_123','ex_135']),
-    ProgramDay(day: 4, exerciseIds: ['ex_100','ex_112','ex_124','ex_136']),
-  ],
+  totalDays: 4,
+exerciseIds: [
+  'ex_097','ex_109','ex_121','ex_133',
+  'ex_098','ex_110','ex_122','ex_134',
+  'ex_099','ex_111','ex_123','ex_135',
+  'ex_100','ex_112','ex_124','ex_136'
+],
 ),  
 ];  
 List<ExerciseItem> byCategory(ExerciseCategory category) {
