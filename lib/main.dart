@@ -424,7 +424,50 @@ String get bmi => _pick(
   'BMI',
   'BMI',
 );
+String get fiveExercisesVoiceCoach => _pick(
+  '5 Exercises Voice Coach',
+  '5 Egzersiz Sesli Koç',
+  '5 Übungen Sprachcoach',
+  'Coach vocal 5 exercices',
+  'Coach de voz de 5 ejercicios',
+  'Coach vocale 5 esercizi',
+  'Coach de voz 5 exercícios',
+  'مدرب صوتي لـ 5 تمارين',
+  '5 एक्सरसाइज़ वॉइस कोच',
+  '5 个练习语音教练',
+  '5エクササイズ音声コーチ',
+  '5개 운동 음성 코치',
+);
 
+String get startWorkout => _pick(
+  'Start Workout',
+  'Antrenmanı Başlat',
+  'Training starten',
+  'Commencer l’entraînement',
+  'Iniciar entrenamiento',
+  'Avvia allenamento',
+  'Iniciar treino',
+  'ابدأ التمرين',
+  'वर्कआउट शुरू करें',
+  '开始训练',
+  'ワークアウト開始',
+  '운동 시작',
+);
+
+String get dailyStreak => _pick(
+  'Daily Streak',
+  'Günlük Seri',
+  'Tägliche Serie',
+  'Série quotidienne',
+  'Racha diaria',
+  'Serie giornaliera',
+  'Sequência diária',
+  'سلسلة يومية',
+  'दैनिक स्ट्रीक',
+  '每日连续',
+  'デイリーストリーク',
+  '일일 연속',
+);
 String get goalSelection => _pick(
   'Goal Selection',
   'Hedef Seçimi',
