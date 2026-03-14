@@ -408,6 +408,140 @@ String get premiumAndAdsModel => _pick(
   'プレミアム + 広告モデル',
   '프리미엄 + 광고 모델',
 );
+  String get theme => _pick(
+  'Theme',
+  'Tema',
+  'Thema',
+  'Thème',
+  'Tema',
+  'Tema',
+  'Tema',
+  'السمة',
+  'थीम',
+  '主题',
+  'テーマ',
+  '테마',
+);
+
+String get language => _pick(
+  'Language',
+  'Dil',
+  'Sprache',
+  'Langue',
+  'Idioma',
+  'Lingua',
+  'Idioma',
+  'اللغة',
+  'भाषा',
+  '语言',
+  '言語',
+  '언어',
+);
+
+String get bmiCalculator => _pick(
+  'BMI Calculator',
+  'BMI Hesaplayıcı',
+  'BMI Rechner',
+  'Calculateur IMC',
+  'Calculadora IMC',
+  'Calcolatore BMI',
+  'Calculadora de IMC',
+  'حاسبة BMI',
+  'BMI कैलकुलेटर',
+  'BMI 计算器',
+  'BMI計算機',
+  'BMI 계산기',
+);
+
+String get healthIntegration => _pick(
+  'Health Integration',
+  'Sağlık Entegrasyonu',
+  'Gesundheitsintegration',
+  'Intégration Santé',
+  'Integración de Salud',
+  'Integrazione Salute',
+  'Integração de Saúde',
+  'تكامل الصحة',
+  'हेल्थ इंटीग्रेशन',
+  '健康集成',
+  'ヘルス連携',
+  '건강 연동',
+);
+
+String get steps => _pick(
+  'Steps',
+  'Adım',
+  'Schritte',
+  'Pas',
+  'Pasos',
+  'Passi',
+  'Passos',
+  'الخطوات',
+  'कदम',
+  '步数',
+  '歩数',
+  '걸음 수',
+);
+
+String get achievements => _pick(
+  'Achievements',
+  'Başarılar',
+  'Erfolge',
+  'Succès',
+  'Logros',
+  'Risultati',
+  'Conquistas',
+  'الإنجازات',
+  'उपलब्धियाँ',
+  '成就',
+  '実績',
+  '업적',
+);
+
+String get waterTracker => _pick(
+  'Water Tracker',
+  'Su Takibi',
+  'Wasser Tracker',
+  'Suivi de l’eau',
+  'Seguimiento de agua',
+  'Monitoraggio acqua',
+  'Monitor de água',
+  'متابعة الماء',
+  'वॉटर ट्रैकर',
+  '饮水追踪',
+  '水分トラッカー',
+  '물 섭취 추적',
+);
+
+String get stepCounter => _pick(
+  'Step Counter',
+  'Adım Sayacı',
+  'Schrittzähler',
+  'Compteur de pas',
+  'Contador de pasos',
+  'Contapassi',
+  'Contador de passos',
+  'عداد الخطوات',
+  'स्टेप काउंटर',
+  '计步器',
+  '歩数計',
+  '만보계',
+);
+
+String get addWaterGlass => _pick(
+  'Add Water',
+  'Su Ekle',
+  'Wasser hinzufügen',
+  'Ajouter de l’eau',
+  'Agregar agua',
+  'Aggiungi acqua',
+  'Adicionar água',
+  'إضافة ماء',
+  'पानी जोड़ें',
+  '添加饮水',
+  '水を追加',
+  '물 추가',
+);
   String get systemMode => _pick(
     'System Mode',
     'Sistem Modu',
