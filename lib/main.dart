@@ -201,7 +201,7 @@ class ProgramsScreen extends StatelessWidget { final Strings t;
 
 const ProgramsScreen({super.key, required this.t});
 
-@override Widget build(BuildContext context) { return ListView( padding: const EdgeInsets.all(16), children: [ SectionTitle(title: t.programs), const SizedBox(height: 16), GridView.builder( shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), itemCount: itemCount: trinkPrograms.length, gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount( crossAxisCount: 2, crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: .95, ), itemBuilder: (context, index) { final p = FakeData.programs[index]; return ProgramCard(program: p); }, ), ], ); } }
+@override Widget build(BuildContext context) { return ListView( padding: const EdgeInsets.all(16), children: [ SectionTitle(title: t.programs), const SizedBox(height: 16), GridView.builder( shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), itemCount: itemCount: trinkPrograms.length, gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount( crossAxisCount: 2, crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: .95, ), itemBuilder: (context, index) { final p = trinkPrograms[index]; return ProgramCard(program: p); }, ), ], ); } }
 
 class ProgressScreen extends StatelessWidget { final Strings t; final int waterGlasses; final VoidCallback onAddWater; final int dailySteps;
 
