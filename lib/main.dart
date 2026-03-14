@@ -363,6 +363,50 @@ String get widgetTitle => _pick(
   'ウィジェット',
   '위젯',
 );
+  String get smartReminder => _pick(
+  'Smart Reminder',
+  'Akıllı Hatırlatıcı',
+  'Intelligente Erinnerung',
+  'Rappel intelligent',
+  'Recordatorio inteligente',
+  'Promemoria intelligente',
+  'Lembrete inteligente',
+  'تذكير ذكي',
+  'स्मार्ट रिमाइंडर',
+  '智能提醒',
+  'スマートリマインダー',
+  '스마트 알림',
+);
+
+String get timeForWorkout => _pick(
+  'Time for Workout',
+  'Antrenman Zamanı',
+  'Zeit fürs Training',
+  "L'heure de l'entraînement",
+  'Hora de entrenar',
+  "Ora dell'allenamento",
+  'Hora do treino',
+  'وقت التمرين',
+  'वर्कआउट का समय',
+  '锻炼时间',
+  'トレーニングの時間',
+  '운동 시간',
+);
+
+String get premiumPlans => _pick(
+  'Premium Plans',
+  'Premium Planlar',
+  'Premium-Pläne',
+  'Plans premium',
+  'Planes premium',
+  'Piani premium',
+  'Planos premium',
+  'الخطط المميزة',
+  'प्रीमियम प्लान',
+  '高级计划',
+  'プレミアムプラン',
+  '프리미엄 플랜',
+);
 String get beforeAfter => _pick(
   'Before & After',
   'Öncesi ve Sonrası',
