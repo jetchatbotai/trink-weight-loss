@@ -4327,14 +4327,14 @@ ProgramItem(
   totalDays: 30,
   equipment: EquipmentType.none,
   isPremium: false,
-  days: [
-    ProgramDay(day: 1, exerciseIds: ['ex_085','ex_097','ex_109','ex_121']),
-    ProgramDay(day: 2, exerciseIds: ['ex_086','ex_098','ex_110','ex_122']),
-    ProgramDay(day: 3, exerciseIds: ['ex_087','ex_099','ex_111','ex_123']),
-    ProgramDay(day: 4, exerciseIds: ['ex_088','ex_100','ex_112','ex_124']),
-  ],
+exerciseIds: [
+  'ex_085', 'ex_097', 'ex_109', 'ex_121',
+  'ex_086', 'ex_098', 'ex_110', 'ex_122',
+  'ex_087', 'ex_099', 'ex_111', 'ex_123',
+  'ex_088', 'ex_100', 'ex_112', 'ex_124',
+],
 ),
-
+  
 ProgramItem(
   id: 'pr_098',
   title: '30 Day Fitness Program 98',
@@ -4343,12 +4343,12 @@ ProgramItem(
   totalDays: 30,
   equipment: EquipmentType.none,
   isPremium: false,
-  days: [
-    ProgramDay(day: 1, exerciseIds: ['ex_089','ex_101','ex_113','ex_125']),
-    ProgramDay(day: 2, exerciseIds: ['ex_090','ex_102','ex_114','ex_126']),
-    ProgramDay(day: 3, exerciseIds: ['ex_091','ex_103','ex_115','ex_127']),
-    ProgramDay(day: 4, exerciseIds: ['ex_092','ex_104','ex_116','ex_128']),
-  ],
+exerciseIds: [
+  'ex_089', 'ex_101', 'ex_113', 'ex_125',
+  'ex_090', 'ex_102', 'ex_114', 'ex_126',
+  'ex_091', 'ex_103', 'ex_115', 'ex_127',
+  'ex_092', 'ex_104', 'ex_116', 'ex_128',
+],
 ),
 
 ProgramItem(
@@ -4359,12 +4359,12 @@ ProgramItem(
   totalDays: 30,
   equipment: EquipmentType.none,
   isPremium: false,
-  days: [
-    ProgramDay(day: 1, exerciseIds: ['ex_093','ex_105','ex_117','ex_129']),
-    ProgramDay(day: 2, exerciseIds: ['ex_094','ex_106','ex_118','ex_130']),
-    ProgramDay(day: 3, exerciseIds: ['ex_095','ex_107','ex_119','ex_131']),
-    ProgramDay(day: 4, exerciseIds: ['ex_096','ex_108','ex_120','ex_132']),
-  ],
+exerciseIds: [
+  'ex_093', 'ex_105', 'ex_117', 'ex_129',
+  'ex_094', 'ex_106', 'ex_118', 'ex_130',
+  'ex_095', 'ex_107', 'ex_119', 'ex_131',
+  'ex_096', 'ex_108', 'ex_120', 'ex_132',
+],
 ),
 
 ProgramItem(
