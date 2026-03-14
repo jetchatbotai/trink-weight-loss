@@ -4279,12 +4279,12 @@ ProgramItem(
   totalDays: 30,
   equipment: EquipmentType.none,
   isPremium: false,
-  days: [
-    ProgramDay(day: 1, exerciseIds: ['ex_073','ex_085','ex_097','ex_109']),
-    ProgramDay(day: 2, exerciseIds: ['ex_074','ex_086','ex_098','ex_110']),
-    ProgramDay(day: 3, exerciseIds: ['ex_075','ex_087','ex_099','ex_111']),
-    ProgramDay(day: 4, exerciseIds: ['ex_076','ex_088','ex_100','ex_112']),
-  ],
+  exerciseIds: [
+  'ex_073', 'ex_085', 'ex_097', 'ex_109',
+  'ex_074', 'ex_086', 'ex_098', 'ex_110',
+  'ex_075', 'ex_087', 'ex_099', 'ex_111',
+  'ex_076', 'ex_088', 'ex_100', 'ex_112',
+],
 ),
 
 ProgramItem(
@@ -4295,12 +4295,12 @@ ProgramItem(
   totalDays: 30,
   equipment: EquipmentType.none,
   isPremium: true,
-  days: [
-    ProgramDay(day: 1, exerciseIds: ['ex_077','ex_089','ex_101','ex_113']),
-    ProgramDay(day: 2, exerciseIds: ['ex_078','ex_090','ex_102','ex_114']),
-    ProgramDay(day: 3, exerciseIds: ['ex_079','ex_091','ex_103','ex_115']),
-    ProgramDay(day: 4, exerciseIds: ['ex_080','ex_092','ex_104','ex_116']),
-  ],
+  exerciseIds: [
+  'ex_077','ex_089','ex_101','ex_113',
+  'ex_078','ex_090','ex_102','ex_114',
+  'ex_079','ex_091','ex_103','ex_115',
+  'ex_080','ex_092','ex_104','ex_116',
+],
 ),
 
 ProgramItem(
@@ -4311,12 +4311,12 @@ ProgramItem(
   totalDays: 30,
   equipment: EquipmentType.none,
   isPremium: false,
-  days: [
-    ProgramDay(day: 1, exerciseIds: ['ex_081','ex_093','ex_105','ex_117']),
-    ProgramDay(day: 2, exerciseIds: ['ex_082','ex_094','ex_106','ex_118']),
-    ProgramDay(day: 3, exerciseIds: ['ex_083','ex_095','ex_107','ex_119']),
-    ProgramDay(day: 4, exerciseIds: ['ex_084','ex_096','ex_108','ex_120']),
-  ],
+  exerciseIds: [
+  'ex_081','ex_093','ex_105','ex_117',
+  'ex_082','ex_094','ex_106','ex_118',
+  'ex_083','ex_095','ex_107','ex_119',
+  'ex_084','ex_096','ex_108','ex_120',
+],
 ),
 
 ProgramItem(
@@ -4372,7 +4372,6 @@ ProgramItem(
   title: '30 Day Fitness Program 100',
   group: 'Full Body',
   level: LevelType.intermediate,
-  totalDays: 30,
   equipment: EquipmentType.none,
   isPremium: true,
   totalDays: 4,
