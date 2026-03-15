@@ -77,9 +77,9 @@ const List<ExerciseItem> trinkExercises = [
     gifAsset: 'assets/gifs/jumping_jacks.gif',
     description: 'Jump while spreading your arms and legs, then return to start.',
   ),
-  ExerciseItem(
-  _002',
-    name: 'High Knees',
+ExerciseItem(
+  id: 'ex_002',
+  name: 'High Knees',
     category: ExerciseCategory.cardio,
     level: LevelType.beginner,
     durationSec: 30,
