@@ -6,9 +6,32 @@ enum LevelType { beginner, intermediate, advanced, }
 
 enum EquipmentType { none, dumbbell, resistanceBand, gym, }
 
-class ExerciseItem { final String id; final String name; final ExerciseCategory category; final LevelType level; final int durationSec; final int calories; final EquipmentType equipment; final String imageAsset; final String gifAsset; final String description;
+class ExerciseItem {
+  final String id;
+  final String name;
+  final ExerciseCategory category;
+  final LevelType level;
+  final int durationSec;
+  final int calories;
+  final EquipmentType equipment;
+  final String imageAsset;
+  final String gifAsset;
+  final String description;
 
-const ExerciseItem({ required this.id, required this.name, required this.category, required this.level, required this.durationSec, required this.calories, required this.equipment, required this.imageAsset, required this.gifAsset, required this.description, }); }
+  const ExerciseItem({
+    required this.id,
+    required this.name,
+    required this.category,
+    required this.level,
+    required this.durationSec,
+    required this.calories,
+    required this.equipment,
+    required this.imageAsset,
+    required this.gifAsset,
+    required this.description,
+  });
+}
+                    
 class ProgramDay {
   final int day;
   final List<String> exerciseIds;
