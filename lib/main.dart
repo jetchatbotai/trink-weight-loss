@@ -163,43 +163,52 @@ return ListView(
 );
 
 } }
+class WorkoutsScreen extends StatelessWidget {
+  final Strings t;
+  final EquipmentType equipment;
+  final ValueChanged<EquipmentType> onEquipmentChanged;
 
-class WorkoutsScreen extends StatelessWidget { final Strings t; final EquipmentType equipment; final ValueChanged<EquipmentType> onEquipmentChanged;
+  const WorkoutsScreen({
+    super.key,
+    required this.t,
+    required this.equipment,
+    required this.onEquipmentChanged,
+  });
 
-const WorkoutsScreen({ super.key, required this.t, required this.equipment, required this.onEquipmentChanged, });
+  @override
+  Widget build(BuildContext context) {
+    final List<ExerciseItem> filtered = equipment == EquipmentType.all
+        ? List<ExerciseItem>.from(trinkExercises.whereType<ExerciseItem>())
+        : trinkExercises
+            .whereType<ExerciseItem>()
+            .where((e) => e.equipment == equipment)
+            .toList();
 
-final List<ExerciseItem> filtered = equipment == EquipmentType.all
-    ? List<ExerciseItem>.from(trinkExercises.whereType<ExerciseItem>())
-    : trinkExercises
-        .whereType<ExerciseItem>()
-        .where((e) => e.equipment == equipment)
-        .toList();
-
-return ListView(
-  padding: const EdgeInsets.all(16),
-  children: [
-    SectionTitle(title: t.workouts),
-    const SizedBox(height: 10),
-    Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: EquipmentType.values.map((e) {
-        return ChoiceChip(
-          label: Text(equipmentLabel(t, e)),
-          selected: equipment == e,
-          onSelected: (_) => onEquipmentChanged(e),
-        );
-      }).toList(),
-    ),
-    const SizedBox(height: 16),
-    ...filtered.map((e) => Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: ExerciseCard(exercise: e),
-        )),
-  ],
-);
-
-} }
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        SectionTitle(title: t.workouts),
+        const SizedBox(height: 10),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: EquipmentType.values.map((e) {
+            return ChoiceChip(
+              label: Text(equipmentLabel(t, e)),
+              selected: equipment == e,
+              onSelected: (_) => onEquipmentChanged(e),
+            );
+          }).toList(),
+        ),
+        const SizedBox(height: 16),
+        ...filtered.map((e) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: ExerciseCard(exercise: e),
+            )),
+      ],
+    );
+  }
+}
 
 class ProgramsScreen extends StatelessWidget { final Strings t;
 
