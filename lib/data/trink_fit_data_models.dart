@@ -18,6 +18,7 @@ class ProgramDay {
     required this.exerciseIds,
   });
 }
+class ProgramItem { final String id; final String title; final String group; final LevelType level; final int totalDays; final EquipmentType equipment; final bool isPremium; final List<String> exerciseIds;
 class ProgramItem {
   final String id;
   final String title;
@@ -39,6 +40,7 @@ class ProgramItem {
     required this.days,
   });
 }
+const ProgramItem({ required this.id, required this.title, required this.group, required this.level, required this.totalDays, required this.equipment, required this.isPremium, required this.exerciseIds, }); }
 const List<ExerciseItem> trinkExercises = [
   ExerciseItem(
     id: 'ex_001',
@@ -4277,12 +4279,12 @@ ProgramItem(
   totalDays: 30,
   equipment: EquipmentType.none,
   isPremium: false,
-  exerciseIds: [
-  'ex_073', 'ex_085', 'ex_097', 'ex_109',
-  'ex_074', 'ex_086', 'ex_098', 'ex_110',
-  'ex_075', 'ex_087', 'ex_099', 'ex_111',
-  'ex_076', 'ex_088', 'ex_100', 'ex_112',
-],
+  days: [
+    ProgramDay(day: 1, exerciseIds: ['ex_073','ex_085','ex_097','ex_109']),
+    ProgramDay(day: 2, exerciseIds: ['ex_074','ex_086','ex_098','ex_110']),
+    ProgramDay(day: 3, exerciseIds: ['ex_075','ex_087','ex_099','ex_111']),
+    ProgramDay(day: 4, exerciseIds: ['ex_076','ex_088','ex_100','ex_112']),
+  ],
 ),
 
 ProgramItem(
@@ -4293,12 +4295,12 @@ ProgramItem(
   totalDays: 30,
   equipment: EquipmentType.none,
   isPremium: true,
-  exerciseIds: [
-  'ex_077','ex_089','ex_101','ex_113',
-  'ex_078','ex_090','ex_102','ex_114',
-  'ex_079','ex_091','ex_103','ex_115',
-  'ex_080','ex_092','ex_104','ex_116',
-],
+  days: [
+    ProgramDay(day: 1, exerciseIds: ['ex_077','ex_089','ex_101','ex_113']),
+    ProgramDay(day: 2, exerciseIds: ['ex_078','ex_090','ex_102','ex_114']),
+    ProgramDay(day: 3, exerciseIds: ['ex_079','ex_091','ex_103','ex_115']),
+    ProgramDay(day: 4, exerciseIds: ['ex_080','ex_092','ex_104','ex_116']),
+  ],
 ),
 
 ProgramItem(
@@ -4309,12 +4311,12 @@ ProgramItem(
   totalDays: 30,
   equipment: EquipmentType.none,
   isPremium: false,
-  exerciseIds: [
-  'ex_081','ex_093','ex_105','ex_117',
-  'ex_082','ex_094','ex_106','ex_118',
-  'ex_083','ex_095','ex_107','ex_119',
-  'ex_084','ex_096','ex_108','ex_120',
-],
+  days: [
+    ProgramDay(day: 1, exerciseIds: ['ex_081','ex_093','ex_105','ex_117']),
+    ProgramDay(day: 2, exerciseIds: ['ex_082','ex_094','ex_106','ex_118']),
+    ProgramDay(day: 3, exerciseIds: ['ex_083','ex_095','ex_107','ex_119']),
+    ProgramDay(day: 4, exerciseIds: ['ex_084','ex_096','ex_108','ex_120']),
+  ],
 ),
 
 ProgramItem(
@@ -4325,14 +4327,14 @@ ProgramItem(
   totalDays: 30,
   equipment: EquipmentType.none,
   isPremium: false,
-exerciseIds: [
-  'ex_085', 'ex_097', 'ex_109', 'ex_121',
-  'ex_086', 'ex_098', 'ex_110', 'ex_122',
-  'ex_087', 'ex_099', 'ex_111', 'ex_123',
-  'ex_088', 'ex_100', 'ex_112', 'ex_124',
-],
+  days: [
+    ProgramDay(day: 1, exerciseIds: ['ex_085','ex_097','ex_109','ex_121']),
+    ProgramDay(day: 2, exerciseIds: ['ex_086','ex_098','ex_110','ex_122']),
+    ProgramDay(day: 3, exerciseIds: ['ex_087','ex_099','ex_111','ex_123']),
+    ProgramDay(day: 4, exerciseIds: ['ex_088','ex_100','ex_112','ex_124']),
+  ],
 ),
-  
+
 ProgramItem(
   id: 'pr_098',
   title: '30 Day Fitness Program 98',
@@ -4341,12 +4343,12 @@ ProgramItem(
   totalDays: 30,
   equipment: EquipmentType.none,
   isPremium: false,
-exerciseIds: [
-  'ex_089', 'ex_101', 'ex_113', 'ex_125',
-  'ex_090', 'ex_102', 'ex_114', 'ex_126',
-  'ex_091', 'ex_103', 'ex_115', 'ex_127',
-  'ex_092', 'ex_104', 'ex_116', 'ex_128',
-],
+  days: [
+    ProgramDay(day: 1, exerciseIds: ['ex_089','ex_101','ex_113','ex_125']),
+    ProgramDay(day: 2, exerciseIds: ['ex_090','ex_102','ex_114','ex_126']),
+    ProgramDay(day: 3, exerciseIds: ['ex_091','ex_103','ex_115','ex_127']),
+    ProgramDay(day: 4, exerciseIds: ['ex_092','ex_104','ex_116','ex_128']),
+  ],
 ),
 
 ProgramItem(
@@ -4357,12 +4359,12 @@ ProgramItem(
   totalDays: 30,
   equipment: EquipmentType.none,
   isPremium: false,
-exerciseIds: [
-  'ex_093', 'ex_105', 'ex_117', 'ex_129',
-  'ex_094', 'ex_106', 'ex_118', 'ex_130',
-  'ex_095', 'ex_107', 'ex_119', 'ex_131',
-  'ex_096', 'ex_108', 'ex_120', 'ex_132',
-],
+  days: [
+    ProgramDay(day: 1, exerciseIds: ['ex_093','ex_105','ex_117','ex_129']),
+    ProgramDay(day: 2, exerciseIds: ['ex_094','ex_106','ex_118','ex_130']),
+    ProgramDay(day: 3, exerciseIds: ['ex_095','ex_107','ex_119','ex_131']),
+    ProgramDay(day: 4, exerciseIds: ['ex_096','ex_108','ex_120','ex_132']),
+  ],
 ),
 
 ProgramItem(
@@ -4370,6 +4372,7 @@ ProgramItem(
   title: '30 Day Fitness Program 100',
   group: 'Full Body',
   level: LevelType.intermediate,
+  totalDays: 30,
   equipment: EquipmentType.none,
   isPremium: true,
   totalDays: 4,
@@ -4401,4 +4404,3 @@ List<ExerciseItem> byEquipment(EquipmentType equipment) {
       .toList();
 }
 List<ProgramItem> programsByGroup(String group) { return trinkPrograms.where((p) => p.group == group).toList(); }
-
