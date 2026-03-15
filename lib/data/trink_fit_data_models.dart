@@ -460,7 +460,6 @@ const List<ExerciseItem> trinkExercises = [
     gifAsset: 'assets/gifs/downward_dog.gif',
     description: 'Lift hips up and back to stretch hamstrings and shoulders.',
   ),
-];
 ExerciseItem(
 id: 'ex_034',
 name: 'Jumping Jacks',
