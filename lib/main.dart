@@ -350,14 +350,65 @@ class SectionTitle extends StatelessWidget { final String title;
 const SectionTitle({super.key, required this.title});
 
 @override Widget build(BuildContext context) { return Text(title, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800)); } }
+String goalLabel(Strings t, GoalType g) {
+  switch (g) {
+    case GoalType.loseWeight:
+      return t.loseWeight;
+    case GoalType.buildMuscle:
+      return t.buildMuscle;
+  }
+}
 
-String goalLabel(Strings t, GoalType g) { switch (g) { case GoalType.loseWeight: return t.loseWeight; case GoalType.buildMuscle: return t.buildMuscle; case GoalType.stayFit: return t.stayFit; case GoalType.improveCardio: return t.improveCardio; } }
+String equipmentLabel(Strings t, EquipmentType e) {
+  switch (e) {
+    case EquipmentType.all:
+      return t.all;
+    case EquipmentType.noEquipment:
+      return t.noEquipment;
+    case EquipmentType.dumbbell:
+      return t.dumbbell;
+    case EquipmentType.resistanceBand:
+      return t.resistanceBand;
+    case EquipmentType.gym:
+      return t.gym;
+  }
+}
 
-String equipmentLabel(Strings t, EquipmentType e) { switch (e) { case EquipmentType.all: return t.all; case EquipmentType.noEquipment: return t.noEquipment; case EquipmentType.dumbbell: return t.dumbbell; case EquipmentType.resistanceBand: return t.resistanceBand; case EquipmentType.gym: return t.gymEquipment; } }
+String themeModeLabel(Strings t, ThemeMode mode) {
+  switch (mode) {
+    case ThemeMode.light:
+      return t.lightMode;
+    case ThemeMode.dark:
+      return t.darkMode;
+    case ThemeMode.system:
+      return t.systemMode;
+  }
+}
 
-String themeModeLabel(Strings t, ThemeMode mode) { switch (mode) { case ThemeMode.light: return t.lightMode; case ThemeMode.dark: return t.darkMode; case ThemeMode.system: return t.systemMode; } }
-
-String langLabel(AppLang lang) { switch (lang) { case AppLang.en: return 'English'; case AppLang.tr: return 'Türkçe'; case AppLang.de: return 'Deutsch'; case AppLang.fr: return 'Français'; case AppLang.es: return 'Español'; case AppLang.it: return 'Italiano'; case AppLang.pt: return 'Português'; case AppLang.ar: return 'العربية'; case AppLang.hi: return 'हिन्दी'; case AppLang.zh: return '中文'; case AppLang.ja: return '日本語'; case AppLang.ko: return '한국어'; } }
+String langLabel(AppLang lang) {
+  switch (lang) {
+    case AppLang.en:
+      return 'English';
+    case AppLang.tr:
+      return 'Türkçe';
+    case AppLang.de:
+      return 'Deutsch';
+    case AppLang.es:
+      return 'Español';
+    case AppLang.fr:
+      return 'Français';
+    case AppLang.ar:
+      return 'العربية';
+    case AppLang.ru:
+      return 'Русский';
+    case AppLang.zh:
+      return '中文';
+    case AppLang.ja:
+      return '日本語';
+    case AppLang.ko:
+      return '한국어';
+  }
+}
  
 class Strings {
   final AppLang lang;
