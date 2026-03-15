@@ -1,10 +1,10 @@
-// Trink Fit data structure starter // Split these into: // lib/models/exercise.dart // lib/models/program.dart // lib/data/exercises_data.dart // lib/data/programs_data.dart
+// Trink Fit data structure starter
 
-enum ExerciseCategory { cardio, abs, legs, arms, fullBody, hiit, stretch, }
+enum ExerciseCategory { cardio, abs, legs, arms, fullBody, hiit, stretch }
 
-enum LevelType { beginner, intermediate, advanced, }
+enum LevelType { beginner, intermediate, advanced }
 
-enum EquipmentType { none, dumbbell, resistanceBand, gym, }
+enum EquipmentType { none, dumbbell, resistanceBand, gym }
 
 class ExerciseItem {
   final String id;
@@ -31,7 +31,7 @@ class ExerciseItem {
     required this.description,
   });
 }
-                    
+
 class ProgramDay {
   final int day;
   final List<String> exerciseIds;
@@ -41,6 +41,7 @@ class ProgramDay {
     required this.exerciseIds,
   });
 }
+
 class ProgramItem {
   final String id;
   final String title;
@@ -62,6 +63,7 @@ class ProgramItem {
     required this.days,
   });
 }
+
 const List<ExerciseItem> trinkExercises = [
   ExerciseItem(
     id: 'ex_001',
@@ -76,7 +78,7 @@ const List<ExerciseItem> trinkExercises = [
     description: 'Jump while spreading your arms and legs, then return to start.',
   ),
   ExerciseItem(
-    id: 'ex_002',
+  _002',
     name: 'High Knees',
     category: ExerciseCategory.cardio,
     level: LevelType.beginner,
