@@ -1096,8 +1096,8 @@ String get appSubtitle => _pick(
         return it;
       case AppLang.pt:
         return pt;
-        case AppLang.ru:
-  return ru;
+      case AppLang.ru:
+        return ru;     
       case AppLang.ar:
         return ar;
       case AppLang.hi:
