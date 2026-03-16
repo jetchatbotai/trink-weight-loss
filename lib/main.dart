@@ -1094,3 +1094,4 @@ String get appSubtitle => _pick(
     }
   return en;
 }
+}
