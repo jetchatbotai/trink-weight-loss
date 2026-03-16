@@ -1073,6 +1073,118 @@ String get appSubtitle => _pick(
   'ホームワークアウト、減量とフィットネス',
   '홈트레이닝, 체중 감량 및 피트니스',
 );
+  class ExerciseDetailScreen extends StatelessWidget {
+  final ExerciseItem exercise;
+  final Strings t;
+
+  const ExerciseDetailScreen({
+    super.key,
+    required this.exercise,
+    required this.t,
+  });
+
+  String categoryLabel(Strings t, ExerciseCategory c) {
+    switch (c) {
+      case ExerciseCategory.cardio:
+        return t.cardio;
+      case ExerciseCategory.abs:
+        return t.abs;
+      case ExerciseCategory.legs:
+        return t.legs;
+      case ExerciseCategory.arms:
+        return t.arms;
+      case ExerciseCategory.fullBody:
+        return t.fullBody;
+      case ExerciseCategory.hiit:
+        return t.hiit;
+      case ExerciseCategory.stretch:
+        return t.stretch;
+    }
+  }
+
+  String equipmentLabelLocal(Strings t, EquipmentType e) {
+    switch (e) {
+      case EquipmentType.none:
+        return t.noEquipment;
+      case EquipmentType.dumbbell:
+        return t.dumbbell;
+      case EquipmentType.resistanceBand:
+        return t.resistanceBand;
+      case EquipmentType.gym:
+        return t.gym;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(exercise.name),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (exercise.gifAsset.isNotEmpty)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: Image.asset(
+                  exercise.gifAsset,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      height: 240,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(24),
+                        color: Theme.of(context).cardColor,
+                      ),
+                      alignment: Alignment.center,
+                      child: const Icon(Icons.image_not_supported_outlined, size: 48),
+                    );
+                  },
+                ),
+              )
+            else
+              Container(
+                height: 240,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(24),
+                  color: Theme.of(context).cardColor,
+                ),
+                alignment: Alignment.center,
+                child: const Icon(Icons.fitness_center, size: 48),
+              ),
+            const SizedBox(height: 20),
+            Text(
+              exercise.name,
+              style: const TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                Chip(label: Text(categoryLabel(t, exercise.category))),
+                Chip(label: Text('${exercise.durationSec} sn')),
+                Chip(label: Text('${exercise.calories} kcal')),
+                Chip(label: Text(equipmentLabelLocal(t, exercise.equipment))),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Text(
+              exercise.description,
+              style: const TextStyle(fontSize: 16, height: 1.5),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
   String _pick(
     String en,
     String tr,
