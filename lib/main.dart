@@ -1060,6 +1060,7 @@ String get appSubtitle => _pick(
     String es,
     String it,
     String pt,
+    String ru,
     String ar,
     String hi,
     String zh,
@@ -1081,6 +1082,8 @@ String get appSubtitle => _pick(
         return it;
       case AppLang.pt:
         return pt;
+        case AppLang.ru:
+  return ru;
       case AppLang.ar:
         return ar;
       case AppLang.hi:
