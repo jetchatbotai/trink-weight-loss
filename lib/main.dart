@@ -355,7 +355,7 @@ String goalLabel(Strings t, GoalType g) {
     case GoalType.loseWeight:
       return t.loseWeight;
       case GoalType.improveCardio:
-      return t.cardio;
+      return t.improveCardio;
       case GoalType.stayFit:
   return t.stayFit;
     case GoalType.buildMuscle:
