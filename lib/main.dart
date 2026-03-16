@@ -854,7 +854,6 @@ String get gym => _pick(
   'Gimnasio',
   'Palestra',
   'Academia',
-  'Тренажерный зал',
   'جيم',
   'जिम',
   '健身房',
