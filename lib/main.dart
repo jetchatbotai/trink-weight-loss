@@ -838,7 +838,21 @@ String get stepCounter => _pick(
   '歩数計',
   '만보계',
 );
-
+String get gym => _pick(
+  'Gym',
+  'Spor Salonu',
+  'Fitnessstudio',
+  'Salle de sport',
+  'Gimnasio',
+  'Palestra',
+  'Academia',
+  'Тренажерный зал',
+  'جيم',
+  'जिम',
+  '健身房',
+  'ジム',
+  '헬스장',
+);
 String get addWaterGlass => _pick(
   'Add Water',
   'Su Ekle',
