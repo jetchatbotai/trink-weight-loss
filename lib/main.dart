@@ -1066,7 +1066,7 @@ String get appSubtitle => _pick(
     String ja,
     String ko,
   ) {
-    switch (lang) {
+    switch (this.lang) {
       case AppLang.en:
         return en;
       case AppLang.tr:
