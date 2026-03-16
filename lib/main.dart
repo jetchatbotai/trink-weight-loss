@@ -201,14 +201,24 @@ class WorkoutsScreen extends StatelessWidget {
           }).toList(),
         ),
         const SizedBox(height: 16),
-        ...filtered.map((e) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: ExerciseCard(exercise: e),
-            )),
-      ],
-    );
-  }
-}
+      ...filtered.map((e) => Padding(
+  padding: const EdgeInsets.only(bottom: 12),
+  child: InkWell(
+    borderRadius: BorderRadius.circular(28),
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ExerciseDetailScreen(
+            exercise: e,
+            t: t,
+          ),
+        ),
+      );
+    },
+    child: ExerciseCard(exercise: e),
+  ),
+)),
 
 class ProgramsScreen extends StatelessWidget { final Strings t;
 
