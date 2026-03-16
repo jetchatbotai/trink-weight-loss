@@ -401,6 +401,12 @@ String langLabel(AppLang lang) {
       return 'Español';
     case AppLang.fr:
       return 'Français';
+    case AppLang.it:
+      return 'Italiano';
+    case AppLang.pt:
+      return 'Português';
+    case AppLang.hi:
+      return 'हिन्दी';
     case AppLang.ar:
       return 'العربية';
     case AppLang.ru:
