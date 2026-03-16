@@ -219,7 +219,10 @@ class WorkoutsScreen extends StatelessWidget {
     child: ExerciseCard(exercise: e),
   ),
 )),
-
+],
+  );
+}
+}
 class ProgramsScreen extends StatelessWidget { final Strings t;
 
 const ProgramsScreen({super.key, required this.t});
