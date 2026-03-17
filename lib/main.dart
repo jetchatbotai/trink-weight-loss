@@ -1113,21 +1113,21 @@ String get appSubtitle => _pick(
       case ExerciseCategory.stretch:
         return t.stretch;
     }
+ } 
+String equipmentLabelLocal(Strings t, EquipmentType e) {
+  switch (e) {
+    case EquipmentType.all:
+      return t.all;
+    case EquipmentType.noEquipment:
+      return t.noEquipment;
+    case EquipmentType.dumbbell:
+      return t.dumbbell;
+    case EquipmentType.resistanceBand:
+      return t.resistanceBand;
+    case EquipmentType.gym:
+      return t.gym;
   }
-
-  String equipmentLabelLocal(Strings t, EquipmentType e) {
-    switch (e) {
-      case EquipmentType.none:
-        return t.noEquipment;
-      case EquipmentType.dumbbell:
-        return t.dumbbell;
-      case EquipmentType.resistanceBand:
-        return t.resistanceBand;
-      case EquipmentType.gym:
-        return t.gym;
-    }
-  }
-
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
