@@ -1111,7 +1111,7 @@ class ExerciseDetailScreen extends StatelessWidget {
       case ExerciseCategory.stretch:
         return t.stretch;
     }
-
+  }
   String equipmentLabelLocal(Strings t, EquipmentType e) {
     switch (e) {
       case EquipmentType.none:
