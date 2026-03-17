@@ -1110,7 +1110,6 @@ class ExerciseDetailScreen extends StatelessWidget {
       case ExerciseCategory.stretch:
         return t.stretch;
     }
-  }
 
   String equipmentLabelLocal(Strings t, EquipmentType e) {
     switch (e) {
@@ -1123,8 +1122,7 @@ class ExerciseDetailScreen extends StatelessWidget {
       case EquipmentType.gym:
         return t.gym;
     }
-  }
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
