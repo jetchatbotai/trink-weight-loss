@@ -378,9 +378,7 @@ String goalLabel(Strings t, GoalType g) {
 
 String equipmentLabel(Strings t, EquipmentType e) {
   switch (e) {
-    case EquipmentType.all:
-      return t.all;
-    case EquipmentType.noEquipment:
+    case EquipmentType.none:
       return t.noEquipment;
     case EquipmentType.dumbbell:
       return t.dumbbell;
@@ -390,7 +388,6 @@ String equipmentLabel(Strings t, EquipmentType e) {
       return t.gym;
   }
 }
-
 String themeModeLabel(Strings t, ThemeMode mode) {
   switch (mode) {
     case ThemeMode.light:
