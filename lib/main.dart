@@ -1084,6 +1084,7 @@ String get appSubtitle => _pick(
   'ホームワークアウト、減量とフィットネス',
   '홈트레이닝, 체중 감량 및 피트니스',
 );
+ } 
 class ExerciseDetailScreen extends StatelessWidget {
   final ExerciseItem exercise;
   final Strings t;
