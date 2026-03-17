@@ -1083,7 +1083,7 @@ String get appSubtitle => _pick(
   'ホームワークアウト、減量とフィットネス',
   '홈트레이닝, 체중 감량 및 피트니스',
 );
-  class ExerciseDetailScreen extends StatelessWidget {
+class ExerciseDetailScreen extends StatelessWidget {
   final ExerciseItem exercise;
   final Strings t;
 
@@ -1110,19 +1110,21 @@ String get appSubtitle => _pick(
       case ExerciseCategory.stretch:
         return t.stretch;
     }
- } 
-String equipmentLabelLocal(Strings t, EquipmentType e) {
-  switch (e) {
-    case EquipmentType.none:
-      return t.noEquipment;
-    case EquipmentType.dumbbell:
-      return t.dumbbell;
-    case EquipmentType.resistanceBand:
-      return t.resistanceBand;
-    case EquipmentType.gym:
-      return t.gym;
   }
-}
+
+  String equipmentLabelLocal(Strings t, EquipmentType e) {
+    switch (e) {
+      case EquipmentType.none:
+        return t.noEquipment;
+      case EquipmentType.dumbbell:
+        return t.dumbbell;
+      case EquipmentType.resistanceBand:
+        return t.resistanceBand;
+      case EquipmentType.gym:
+        return t.gym;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1130,69 +1132,101 @@ String equipmentLabelLocal(Strings t, EquipmentType e) {
         title: Text(exercise.name),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (exercise.gifAsset.isNotEmpty)
-              ClipRRect(
-                borderRadius: BorderRadius.circular(24),
-                child: Image.asset(
-                  exercise.gifAsset,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      height: 240,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(24),
-                        color: Theme.of(context).cardColor,
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    exercise.name,
+                    style: const TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      Chip(
+                        label: Text(categoryLabel(t, exercise.category)),
                       ),
-                      alignment: Alignment.center,
-                      child: const Icon(Icons.image_not_supported_outlined, size: 48),
-                    );
-                  },
-                ),
-              )
-            else
-              Container(
-                height: 240,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(24),
-                  color: Theme.of(context).cardColor,
-                ),
-                alignment: Alignment.center,
-                child: const Icon(Icons.fitness_center, size: 48),
+                      Chip(
+                        label: Text('${exercise.durationSec} sn'),
+                      ),
+                      Chip(
+                        label: Text('${exercise.calories} kcal'),
+                      ),
+                      Chip(
+                        label: Text(
+                          equipmentLabelLocal(t, exercise.equipment),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            const SizedBox(height: 20),
-            Text(
-              exercise.name,
-              style: const TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            const SizedBox(height: 10),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                Chip(label: Text(categoryLabel(t, exercise.category))),
-                Chip(label: Text('${exercise.durationSec} sn')),
-                Chip(label: Text('${exercise.calories} kcal')),
-                Chip(label: Text(equipmentLabelLocal(t, exercise.equipment))),
-              ],
             ),
             const SizedBox(height: 20),
             Text(
               exercise.description,
               style: const TextStyle(fontSize: 16, height: 1.5),
             ),
+            const SizedBox(height: 24),
+            if (exercise.gifAsset.isNotEmpty)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Image.asset(
+                  exercise.gifAsset,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      height: 220,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).cardColor,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Text('GIF bulunamadı'),
+                    );
+                  },
+                ),
+              )
+            else if (exercise.imageAsset.isNotEmpty)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Image.asset(
+                  exercise.imageAsset,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      height: 220,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).cardColor,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Text('Görsel bulunamadı'),
+                    );
+                  },
+                ),
+              ),
           ],
         ),
       ),
     );
   }
-}
+}  
   String _pick(
     String en,
     String tr,
