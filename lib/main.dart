@@ -1126,6 +1126,8 @@ class ExerciseDetailScreen extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
+    final exercise = this.exercise;
+  final t = this.t;
     return Scaffold(
       appBar: AppBar(
         title: Text(exercise.name),
