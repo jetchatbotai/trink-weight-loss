@@ -336,8 +336,9 @@ class ProgramCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                if (program.isPremium)
-                  const Icon(Icons.workspace_premium, color: Colors.amber),
+                if (program.isPremium) ...[
+  const Icon(Icons.workspace_premium, color: Colors.amber),
+],
               ],
             ),
             const SizedBox(height: 8),
