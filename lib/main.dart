@@ -4,7 +4,7 @@ void main() { runApp(const TrinkFitApp()); }
 
 enum AppLang { en, tr, de, fr, es, it, pt, ar, hi, zh, ja, ko, }
 
-enum GoalType { loseWeight, buildMuscle, stayFit, improveCardio } enum EquipmentType { all, noEquipment, dumbbell, resistanceBand, gym }
+enum GoalType { loseWeight, buildMuscle, stayFit, improveCardio } 
 
 class TrinkFitApp extends StatefulWidget { const TrinkFitApp({super.key});
 
