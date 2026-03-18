@@ -26,7 +26,7 @@ const MainShell({ super.key, required this.lang, required this.themeMode, requir
 
 @override State<MainShell> createState() => _MainShellState(); }
 
-class _MainShellState extends State<MainShell> { int index = 0; GoalType goal = GoalType.loseWeight; EquipmentType equipment = EquipmentType.all; int waterGlasses = 5; int dailySteps = 6842; int caloriesLogged = 1280; int targetCalories = 1800;
+class _MainShellState extends State<MainShell> { int index = 0; GoalType goal = GoalType.loseWeight; EquipmentType? equipment; int waterGlasses = 5; int dailySteps = 6842; int caloriesLogged = 1280; int targetCalories = 1800;
 
 @override Widget build(BuildContext context) { final t = Strings(widget.lang); final screens = [ HomeScreen( t: t, goal: goal, onGoalChanged: (v) => setState(() => goal = v), waterGlasses: waterGlasses, dailySteps: dailySteps, caloriesLogged: caloriesLogged, targetCalories: targetCalories, ), WorkoutsScreen( t: t, equipment: equipment, onEquipmentChanged: (v) => setState(() => equipment = v), ), ProgramsScreen(t: t), ProgressScreen( t: t, waterGlasses: waterGlasses, onAddWater: () => setState(() => waterGlasses++), dailySteps: dailySteps, ), ProfileScreen( t: t, lang: widget.lang, onLangChanged: widget.onLangChanged, themeMode: widget.themeMode, onThemeModeChanged: widget.onThemeModeChanged, ), ];
 
@@ -177,12 +177,11 @@ class WorkoutsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<ExerciseItem> filtered = equipment == null
-        ? List<ExerciseItem>.from(trinkExercises.whereType<ExerciseItem>())
-        : trinkExercises
-            .whereType<ExerciseItem>()
-            .where((e) => e.equipment == equipment)
-            .toList();
+ final List<ExerciseItem> filtered = equipment == null
+    ? List<ExerciseItem>.from(trinkExercises)
+    : trinkExercises
+        .where((e) => e.equipment == equipment)
+        .toList(); 
 
     return ListView(
       padding: const EdgeInsets.all(16),
