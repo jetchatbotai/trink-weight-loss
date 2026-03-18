@@ -432,6 +432,47 @@ String langLabel(AppLang lang) {
 class Strings {
   final AppLang lang;
   Strings(this.lang);
+  String _pick(
+  String en,
+  String tr,
+  String de,
+  String fr,
+  String es,
+  String it,
+  String pt,
+  String ar,
+  String hi,
+  String zh,
+  String ja,
+  String ko,
+) {
+  switch (lang) {
+    case AppLang.en:
+      return en;
+    case AppLang.tr:
+      return tr;
+    case AppLang.de:
+      return de;
+    case AppLang.fr:
+      return fr;
+    case AppLang.es:
+      return es;
+    case AppLang.it:
+      return it;
+    case AppLang.pt:
+      return pt;
+    case AppLang.ar:
+      return ar;
+    case AppLang.hi:
+      return hi;
+    case AppLang.zh:
+      return zh;
+    case AppLang.ja:
+      return ja;
+    case AppLang.ko:
+      return ko;
+  }
+}
 String get widgetTitle => _pick(
   'Widgets',
   'Widgetler',
@@ -1025,6 +1066,20 @@ String get improveCardio => _pick(
   '提升心肺功能',
   '有酸素能力を向上',
   '유산소 능력 향상',
+);
+  String get cardio => _pick(
+  'Cardio',
+  'Kardiyo',
+  'Cardio',
+  'Cardio',
+  'Cardio',
+  'Cardio',
+  'Cardio',
+  'كارديو',
+  'कार्डियो',
+  '有氧',
+  '有酸素',
+  '유산소',
 );
   String get abs => _pick(
   'Abs',
