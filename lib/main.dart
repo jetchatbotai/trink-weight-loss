@@ -1026,6 +1026,95 @@ String get improveCardio => _pick(
   '有酸素能力を向上',
   '유산소 능력 향상',
 );
+  String get abs => _pick(
+  'Abs',
+  'Karın',
+  'Bauch',
+  'Abdos',
+  'Abdominales',
+  'Addominali',
+  'Abdominais',
+  'البطن',
+  'एब्स',
+  '腹肌',
+  '腹筋',
+  '복근',
+);
+
+String get legs => _pick(
+  'Legs',
+  'Bacaklar',
+  'Beine',
+  'Jambes',
+  'Piernas',
+  'Gambe',
+  'Pernas',
+  'الساقين',
+  'पैर',
+  '腿',
+  '脚',
+  '다리',
+);
+
+String get arms => _pick(
+  'Arms',
+  'Kollar',
+  'Arme',
+  'Bras',
+  'Brazos',
+  'Braccia',
+  'Braços',
+  'الذراعين',
+  'बांहें',
+  '手臂',
+  '腕',
+  '팔',
+);
+
+String get fullBody => _pick(
+  'Full Body',
+  'Tüm Vücut',
+  'Ganzkörper',
+  'Corps entier',
+  'Cuerpo completo',
+  'Corpo intero',
+  'Corpo inteiro',
+  'الجسم بالكامل',
+  'पूर्ण शरीर',
+  '全身',
+  '全身',
+  '전신',
+);
+
+String get hiit => _pick(
+  'HIIT',
+  'HIIT',
+  'HIIT',
+  'HIIT',
+  'HIIT',
+  'HIIT',
+  'HIIT',
+  'هيت',
+  'HIIT',
+  'HIIT',
+  'HIIT',
+  'HIIT',
+);
+
+String get stretch => _pick(
+  'Stretch',
+  'Esneme',
+  'Dehnen',
+  'Étirement',
+  'Estiramiento',
+  'Stretching',
+  'Alongamento',
+  'تمدد',
+  'स्ट्रेच',
+  '拉伸',
+  'ストレッチ',
+  '스트레칭',
+);
   String get loseWeight => _pick(
   'Lose Weight',
   'Kilo Ver',
