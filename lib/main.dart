@@ -869,6 +869,7 @@ class Strings {
   String get theme => _pick('Theme', 'Tema', 'Thema', 'Thème', 'Tema', 'Tema', 'Tema', 'السمة', 'थीम', '主题', 'テーマ', '테마');
   String get language => _pick('Language', 'Dil', 'Sprache', 'Langue', 'Idioma', 'Lingua', 'Idioma', 'اللغة', 'भाषा', '语言', '言語', '언어');
   String get bmiCalculator => _pick('BMI Calculator', 'BMI Hesaplayıcı', 'BMI Rechner', 'Calculateur IMC', 'Calculadora IMC', 'Calcolatore BMI', 'Calculadora de IMC', 'حاسبة BMI', 'BMI कैलकुलेटर', 'BMI 计算器', 'BMI計算機', 'BMI 계산기');
+  String get widgetTitle => _pick('Widgets', 'Widgetler', 'Widgets', 'Widgets', 'Widgets', 'Widget', 'Widgets', 'الويدجت', 'विजेट्स', '小组件', 'ウィジェット', '위젯');
   String get healthIntegration => _pick('Health Integration', 'Sağlık Entegrasyonu', 'Gesundheitsintegration', 'Intégration Santé', 'Integración de Salud', 'Integrazione Salute', 'Integração de Saúde', 'تكامل الصحة', 'हेल्थ इंटीग्रेशन', '健康集成', 'ヘルス連携', '건강 연동');
   String get themeTitle => theme;
   String get darkMode => _pick('Dark Mode', 'Koyu Mod', 'Dunkler Modus', 'Mode sombre', 'Modo oscuro', 'Modalità scura', 'Modo escuro', 'الوضع الداكن', 'डार्क मोड', '深色模式', 'ダークモード', '다크 모드');
