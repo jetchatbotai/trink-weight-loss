@@ -411,7 +411,18 @@ class ProgramsScreen extends StatelessWidget {
           ),
           itemBuilder: (context, index) {
             final p = trinkPrograms[index];
-            return ProgramCard(program: p);
+            return InkWell(
+              borderRadius: BorderRadius.circular(24),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ProgramDetailScreen(program: p, t: t),
+                  ),
+                );
+              },
+              child: ProgramCard(program: p),
+            );
           },
         ),
       ],
@@ -633,33 +644,71 @@ class ProgramCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final previewGif = programGifAsset(program);
+
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    program.title,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
-                  ),
-                ),
-                if (program.isPremium) ...[
-                  const Icon(Icons.workspace_premium, color: Colors.amber),
-                ],
-              ],
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (previewGif != null)
+            SizedBox(
+              height: 110,
+              width: double.infinity,
+              child: Image.asset(
+                previewGif,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(colors: [AppTheme.primary, AppTheme.accent]),
+                    ),
+                    alignment: Alignment.center,
+                    child: const Icon(Icons.play_circle_fill, size: 36, color: Colors.white),
+                  );
+                },
+              ),
+            )
+          else
+            Container(
+              height: 110,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(colors: [AppTheme.primary, AppTheme.accent]),
+              ),
+              alignment: Alignment.center,
+              child: const Icon(Icons.play_circle_fill, size: 36, color: Colors.white),
             ),
-            const SizedBox(height: 8),
-            Text(program.group),
-            const Spacer(),
-            Text('${program.totalDays} days'),
-          ],
-        ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          program.title,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+                        ),
+                      ),
+                      if (program.isPremium) ...[
+                        const Icon(Icons.workspace_premium, color: Colors.amber),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(program.group),
+                  const Spacer(),
+                  Text('${program.totalDays} days'),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -785,6 +834,42 @@ String categoryLabel(Strings t, ExerciseCategory c) {
   }
 }
 
+
+ExerciseItem? findExerciseById(String id) {
+  for (final e in trinkExercises) {
+    if (e.id == id) return e;
+  }
+  return null;
+}
+
+ExerciseItem? exerciseById(String id) {
+  for (final exercise in trinkExercises) {
+    if (exercise.id == id) return exercise;
+  }
+  return null;
+}
+
+List<ExerciseItem> exercisesForDay(ProgramDay day) {
+  return day.exerciseIds
+      .map(exerciseById)
+      .whereType<ExerciseItem>()
+      .toList();
+}
+
+String? programGifAsset(ProgramItem program) {
+  if (program.days.isEmpty || program.days.first.exerciseIds.isEmpty) return null;
+  final firstExercise = exerciseById(program.days.first.exerciseIds.first);
+  if (firstExercise == null || firstExercise.gifAsset.isEmpty) return null;
+  return firstExercise.gifAsset;
+}
+
+String? programCoverAsset(ProgramItem program) {
+  if (program.days.isEmpty || program.days.first.exerciseIds.isEmpty) return null;
+  final firstExercise = exerciseById(program.days.first.exerciseIds.first);
+  if (firstExercise == null || firstExercise.imageAsset.isEmpty) return null;
+  return firstExercise.imageAsset;
+}
+
 class Strings {
   final AppLang lang;
   const Strings(this.lang);
@@ -888,6 +973,7 @@ class Strings {
   String get hiit => _pick('HIIT', 'HIIT', 'HIIT', 'HIIT', 'HIIT', 'HIIT', 'HIIT', 'هيت', 'HIIT', 'HIIT', 'HIIT', 'HIIT');
   String get stretch => _pick('Stretch', 'Esneme', 'Dehnen', 'Étirement', 'Estiramiento', 'Stretching', 'Alongamento', 'تمدد', 'स्ट्रेच', '拉伸', 'ストレッチ', '스트레칭');
 }
+
 
 class ExerciseDetailScreen extends StatelessWidget {
   final ExerciseItem exercise;
@@ -995,6 +1081,142 @@ class ExerciseDetailScreen extends StatelessWidget {
               ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class ProgramDetailScreen extends StatelessWidget {
+  final ProgramItem program;
+  final Strings t;
+
+  const ProgramDetailScreen({
+    super.key,
+    required this.program,
+    required this.t,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final previewGif = programGifAsset(program);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(program.title),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          if (previewGif != null)
+            ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: Image.asset(
+                previewGif,
+                height: 180,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    height: 180,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(colors: [AppTheme.primary, AppTheme.accent]),
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    alignment: Alignment.center,
+                    child: const Icon(Icons.play_circle_fill, size: 44, color: Colors.white),
+                  );
+                },
+              ),
+            )
+          else
+            Container(
+              height: 180,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(colors: [AppTheme.primary, AppTheme.accent]),
+                borderRadius: BorderRadius.circular(24),
+              ),
+              alignment: Alignment.center,
+              child: const Icon(Icons.play_circle_fill, size: 44, color: Colors.white),
+            ),
+          const SizedBox(height: 16),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(18),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    program.title,
+                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(program.group),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      Chip(label: Text('${program.totalDays} days')),
+                      Chip(label: Text(program.level.name)),
+                      Chip(label: Text(equipmentLabel(t, program.equipment))),
+                      if (program.isPremium) const Chip(label: Text('Premium')),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          ...program.days.map((day) {
+            final exercises = exercisesForDay(day);
+            return Card(
+              margin: const EdgeInsets.only(bottom: 12),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Day ${day.day}',
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                    ),
+                    const SizedBox(height: 10),
+                    ...exercises.map((exercise) {
+                      return ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(colors: [AppTheme.primary, AppTheme.accent]),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          alignment: Alignment.center,
+                          child: const Icon(Icons.play_arrow, color: Colors.white),
+                        ),
+                        title: Text(exercise.name),
+                        subtitle: Text(
+                          '${categoryLabel(t, exercise.category)} • ${exercise.durationSec} sn • ${exercise.calories} kcal',
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ExerciseDetailScreen(
+                                exercise: exercise,
+                                t: t,
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    }),
+                  ],
+                ),
+              ),
+            );
+          }),
+        ],
       ),
     );
   }
