@@ -177,7 +177,7 @@ class WorkoutsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<ExerciseItem> filtered = equipment == EquipmentType.all
+    final List<ExerciseItem> filtered = equipment == null
         ? List<ExerciseItem>.from(trinkExercises.whereType<ExerciseItem>())
         : trinkExercises
             .whereType<ExerciseItem>()
