@@ -1243,7 +1243,7 @@ class ExerciseDetailScreen extends StatelessWidget {
     String ja,
     String ko,
   ) {
-    switch (this.lang) {
+    switch (t.lang) {
       case AppLang.en:
         return en;
       case AppLang.tr:
