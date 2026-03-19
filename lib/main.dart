@@ -64,10 +64,7 @@ class AppTheme {
   static ThemeData get dark => ThemeData(
         useMaterial3: true,
         scaffoldBackgroundColor: darkBg,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: primary,
-          brightness: Brightness.dark,
-        ),
+        colorScheme: ColorScheme.fromSeed(seedColor: primary, brightness: Brightness.dark),
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.transparent,
           foregroundColor: Colors.white,
@@ -149,31 +146,11 @@ class _MainShellState extends State<MainShell> {
         selectedIndex: index,
         onDestinationSelected: (i) => setState(() => index = i),
         destinations: [
-          NavigationDestination(
-            icon: const Icon(Icons.home_outlined),
-            selectedIcon: const Icon(Icons.home),
-            label: t.home,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.fitness_center_outlined),
-            selectedIcon: const Icon(Icons.fitness_center),
-            label: t.workouts,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.dashboard_outlined),
-            selectedIcon: const Icon(Icons.dashboard),
-            label: t.programs,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.show_chart_outlined),
-            selectedIcon: const Icon(Icons.show_chart),
-            label: t.progress,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.person_outline),
-            selectedIcon: const Icon(Icons.person),
-            label: t.profile,
-          ),
+          NavigationDestination(icon: const Icon(Icons.home_outlined), selectedIcon: const Icon(Icons.home), label: t.home),
+          NavigationDestination(icon: const Icon(Icons.fitness_center_outlined), selectedIcon: const Icon(Icons.fitness_center), label: t.workouts),
+          NavigationDestination(icon: const Icon(Icons.dashboard_outlined), selectedIcon: const Icon(Icons.dashboard), label: t.programs),
+          NavigationDestination(icon: const Icon(Icons.show_chart_outlined), selectedIcon: const Icon(Icons.show_chart), label: t.progress),
+          NavigationDestination(icon: const Icon(Icons.person_outline), selectedIcon: const Icon(Icons.person), label: t.profile),
         ],
       ),
     );
@@ -189,16 +166,7 @@ class HomeScreen extends StatelessWidget {
   final int caloriesLogged;
   final int targetCalories;
 
-  const HomeScreen({
-    super.key,
-    required this.t,
-    required this.goal,
-    required this.onGoalChanged,
-    required this.waterGlasses,
-    required this.dailySteps,
-    required this.caloriesLogged,
-    required this.targetCalories,
-  });
+  const HomeScreen({super.key, required this.t, required this.goal, required this.onGoalChanged, required this.waterGlasses, required this.dailySteps, required this.caloriesLogged, required this.targetCalories});
 
   @override
   Widget build(BuildContext context) {
@@ -224,10 +192,7 @@ class HomeScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Trink Fit',
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800, color: textColor),
-                  ),
+                  Text('Trink Fit', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800, color: textColor)),
                   Text(t.appSubtitle, style: TextStyle(color: textColor.withOpacity(.65))),
                 ],
               ),
@@ -247,18 +212,12 @@ class HomeScreen extends StatelessWidget {
             children: [
               Text(t.todaysWorkout, style: const TextStyle(color: Colors.white70)),
               const SizedBox(height: 6),
-              const Text(
-                '15 min Fat Burn',
-                style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w800),
-              ),
+              const Text('15 min Fat Burn', style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w800)),
               const SizedBox(height: 8),
               Text(t.fiveExercisesVoiceCoach, style: const TextStyle(color: Colors.white70)),
               const SizedBox(height: 14),
               FilledButton(
-                style: FilledButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: AppTheme.primary,
-                ),
+                style: FilledButton.styleFrom(backgroundColor: Colors.white, foregroundColor: AppTheme.primary),
                 onPressed: () {},
                 child: Text(t.startWorkout),
               ),
@@ -266,53 +225,23 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(child: StatCard(title: t.dailyStreak, value: '7 🔥')),
-            const SizedBox(width: 12),
-            Expanded(child: StatCard(title: t.steps, value: '$dailySteps')),
-          ],
-        ),
+        Row(children: [Expanded(child: StatCard(title: t.dailyStreak, value: '7 ðŸ”¥')), const SizedBox(width: 12), Expanded(child: StatCard(title: t.steps, value: '$dailySteps'))]),
         const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(child: StatCard(title: t.water, value: '${(waterGlasses * 0.25).toStringAsFixed(2)}L / 2L')),
-            const SizedBox(width: 12),
-            Expanded(child: StatCard(title: t.bmi, value: '24.1')),
-          ],
-        ),
+        Row(children: [Expanded(child: StatCard(title: t.water, value: '${(waterGlasses * 0.25).toStringAsFixed(2)}L / 2L')), const SizedBox(width: 12), Expanded(child: StatCard(title: t.bmi, value: '24.1'))]),
         const SizedBox(height: 20),
         SectionTitle(title: t.goalSelection),
         const SizedBox(height: 10),
         Wrap(
           spacing: 8,
           runSpacing: 8,
-          children: GoalType.values.map((g) {
-            return ChoiceChip(
-              label: Text(goalLabel(t, g)),
-              selected: goal == g,
-              onSelected: (_) => onGoalChanged(g),
-            );
-          }).toList(),
+          children: GoalType.values.map((g) => ChoiceChip(label: Text(goalLabel(t, g)), selected: goal == g, onSelected: (_) => onGoalChanged(g))).toList(),
         ),
         const SizedBox(height: 20),
         SectionTitle(title: t.quickWorkout),
         const SizedBox(height: 10),
-        Row(
-          children: [
-            Expanded(child: DashboardTile(title: t.challenge30Day, subtitle: t.fatBurnPlan, icon: Icons.local_fire_department)),
-            const SizedBox(width: 12),
-            Expanded(child: DashboardTile(title: t.aiTrainer, subtitle: t.createWorkoutForBellyFat, icon: Icons.auto_awesome)),
-          ],
-        ),
+        Row(children: [Expanded(child: DashboardTile(title: t.challenge30Day, subtitle: t.fatBurnPlan, icon: Icons.local_fire_department)), const SizedBox(width: 12), Expanded(child: DashboardTile(title: t.aiTrainer, subtitle: t.createWorkoutForBellyFat, icon: Icons.auto_awesome))]),
         const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(child: DashboardTile(title: t.calorieTracker, subtitle: '$caloriesLogged / $targetCalories kcal', icon: Icons.restaurant_menu)),
-            const SizedBox(width: 12),
-            Expanded(child: DashboardTile(title: t.smartReminder, subtitle: t.timeForWorkout, icon: Icons.notifications_active)),
-          ],
-        ),
+        Row(children: [Expanded(child: DashboardTile(title: t.calorieTracker, subtitle: '$caloriesLogged / $targetCalories kcal', icon: Icons.restaurant_menu)), const SizedBox(width: 12), Expanded(child: DashboardTile(title: t.smartReminder, subtitle: t.timeForWorkout, icon: Icons.notifications_active))]),
         const SizedBox(height: 20),
         SectionTitle(title: t.premiumPlans),
         const SizedBox(height: 10),
@@ -327,19 +256,11 @@ class WorkoutsScreen extends StatelessWidget {
   final EquipmentType? equipment;
   final ValueChanged<EquipmentType?> onEquipmentChanged;
 
-  const WorkoutsScreen({
-    super.key,
-    required this.t,
-    required this.equipment,
-    required this.onEquipmentChanged,
-  });
+  const WorkoutsScreen({super.key, required this.t, required this.equipment, required this.onEquipmentChanged});
 
   @override
   Widget build(BuildContext context) {
-    final List<ExerciseItem> filtered = equipment == null
-        ? List<ExerciseItem>.from(trinkExercises)
-        : trinkExercises.where((e) => e.equipment == equipment).toList();
-
+    final List<ExerciseItem> filtered = equipment == null ? List<ExerciseItem>.from(trinkExercises) : trinkExercises.where((e) => e.equipment == equipment).toList();
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -349,39 +270,19 @@ class WorkoutsScreen extends StatelessWidget {
           spacing: 8,
           runSpacing: 8,
           children: [
-            ChoiceChip(
-              label: Text(t.all),
-              selected: equipment == null,
-              onSelected: (_) => onEquipmentChanged(null),
-            ),
-            ...EquipmentType.values.map((e) {
-              return ChoiceChip(
-                label: Text(equipmentLabel(t, e)),
-                selected: equipment == e,
-                onSelected: (_) => onEquipmentChanged(e),
-              );
-            }),
+            ChoiceChip(label: Text(t.all), selected: equipment == null, onSelected: (_) => onEquipmentChanged(null)),
+            ...EquipmentType.values.map((e) => ChoiceChip(label: Text(equipmentLabel(t, e)), selected: equipment == e, onSelected: (_) => onEquipmentChanged(e))),
           ],
         ),
         const SizedBox(height: 16),
         ...filtered.map((e) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(28),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => ExerciseDetailScreen(
-                        exercise: e,
-                        t: t,
-                      ),
-                    ),
-                  );
-                },
-                child: ExerciseCard(exercise: e, t: t),
-              ),
-            )),
+          padding: const EdgeInsets.only(bottom: 12),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(28),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ExerciseDetailScreen(exercise: e, t: t))),
+            child: ExerciseCard(exercise: e, t: t),
+          ),
+        )),
       ],
     );
   }
@@ -389,7 +290,6 @@ class WorkoutsScreen extends StatelessWidget {
 
 class ProgramsScreen extends StatelessWidget {
   final Strings t;
-
   const ProgramsScreen({super.key, required this.t});
 
   @override
@@ -403,24 +303,12 @@ class ProgramsScreen extends StatelessWidget {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: trinkPrograms.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            childAspectRatio: .95,
-          ),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: .95),
           itemBuilder: (context, index) {
             final p = trinkPrograms[index];
             return InkWell(
               borderRadius: BorderRadius.circular(24),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => ProgramDetailScreen(program: p, t: t),
-                  ),
-                );
-              },
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ProgramDetailScreen(program: p, t: t))),
               child: ProgramCard(program: p),
             );
           },
@@ -435,14 +323,7 @@ class ProgressScreen extends StatelessWidget {
   final int waterGlasses;
   final VoidCallback onAddWater;
   final int dailySteps;
-
-  const ProgressScreen({
-    super.key,
-    required this.t,
-    required this.waterGlasses,
-    required this.onAddWater,
-    required this.dailySteps,
-  });
+  const ProgressScreen({super.key, required this.t, required this.waterGlasses, required this.onAddWater, required this.dailySteps});
 
   @override
   Widget build(BuildContext context) {
@@ -453,7 +334,7 @@ class ProgressScreen extends StatelessWidget {
         const SizedBox(height: 16),
         DashboardTile(title: t.beforeAfter, subtitle: t.trackTransformation, icon: Icons.photo_library_outlined),
         const SizedBox(height: 12),
-        DashboardTile(title: t.achievements, subtitle: 'First Workout • 7 Day Streak', icon: Icons.emoji_events_outlined),
+        DashboardTile(title: t.achievements, subtitle: 'First Workout â€¢ 7 Day Streak', icon: Icons.emoji_events_outlined),
         const SizedBox(height: 12),
         DashboardTile(title: t.waterTracker, subtitle: '${(waterGlasses * 0.25).toStringAsFixed(2)} L', icon: Icons.water_drop_outlined),
         const SizedBox(height: 12),
@@ -461,7 +342,7 @@ class ProgressScreen extends StatelessWidget {
         const SizedBox(height: 12),
         DashboardTile(title: t.stepCounter, subtitle: '$dailySteps ${t.steps}', icon: Icons.directions_walk_outlined),
         const SizedBox(height: 12),
-        DashboardTile(title: t.healthIntegration, subtitle: 'Google Fit • Apple Health', icon: Icons.favorite_border),
+        DashboardTile(title: t.healthIntegration, subtitle: 'Google Fit â€¢ Apple Health', icon: Icons.favorite_border),
       ],
     );
   }
@@ -474,14 +355,7 @@ class ProfileScreen extends StatelessWidget {
   final ThemeMode themeMode;
   final ValueChanged<ThemeMode> onThemeModeChanged;
 
-  const ProfileScreen({
-    super.key,
-    required this.t,
-    required this.lang,
-    required this.onLangChanged,
-    required this.themeMode,
-    required this.onThemeModeChanged,
-  });
+  const ProfileScreen({super.key, required this.t, required this.lang, required this.onLangChanged, required this.themeMode, required this.onThemeModeChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -506,12 +380,10 @@ class ProfileScreen extends StatelessWidget {
         DropdownButtonFormField<AppLang>(
           value: lang,
           items: AppLang.values.map((e) => DropdownMenuItem<AppLang>(value: e, child: Text(langLabel(e)))).toList(),
-          onChanged: (value) {
-            if (value != null) onLangChanged(value);
-          },
+          onChanged: (value) { if (value != null) onLangChanged(value); },
         ),
         const SizedBox(height: 16),
-        DashboardTile(title: t.bmiCalculator, subtitle: 'BMI = 24.1 • Normal', icon: Icons.monitor_weight_outlined),
+        DashboardTile(title: t.bmiCalculator, subtitle: 'BMI = 24.1 â€¢ Normal', icon: Icons.monitor_weight_outlined),
         const SizedBox(height: 12),
         DashboardTile(title: t.widgetTitle, subtitle: t.todaysWorkout, icon: Icons.widgets_outlined),
         const SizedBox(height: 12),
@@ -524,22 +396,13 @@ class ProfileScreen extends StatelessWidget {
 class StatCard extends StatelessWidget {
   final String title;
   final String value;
-
   const StatCard({super.key, required this.title, required this.value});
-
   @override
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(18),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-            const SizedBox(height: 8),
-            Text(value, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800)),
-          ],
-        ),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)), const SizedBox(height: 8), Text(value, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800))]),
       ),
     );
   }
@@ -549,43 +412,13 @@ class DashboardTile extends StatelessWidget {
   final String title;
   final String subtitle;
   final IconData icon;
-
-  const DashboardTile({
-    super.key,
-    required this.title,
-    required this.subtitle,
-    required this.icon,
-  });
-
+  const DashboardTile({super.key, required this.title, required this.subtitle, required this.icon});
   @override
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Container(
-              width: 46,
-              height: 46,
-              decoration: BoxDecoration(
-                color: AppTheme.primary.withOpacity(.12),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Icon(icon, color: AppTheme.primary),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: const TextStyle(fontWeight: FontWeight.w800)),
-                  const SizedBox(height: 4),
-                  Text(subtitle, style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(.7))),
-                ],
-              ),
-            ),
-          ],
-        ),
+        child: Row(children: [Container(width: 46, height: 46, decoration: BoxDecoration(color: AppTheme.primary.withOpacity(.12), borderRadius: BorderRadius.circular(14)), child: Icon(icon, color: AppTheme.primary)), const SizedBox(width: 12), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: const TextStyle(fontWeight: FontWeight.w800)), const SizedBox(height: 4), Text(subtitle, style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(.7)))]))]),
       ),
     );
   }
@@ -594,44 +427,13 @@ class DashboardTile extends StatelessWidget {
 class ExerciseCard extends StatelessWidget {
   final ExerciseItem exercise;
   final Strings t;
-
   const ExerciseCard({super.key, required this.exercise, required this.t});
-
   @override
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(colors: [AppTheme.primary, AppTheme.accent]),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: const Icon(Icons.play_circle_outline, color: Colors.white),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    exercise.name,
-                    style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${categoryLabel(t, exercise.category)} • ${exercise.calories} kcal',
-                    style: const TextStyle(fontSize: 12),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+        child: Row(children: [Container(width: 56, height: 56, decoration: BoxDecoration(gradient: const LinearGradient(colors: [AppTheme.primary, AppTheme.accent]), borderRadius: BorderRadius.circular(16)), child: const Icon(Icons.play_circle_outline, color: Colors.white)), const SizedBox(width: 12), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(exercise.name, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)), const SizedBox(height: 4), Text('${categoryLabel(t, exercise.category)} â€¢ ${exercise.calories} kcal', style: const TextStyle(fontSize: 12))]))]),
       ),
     );
   }
@@ -639,100 +441,40 @@ class ExerciseCard extends StatelessWidget {
 
 class ProgramCard extends StatelessWidget {
   final ProgramItem program;
-
   const ProgramCard({super.key, required this.program});
-
   @override
   Widget build(BuildContext context) {
     final previewGif = programGifAsset(program);
-
     return Card(
       clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (previewGif != null)
-            SizedBox(
-              height: 110,
-              width: double.infinity,
-              child: Image.asset(
-                previewGif,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(colors: [AppTheme.primary, AppTheme.accent]),
-                    ),
-                    alignment: Alignment.center,
-                    child: const Icon(Icons.play_circle_fill, size: 36, color: Colors.white),
-                  );
-                },
-              ),
-            )
-          else
-            Container(
-              height: 110,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(colors: [AppTheme.primary, AppTheme.accent]),
-              ),
-              alignment: Alignment.center,
-              child: const Icon(Icons.play_circle_fill, size: 36, color: Colors.white),
-            ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          program.title,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
-                        ),
-                      ),
-                      if (program.isPremium) ...[
-                        const Icon(Icons.workspace_premium, color: Colors.amber),
-                      ],
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(program.group),
-                  const Spacer(),
-                  Text('${program.totalDays} days'),
-                ],
-              ),
-            ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        if (previewGif != null)
+          SizedBox(
+            height: 110,
+            width: double.infinity,
+            child: Image.asset(previewGif, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Container(decoration: const BoxDecoration(gradient: LinearGradient(colors: [AppTheme.primary, AppTheme.accent])), alignment: Alignment.center, child: const Icon(Icons.play_circle_fill, size: 36, color: Colors.white))),
+          )
+        else
+          Container(height: 110, width: double.infinity, decoration: const BoxDecoration(gradient: LinearGradient(colors: [AppTheme.primary, AppTheme.accent])), alignment: Alignment.center, child: const Icon(Icons.play_circle_fill, size: 36, color: Colors.white)),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Row(children: [Expanded(child: Text(program.title, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16))), if (program.isPremium) const Icon(Icons.workspace_premium, color: Colors.amber)]), const SizedBox(height: 8), Text(program.group), const Spacer(), Text('${program.totalDays} days')]),
           ),
-        ],
-      ),
+        ),
+      ]),
     );
   }
 }
 
 class PremiumCard extends StatelessWidget {
   const PremiumCard({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(18),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            Text('Premium + Ads Model', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
-            SizedBox(height: 10),
-            Text('Monthly   179 TL'),
-            Text('3 Months  399 TL'),
-            Text('6 Months  599 TL'),
-            Text('Yearly    899 TL ⭐'),
-          ],
-        ),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: const [Text('Premium + Ads Model', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)), SizedBox(height: 10), Text('Monthly   179 TL'), Text('3 Months  399 TL'), Text('6 Months  599 TL'), Text('Yearly    899 TL â­')]),
       ),
     );
   }
@@ -740,347 +482,160 @@ class PremiumCard extends StatelessWidget {
 
 class SectionTitle extends StatelessWidget {
   final String title;
-
   const SectionTitle({super.key, required this.title});
-
   @override
-  Widget build(BuildContext context) {
-    return Text(title, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800));
-  }
+  Widget build(BuildContext context) => Text(title, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800));
 }
 
 String goalLabel(Strings t, GoalType g) {
   switch (g) {
-    case GoalType.loseWeight:
-      return t.loseWeight;
-    case GoalType.buildMuscle:
-      return t.buildMuscle;
-    case GoalType.stayFit:
-      return t.stayFit;
-    case GoalType.improveCardio:
-      return t.improveCardio;
+    case GoalType.loseWeight: return t.loseWeight;
+    case GoalType.buildMuscle: return t.buildMuscle;
+    case GoalType.stayFit: return t.stayFit;
+    case GoalType.improveCardio: return t.improveCardio;
   }
 }
-
 String equipmentLabel(Strings t, EquipmentType e) {
   switch (e) {
-    case EquipmentType.none:
-      return t.noEquipment;
-    case EquipmentType.dumbbell:
-      return t.dumbbell;
-    case EquipmentType.resistanceBand:
-      return t.resistanceBand;
-    case EquipmentType.gym:
-      return t.gym;
+    case EquipmentType.none: return t.noEquipment;
+    case EquipmentType.dumbbell: return t.dumbbell;
+    case EquipmentType.resistanceBand: return t.resistanceBand;
+    case EquipmentType.gym: return t.gym;
   }
 }
-
 String themeModeLabel(Strings t, ThemeMode mode) {
   switch (mode) {
-    case ThemeMode.light:
-      return t.lightMode;
-    case ThemeMode.dark:
-      return t.darkMode;
-    case ThemeMode.system:
-      return t.systemMode;
+    case ThemeMode.light: return t.lightMode;
+    case ThemeMode.dark: return t.darkMode;
+    case ThemeMode.system: return t.systemMode;
   }
 }
-
 String langLabel(AppLang lang) {
   switch (lang) {
-    case AppLang.en:
-      return 'English';
-    case AppLang.tr:
-      return 'Türkçe';
-    case AppLang.de:
-      return 'Deutsch';
-    case AppLang.fr:
-      return 'Français';
-    case AppLang.es:
-      return 'Español';
-    case AppLang.it:
-      return 'Italiano';
-    case AppLang.pt:
-      return 'Português';
-    case AppLang.ar:
-      return 'العربية';
-    case AppLang.hi:
-      return 'हिन्दी';
-    case AppLang.zh:
-      return '中文';
-    case AppLang.ja:
-      return '日本語';
-    case AppLang.ko:
-      return '한국어';
+    case AppLang.en: return 'English';
+    case AppLang.tr: return 'TÃ¼rkÃ§e';
+    case AppLang.de: return 'Deutsch';
+    case AppLang.fr: return 'FranÃ§ais';
+    case AppLang.es: return 'EspaÃ±ol';
+    case AppLang.it: return 'Italiano';
+    case AppLang.pt: return 'PortuguÃªs';
+    case AppLang.ar: return 'Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©';
+    case AppLang.hi: return 'à¤¹à¤¿à¤¨à¥à¤¦à¥€';
+    case AppLang.zh: return 'ä¸­æ–‡';
+    case AppLang.ja: return 'æ—¥æœ¬èªž';
+    case AppLang.ko: return 'í•œêµ­ì–´';
   }
 }
-
 String categoryLabel(Strings t, ExerciseCategory c) {
   switch (c) {
-    case ExerciseCategory.cardio:
-      return t.cardio;
-    case ExerciseCategory.abs:
-      return t.abs;
-    case ExerciseCategory.legs:
-      return t.legs;
-    case ExerciseCategory.arms:
-      return t.arms;
-    case ExerciseCategory.fullBody:
-      return t.fullBody;
-    case ExerciseCategory.hiit:
-      return t.hiit;
-    case ExerciseCategory.stretch:
-      return t.stretch;
+    case ExerciseCategory.cardio: return t.cardio;
+    case ExerciseCategory.abs: return t.abs;
+    case ExerciseCategory.legs: return t.legs;
+    case ExerciseCategory.arms: return t.arms;
+    case ExerciseCategory.fullBody: return t.fullBody;
+    case ExerciseCategory.hiit: return t.hiit;
+    case ExerciseCategory.stretch: return t.stretch;
   }
 }
-
-
-ExerciseItem? findExerciseById(String id) {
-  for (final e in trinkExercises) {
-    if (e.id == id) return e;
-  }
-  return null;
-}
-
-ExerciseItem? exerciseById(String id) {
-  for (final exercise in trinkExercises) {
-    if (exercise.id == id) return exercise;
-  }
-  return null;
-}
-
-List<ExerciseItem> exercisesForDay(ProgramDay day) {
-  return day.exerciseIds
-      .map(exerciseById)
-      .whereType<ExerciseItem>()
-      .toList();
-}
-
-String? programGifAsset(ProgramItem program) {
-  if (program.days.isEmpty || program.days.first.exerciseIds.isEmpty) return null;
-  final firstExercise = exerciseById(program.days.first.exerciseIds.first);
-  if (firstExercise == null || firstExercise.gifAsset.isEmpty) return null;
-  return firstExercise.gifAsset;
-}
-
-String? programCoverAsset(ProgramItem program) {
-  if (program.days.isEmpty || program.days.first.exerciseIds.isEmpty) return null;
-  final firstExercise = exerciseById(program.days.first.exerciseIds.first);
-  if (firstExercise == null || firstExercise.imageAsset.isEmpty) return null;
-  return firstExercise.imageAsset;
-}
+ExerciseItem? exerciseById(String id) { for (final exercise in trinkExercises) { if (exercise.id == id) return exercise; } return null; }
+List<ExerciseItem> exercisesForDay(ProgramDay day) => day.exerciseIds.map(exerciseById).whereType<ExerciseItem>().toList();
+String? programGifAsset(ProgramItem program) { if (program.days.isEmpty || program.days.first.exerciseIds.isEmpty) return null; final firstExercise = exerciseById(program.days.first.exerciseIds.first); if (firstExercise == null || firstExercise.gifAsset.isEmpty) return null; return firstExercise.gifAsset; }
+String? programCoverAsset(ProgramItem program) { if (program.days.isEmpty || program.days.first.exerciseIds.isEmpty) return null; final firstExercise = exerciseById(program.days.first.exerciseIds.first); if (firstExercise == null || firstExercise.imageAsset.isEmpty) return null; return firstExercise.imageAsset; }
 
 class Strings {
   final AppLang lang;
   const Strings(this.lang);
-
-  String _pick(
-    String en,
-    String tr,
-    String de,
-    String fr,
-    String es,
-    String it,
-    String pt,
-    String ar,
-    String hi,
-    String zh,
-    String ja,
-    String ko,
-  ) {
+  String _pick(String en, String tr, String de, String fr, String es, String it, String pt, String ar, String hi, String zh, String ja, String ko) {
     switch (lang) {
-      case AppLang.en:
-        return en;
-      case AppLang.tr:
-        return tr;
-      case AppLang.de:
-        return de;
-      case AppLang.fr:
-        return fr;
-      case AppLang.es:
-        return es;
-      case AppLang.it:
-        return it;
-      case AppLang.pt:
-        return pt;
-      case AppLang.ar:
-        return ar;
-      case AppLang.hi:
-        return hi;
-      case AppLang.zh:
-        return zh;
-      case AppLang.ja:
-        return ja;
-      case AppLang.ko:
-        return ko;
+      case AppLang.en: return en; case AppLang.tr: return tr; case AppLang.de: return de; case AppLang.fr: return fr; case AppLang.es: return es; case AppLang.it: return it; case AppLang.pt: return pt; case AppLang.ar: return ar; case AppLang.hi: return hi; case AppLang.zh: return zh; case AppLang.ja: return ja; case AppLang.ko: return ko;
     }
   }
-
-  String get home => _pick('Home', 'Ana Sayfa', 'Start', 'Accueil', 'Inicio', 'Home', 'Início', 'الرئيسية', 'होम', '首页', 'ホーム', '홈');
-  String get workouts => _pick('Workouts', 'Antrenmanlar', 'Workouts', 'Entraînements', 'Entrenos', 'Allenamenti', 'Treinos', 'التمارين', 'वर्कआउट', '训练', 'ワークアウト', '운동');
-  String get programs => _pick('Programs', 'Programlar', 'Programme', 'Programmes', 'Programas', 'Programmi', 'Programas', 'البرامج', 'प्रोग्राम', '计划', 'プログラム', '프로그램');
-  String get progress => _pick('Progress', 'İlerleme', 'Fortschritt', 'Progrès', 'Progreso', 'Progressi', 'Progresso', 'التقدم', 'प्रगति', '进度', '進捗', '진행');
-  String get profile => _pick('Profile', 'Profil', 'Profil', 'Profil', 'Perfil', 'Profilo', 'Perfil', 'الملف الشخصي', 'प्रोफाइल', '我的', 'プロフィール', '프로필');
-  String get appSubtitle => _pick('Home Workout, Weight Loss & Fitness', 'Evde Egzersiz, Kilo Verme ve Fitness', 'Home Training, Gewichtsverlust & Fitness', 'Entraînement à domicile, perte de poids et fitness', 'Entrenamiento en casa, pérdida de peso y fitness', 'Allenamento a casa, perdita di peso e fitness', 'Treino em casa, perda de peso e fitness', 'تمارين منزلية، خسارة الوزن واللياقة', 'होम वर्कआउट, वजन घटाना और फिटनेस', '居家锻炼, 减重与健身', 'ホームワークアウト、減量とフィットネス', '홈트레이닝, 체중 감량 및 피트니스');
-  String get todaysWorkout => _pick("Today's Workout", 'Bugünün Antrenmanı', 'Heutiges Training', "Entraînement d'aujourd'hui", 'Entrenamiento de hoy', 'Allenamento di oggi', 'Treino de hoje', 'تمرين اليوم', 'आज का वर्कआउट', '今日训练', '今日のワークアウト', '오늘의 운동');
-  String get fiveExercisesVoiceCoach => _pick('5 Exercises Voice Coach', '5 Egzersiz Sesli Koç', '5 Übungen Sprachcoach', 'Coach vocal 5 exercices', 'Coach de voz de 5 ejercicios', 'Coach vocale 5 esercizi', 'Coach de voz 5 exercícios', 'مدرب صوتي لـ 5 تمارين', '5 एक्सरसाइज़ वॉइस कोच', '5 个练习语音教练', '5エクササイズ音声コーチ', '5개 운동 음성 코치');
-  String get startWorkout => _pick('Start Workout', 'Antrenmanı Başlat', 'Training starten', 'Commencer l’entraînement', 'Iniciar entrenamiento', 'Avvia allenamento', 'Iniciar treino', 'ابدأ التمرين', 'वर्कआउट शुरू करें', '开始训练', 'ワークアウト開始', '운동 시작');
-  String get dailyStreak => _pick('Daily Streak', 'Günlük Seri', 'Tägliche Serie', 'Série quotidienne', 'Racha diaria', 'Serie giornaliera', 'Sequência diária', 'سلسلة يومية', 'दैनिक स्ट्रीक', '每日连续', 'デイリーストリーク', '일일 연속');
-  String get steps => _pick('Steps', 'Adım', 'Schritte', 'Pas', 'Pasos', 'Passi', 'Passos', 'الخطوات', 'कदम', '步数', '歩数', '걸음 수');
-  String get water => _pick('Water', 'Su', 'Wasser', 'Eau', 'Agua', 'Acqua', 'Água', 'الماء', 'पानी', '水', '水', '물');
-  String get bmi => _pick('BMI', 'BMI', 'BMI', 'IMC', 'IMC', 'BMI', 'IMC', 'مؤشر كتلة الجسم', 'बीएमआई', 'BMI', 'BMI', 'BMI');
-  String get goalSelection => _pick('Goal Selection', 'Hedef Seçimi', 'Zielauswahl', 'Sélection d’objectif', 'Selección de objetivo', 'Selezione obiettivo', 'Seleção de objetivo', 'اختيار الهدف', 'लक्ष्य चयन', '目标选择', '目標選択', '목표 선택');
-  String get quickWorkout => _pick('Quick Workout', 'Hızlı Antrenman', 'Schnelles Training', 'Entraînement rapide', 'Entrenamiento rápido', 'Allenamento rapido', 'Treino rápido', 'تمرين سريع', 'त्वरित कसरत', '快速训练', 'クイックワークアウト', '빠른 운동');
-  String get challenge30Day => _pick('30-Day Challenge', '30 Günlük Meydan Okuma', '30-Tage-Challenge', 'Défi de 30 jours', 'Desafío de 30 días', 'Sfida di 30 giorni', 'Desafio de 30 dias', 'تحدي 30 يومًا', '30-दिवसीय चैलेंज', '30天挑战', '30日間チャレンジ', '30일 챌린지');
-  String get fatBurnPlan => _pick('Fat Burn Plan', 'Yağ Yakma Planı', 'Fettverbrennungsplan', 'Plan brûle-graisse', 'Plan para quemar grasa', 'Piano brucia grassi', 'Plano de queima de gordura', 'خطة حرق الدهون', 'फैट बर्न प्लान', '燃脂计划', '脂肪燃焼プラン', '지방 연소 플랜');
-  String get aiTrainer => _pick('AI Trainer', 'Yapay Zekâ Antrenörü', 'KI-Trainer', 'Coach IA', 'Entrenador IA', 'Allenatore IA', 'Treinador IA', 'مدرب الذكاء الاصطناعي', 'एआई ट्रेनर', 'AI教练', 'AIトレーナー', 'AI 트레이너');
-  String get createWorkoutForBellyFat => _pick('Create workout for belly fat', 'Göbek yağı için antrenman oluştur', 'Training gegen Bauchfett erstellen', 'Créer un entraînement pour la graisse du ventre', 'Crear entrenamiento para grasa abdominal', 'Crea allenamento per il grasso addominale', 'Criar treino para gordura abdominal', 'أنشئ تمرينًا لدهون البطن', 'पेट की चर्बी के लिए वर्कआउट बनाएं', '为腹部脂肪创建训练', 'お腹の脂肪向けワークアウトを作成', '복부 지방용 운동 만들기');
-  String get calorieTracker => _pick('Calorie Tracker', 'Kalori Takibi', 'Kalorien-Tracker', 'Suivi des calories', 'Seguimiento de calorías', 'Monitor calorie', 'Rastreador de calorias', 'متتبع السعرات الحرارية', 'कैलोरी ट्रैकर', '卡路里追踪', 'カロリートラッカー', '칼로리 추적기');
-  String get smartReminder => _pick('Smart Reminder', 'Akıllı Hatırlatıcı', 'Intelligente Erinnerung', 'Rappel intelligent', 'Recordatorio inteligente', 'Promemoria intelligente', 'Lembrete inteligente', 'تذكير ذكي', 'स्मार्ट रिमाइंडर', '智能提醒', 'スマートリマインダー', '스마트 알림');
-  String get timeForWorkout => _pick('Time for workout', 'Antrenman zamanı', 'Zeit fürs Training', "C'est l'heure de s'entraîner", 'Hora de entrenar', 'È ora di allenarsi', 'Hora do treino', 'حان وقت التمرين', 'वर्कआउट का समय', '该锻炼了', 'ワークアウトの時間', '운동할 시간');
-  String get premiumPlans => _pick('Premium Plans', 'Premium Planlar', 'Premium-Pläne', 'Plans premium', 'Planes premium', 'Piani premium', 'Planos premium', 'خطط بريميوم', 'प्रीमियम प्लान', '高级计划', 'プレミアムプラン', '프리미엄 플랜');
-  String get loseWeight => _pick('Lose Weight', 'Kilo Ver', 'Gewicht verlieren', 'Perdre du poids', 'Perder peso', 'Perdere peso', 'Perder peso', 'إنقاص الوزن', 'वजन घटाएं', '减肥', '減量', '체중 감량');
-  String get buildMuscle => _pick('Build Muscle', 'Kas Yap', 'Muskeln aufbauen', 'Développer les muscles', 'Ganar músculo', 'Costruire muscoli', 'Ganhar músculos', 'بناء العضلات', 'मांसपेशियाँ बनाएं', '增肌', '筋肉をつける', '근육 만들기');
-  String get stayFit => _pick('Stay Fit', 'Formda Kal', 'Fit bleiben', 'Rester en forme', 'Mantenerse en forma', 'Rimani in forma', 'Manter a forma', 'الحفاظ على اللياقة', 'फिट रहें', '保持健康', '健康を保つ', '몸매 유지');
-  String get improveCardio => _pick('Improve Cardio', 'Kardiyoyu Geliştir', 'Cardio verbessern', 'Améliorer le cardio', 'Mejorar cardio', 'Migliora il cardio', 'Melhorar cardio', 'تحسين الكارديو', 'कार्डियो सुधारें', '提升心肺功能', '有酸素能力を向上', '유산소 능력 향상');
-  String get beforeAfter => _pick('Before & After', 'Öncesi ve Sonrası', 'Vorher & Nachher', 'Avant / Après', 'Antes y Después', 'Prima e Dopo', 'Antes e Depois', 'قبل وبعد', 'पहले और बाद में', '前后对比', 'ビフォーアフター', '전후 비교');
-  String get trackTransformation => _pick('Track Transformation', 'Değişimi Takip Et', 'Transformation verfolgen', 'Suivre la transformation', 'Seguir transformación', 'Monitora trasformazione', 'Acompanhar transformação', 'تتبع التغيير', 'परिवर्तन ट्रैक करें', '追踪变化', '変化を追跡', '변화 추적');
-  String get achievements => _pick('Achievements', 'Başarılar', 'Erfolge', 'Succès', 'Logros', 'Risultati', 'Conquistas', 'الإنجازات', 'उपलब्धियाँ', '成就', '実績', '업적');
-  String get waterTracker => _pick('Water Tracker', 'Su Takibi', 'Wasser Tracker', 'Suivi de l’eau', 'Seguimiento de agua', 'Monitoraggio acqua', 'Monitor de água', 'متابعة الماء', 'वॉटर ट्रैकर', '饮水追踪', '水分トラッカー', '물 섭취 추적');
-  String get stepCounter => _pick('Step Counter', 'Adım Sayacı', 'Schrittzähler', 'Compteur de pas', 'Contador de pasos', 'Contapassi', 'Contador de passos', 'عداد الخطوات', 'स्टेप काउंटर', '计步器', '歩数計', '만보계');
-  String get addWaterGlass => _pick('Add Water', 'Su Ekle', 'Wasser hinzufügen', 'Ajouter de l’eau', 'Agregar agua', 'Aggiungi acqua', 'Adicionar água', 'إضافة ماء', 'पानी जोड़ें', '添加饮水', '水を追加', '물 추가');
-  String get adsPremium => _pick('Ads Premium', 'Reklam Premium', 'Werbe-Premium', 'Premium pubs', 'Premium con anuncios', 'Premium con pubblicità', 'Premium com anúncios', 'بريميوم مع إعلانات', 'विज्ञापन प्रीमियम', '广告高级版', '広告付きプレミアム', '광고 포함 프리미엄');
-  String get premiumAndAdsModel => _pick('Premium + Ads Model', 'Premium + Reklam Modeli', 'Premium + Werbemodell', 'Modèle Premium + pubs', 'Modelo Premium + anuncios', 'Modello Premium + pubblicità', 'Modelo Premium + anúncios', 'نموذج بريميوم + إعلانات', 'प्रीमियम + विज्ञापन मॉडल', '高级版 + 广告模式', 'プレミアム + 広告モデル', '프리미엄 + 광고 모델');
-  String get theme => _pick('Theme', 'Tema', 'Thema', 'Thème', 'Tema', 'Tema', 'Tema', 'السمة', 'थीम', '主题', 'テーマ', '테마');
-  String get language => _pick('Language', 'Dil', 'Sprache', 'Langue', 'Idioma', 'Lingua', 'Idioma', 'اللغة', 'भाषा', '语言', '言語', '언어');
-  String get bmiCalculator => _pick('BMI Calculator', 'BMI Hesaplayıcı', 'BMI Rechner', 'Calculateur IMC', 'Calculadora IMC', 'Calcolatore BMI', 'Calculadora de IMC', 'حاسبة BMI', 'BMI कैलकुलेटर', 'BMI 计算器', 'BMI計算機', 'BMI 계산기');
-  String get widgetTitle => _pick('Widgets', 'Widgetler', 'Widgets', 'Widgets', 'Widgets', 'Widget', 'Widgets', 'الويدجت', 'विजेट्स', '小组件', 'ウィジェット', '위젯');
-  String get healthIntegration => _pick('Health Integration', 'Sağlık Entegrasyonu', 'Gesundheitsintegration', 'Intégration Santé', 'Integración de Salud', 'Integrazione Salute', 'Integração de Saúde', 'تكامل الصحة', 'हेल्थ इंटीग्रेशन', '健康集成', 'ヘルス連携', '건강 연동');
-  String get themeTitle => theme;
-  String get darkMode => _pick('Dark Mode', 'Koyu Mod', 'Dunkler Modus', 'Mode sombre', 'Modo oscuro', 'Modalità scura', 'Modo escuro', 'الوضع الداكن', 'डार्क मोड', '深色模式', 'ダークモード', '다크 모드');
-  String get lightMode => _pick('Light Mode', 'Açık Mod', 'Heller Modus', 'Mode clair', 'Modo claro', 'Modalità chiara', 'Modo claro', 'الوضع الفاتح', 'लाइट मोड', '浅色模式', 'ライトモード', '라이트 모드');
-  String get systemMode => _pick('System Mode', 'Sistem Modu', 'Systemmodus', 'Mode système', 'Modo del sistema', 'Modalità sistema', 'Modo do sistema', 'وضع النظام', 'सिस्टम मोड', '系统模式', 'システムモード', '시스템 모드');
-  String get all => _pick('All', 'Tümü', 'Alle', 'Tous', 'Todos', 'Tutti', 'Todos', 'الكل', 'सभी', '全部', 'すべて', '전체');
-  String get noEquipment => _pick('No Equipment', 'Ekipmansız', 'Ohne Geräte', 'Sans équipement', 'Sin equipo', 'Senza attrezzi', 'Sem equipamento', 'بدون معدات', 'बिना उपकरण', '无器械', '器具なし', '장비 없음');
-  String get dumbbell => _pick('Dumbbell', 'Dambıl', 'Hantel', 'Haltère', 'Mancuerna', 'Manubrio', 'Halter', 'دمبل', 'डम्बल', '哑铃', 'ダンベル', '덤벨');
-  String get resistanceBand => _pick('Resistance Band', 'Direnç Bandı', 'Widerstandsband', 'Bande de résistance', 'Banda elástica', 'Banda di resistenza', 'Banda elástica', 'حبل مقاومة', 'रेज़िस्टेंस बैंड', '阻力带', 'レジスタンスバンド', '저항 밴드');
-  String get gym => _pick('Gym', 'Spor Salonu', 'Fitnessstudio', 'Salle de sport', 'Gimnasio', 'Palestra', 'Academia', 'صالة رياضية', 'जिम', '健身房', 'ジム', '헬스장');
-  String get cardio => _pick('Cardio', 'Kardiyo', 'Cardio', 'Cardio', 'Cardio', 'Cardio', 'Cardio', 'كارديو', 'कार्डियो', '有氧', '有酸素', '유산소');
-  String get abs => _pick('Abs', 'Karın', 'Bauch', 'Abdos', 'Abdominales', 'Addominali', 'Abdominais', 'البطن', 'एब्स', '腹肌', '腹筋', '복근');
-  String get legs => _pick('Legs', 'Bacaklar', 'Beine', 'Jambes', 'Piernas', 'Gambe', 'Pernas', 'الساقين', 'पैर', '腿', '脚', '다리');
-  String get arms => _pick('Arms', 'Kollar', 'Arme', 'Bras', 'Brazos', 'Braccia', 'Braços', 'الذراعين', 'बांहें', '手臂', '腕', '팔');
-  String get fullBody => _pick('Full Body', 'Tüm Vücut', 'Ganzkörper', 'Corps entier', 'Cuerpo completo', 'Corpo intero', 'Corpo inteiro', 'الجسم بالكامل', 'पूर्ण शरीर', '全身', '全身', '전신');
-  String get hiit => _pick('HIIT', 'HIIT', 'HIIT', 'HIIT', 'HIIT', 'HIIT', 'HIIT', 'هيت', 'HIIT', 'HIIT', 'HIIT', 'HIIT');
-  String get stretch => _pick('Stretch', 'Esneme', 'Dehnen', 'Étirement', 'Estiramiento', 'Stretching', 'Alongamento', 'تمدد', 'स्ट्रेच', '拉伸', 'ストレッチ', '스트레칭');
+  String get home => _pick('Home', 'Ana Sayfa', 'Start', 'Accueil', 'Inicio', 'Home', 'InÃ­cio', 'Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ©', 'à¤¹à¥‹à¤®', 'é¦–é¡µ', 'ãƒ›ãƒ¼ãƒ ', 'í™ˆ');
+  String get workouts => _pick('Workouts', 'Antrenmanlar', 'Workouts', 'EntraÃ®nements', 'Entrenos', 'Allenamenti', 'Treinos', 'Ø§Ù„ØªÙ…Ø§Ø±ÙŠÙ†', 'à¤µà¤°à¥à¤•à¤†à¤‰à¤Ÿ', 'è®­ç»ƒ', 'ãƒ¯ãƒ¼ã‚¯ã‚¢ã‚¦ãƒˆ', 'ìš´ë™');
+  String get programs => _pick('Programs', 'Programlar', 'Programme', 'Programmes', 'Programas', 'Programmi', 'Programas', 'Ø§Ù„Ø¨Ø±Ø§Ù…Ø¬', 'à¤ªà¥à¤°à¥‹à¤—à¥à¤°à¤¾à¤®', 'è®¡åˆ’', 'ãƒ—ãƒ­ã‚°ãƒ©ãƒ ', 'í”„ë¡œê·¸ëž¨');
+  String get progress => _pick('Progress', 'Ä°lerleme', 'Fortschritt', 'ProgrÃ¨s', 'Progreso', 'Progressi', 'Progresso', 'Ø§Ù„ØªÙ‚Ø¯Ù…', 'à¤ªà¥à¤°à¤—à¤¤à¤¿', 'è¿›åº¦', 'é€²æ—', 'ì§„í–‰');
+  String get profile => _pick('Profile', 'Profil', 'Profil', 'Profil', 'Perfil', 'Profilo', 'Perfil', 'Ø§Ù„Ù…Ù„Ù Ø§Ù„Ø´Ø®ØµÙŠ', 'à¤ªà¥à¤°à¥‹à¤«à¤¾à¤‡à¤²', 'æˆ‘çš„', 'ãƒ—ãƒ­ãƒ•ã‚£ãƒ¼ãƒ«', 'í”„ë¡œí•„');
+  String get appSubtitle => _pick('Home Workout, Weight Loss & Fitness', 'Evde Egzersiz, Kilo Verme ve Fitness', 'Home Training, Gewichtsverlust & Fitness', 'EntraÃ®nement Ã  domicile, perte de poids et fitness', 'Entrenamiento en casa, pÃ©rdida de peso y fitness', 'Allenamento a casa, perdita di peso e fitness', 'Treino em casa, perda de peso e fitness', 'ØªÙ…Ø§Ø±ÙŠÙ† Ù…Ù†Ø²Ù„ÙŠØ©ØŒ Ø®Ø³Ø§Ø±Ø© Ø§Ù„ÙˆØ²Ù† ÙˆØ§Ù„Ù„ÙŠØ§Ù‚Ø©', 'à¤¹à¥‹à¤® à¤µà¤°à¥à¤•à¤†à¤‰à¤Ÿ, à¤µà¤œà¤¨ à¤˜à¤Ÿà¤¾à¤¨à¤¾ à¤”à¤° à¤«à¤¿à¤Ÿà¤¨à¥‡à¤¸', 'å±…å®¶é”»ç‚¼, å‡é‡ä¸Žå¥èº«', 'ãƒ›ãƒ¼ãƒ ãƒ¯ãƒ¼ã‚¯ã‚¢ã‚¦ãƒˆã€æ¸›é‡ã¨ãƒ•ã‚£ãƒƒãƒˆãƒã‚¹', 'í™ˆíŠ¸ë ˆì´ë‹, ì²´ì¤‘ ê°ëŸ‰ ë° í”¼íŠ¸ë‹ˆìŠ¤');
+  String get todaysWorkout => _pick("Today's Workout", 'BugÃ¼nÃ¼n AntrenmanÄ±', 'Heutiges Training', "EntraÃ®nement d'aujourd'hui", 'Entrenamiento de hoy', 'Allenamento di oggi', 'Treino de hoje', 'ØªÙ…Ø±ÙŠÙ† Ø§Ù„ÙŠÙˆÙ…', 'à¤†à¤œ à¤•à¤¾ à¤µà¤°à¥à¤•à¤†à¤‰à¤Ÿ', 'ä»Šæ—¥è®­ç»ƒ', 'ä»Šæ—¥ã®ãƒ¯ãƒ¼ã‚¯ã‚¢ã‚¦ãƒˆ', 'ì˜¤ëŠ˜ì˜ ìš´ë™');
+  String get fiveExercisesVoiceCoach => _pick('5 Exercises Voice Coach', '5 Egzersiz Sesli KoÃ§', '5 Ãœbungen Sprachcoach', 'Coach vocal 5 exercices', 'Coach de voz de 5 ejercicios', 'Coach vocale 5 esercizi', 'Coach de voz 5 exercÃ­cios', 'Ù…Ø¯Ø±Ø¨ ØµÙˆØªÙŠ Ù„Ù€ 5 ØªÙ…Ø§Ø±ÙŠÙ†', '5 à¤à¤•à¥à¤¸à¤°à¤¸à¤¾à¤‡à¤œà¤¼ à¤µà¥‰à¤‡à¤¸ à¤•à¥‹à¤š', '5 ä¸ªç»ƒä¹ è¯­éŸ³æ•™ç»ƒ', '5ã‚¨ã‚¯ã‚µã‚µã‚¤ã‚ºéŸ³å£°ã‚³ãƒ¼ãƒ', '5ê°œ ìš´ë™ ìŒì„± ì½”ì¹˜');
+  String get startWorkout => _pick('Start Workout', 'AntrenmanÄ± BaÅŸlat', 'Training starten', 'Commencer lâ€™entraÃ®nement', 'Iniciar entrenamiento', 'Avvia allenamento', 'Iniciar treino', 'Ø§Ø¨Ø¯Ø£ Ø§Ù„ØªÙ…Ø±ÙŠÙ†', 'à¤µà¤°à¥à¤•à¤†à¤‰à¤Ÿ à¤¶à¥à¤°à¥‚ à¤•à¤°à¥‡à¤‚', 'å¼€å§‹è®­ç»ƒ', 'ãƒ¯ãƒ¼ã‚¯ã‚¢ã‚¦ãƒˆé–‹å§‹', 'ìš´ë™ ì‹œìž‘');
+  String get dailyStreak => _pick('Daily Streak', 'GÃ¼nlÃ¼k Seri', 'TÃ¤gliche Serie', 'SÃ©rie quotidienne', 'Racha diaria', 'Serie giornaliera', 'SequÃªncia diÃ¡ria', 'Ø³Ù„Ø³Ù„Ø© ÙŠÙˆÙ…ÙŠØ©', 'à¤¦à¥ˆà¤¨à¤¿à¤• à¤¸à¥à¤Ÿà¥à¤°à¥€à¤•', 'æ¯æ—¥è¿žç»­', 'ãƒ‡ã‚¤ãƒªãƒ¼ã‚¹ãƒˆãƒªãƒ¼ã‚¯', 'ì¼ì¼ ì—°ì†');
+  String get steps => _pick('Steps', 'AdÄ±m', 'Schritte', 'Pas', 'Pasos', 'Passi', 'Passos', 'Ø§Ù„Ø®Ø·ÙˆØ§Øª', 'à¤•à¤¦à¤®', 'æ­¥æ•°', 'æ­©æ•°', 'ê±¸ìŒ ìˆ˜');
+  String get water => _pick('Water', 'Su', 'Wasser', 'Eau', 'Agua', 'Acqua', 'Ãgua', 'Ø§Ù„Ù…Ø§Ø¡', 'à¤ªà¤¾à¤¨à¥€', 'æ°´', 'æ°´', 'ë¬¼');
+  String get bmi => _pick('BMI', 'BMI', 'BMI', 'IMC', 'IMC', 'BMI', 'IMC', 'Ù…Ø¤Ø´Ø± ÙƒØªÙ„Ø© Ø§Ù„Ø¬Ø³Ù…', 'à¤¬à¥€à¤à¤®à¤†à¤ˆ', 'BMI', 'BMI', 'BMI');
+  String get goalSelection => _pick('Goal Selection', 'Hedef SeÃ§imi', 'Zielauswahl', 'SÃ©lection dâ€™objectif', 'SelecciÃ³n de objetivo', 'Selezione obiettivo', 'SeleÃ§Ã£o de objetivo', 'Ø§Ø®ØªÙŠØ§Ø± Ø§Ù„Ù‡Ø¯Ù', 'à¤²à¤•à¥à¤·à¥à¤¯ à¤šà¤¯à¤¨', 'ç›®æ ‡é€‰æ‹©', 'ç›®æ¨™é¸æŠž', 'ëª©í‘œ ì„ íƒ');
+  String get quickWorkout => _pick('Quick Workout', 'HÄ±zlÄ± Antrenman', 'Schnelles Training', 'EntraÃ®nement rapide', 'Entrenamiento rÃ¡pido', 'Allenamento rapido', 'Treino rÃ¡pido', 'ØªÙ…Ø±ÙŠÙ† Ø³Ø±ÙŠØ¹', 'à¤¤à¥à¤µà¤°à¤¿à¤¤ à¤•à¤¸à¤°à¤¤', 'å¿«é€Ÿè®­ç»ƒ', 'ã‚¯ã‚¤ãƒƒã‚¯ãƒ¯ãƒ¼ã‚¯ã‚¢ã‚¦ãƒˆ', 'ë¹ ë¥¸ ìš´ë™');
+  String get challenge30Day => _pick('30-Day Challenge', '30 GÃ¼nlÃ¼k Meydan Okuma', '30-Tage-Challenge', 'DÃ©fi de 30 jours', 'DesafÃ­o de 30 dÃ­as', 'Sfida di 30 giorni', 'Desafio de 30 dias', 'ØªØ­Ø¯ÙŠ 30 ÙŠÙˆÙ…Ù‹Ø§', '30-à¤¦à¤¿à¤µà¤¸à¥€à¤¯ à¤šà¥ˆà¤²à¥‡à¤‚à¤œ', '30å¤©æŒ‘æˆ˜', '30æ—¥é–“ãƒãƒ£ãƒ¬ãƒ³ã‚¸', '30ì¼ ì±Œë¦°ì§€');
+  String get fatBurnPlan => _pick('Fat Burn Plan', 'YaÄŸ Yakma PlanÄ±', 'Fettverbrennungsplan', 'Plan brÃ»le-graisse', 'Plan para quemar grasa', 'Piano brucia grassi', 'Plano de queima de gordura', 'Ø®Ø·Ø© Ø­Ø±Ù‚ Ø§Ù„Ø¯Ù‡ÙˆÙ†', 'à¤«à¥ˆà¤Ÿ à¤¬à¤°à¥à¤¨ à¤ªà¥à¤²à¤¾à¤¨', 'ç‡ƒè„‚è®¡åˆ’', 'è„‚è‚ªç‡ƒç„¼ãƒ—ãƒ©ãƒ³', 'ì§€ë°© ì—°ì†Œ í”Œëžœ');
+  String get aiTrainer => _pick('AI Trainer', 'Yapay ZekÃ¢ AntrenÃ¶rÃ¼', 'KI-Trainer', 'Coach IA', 'Entrenador IA', 'Allenatore IA', 'Treinador IA', 'Ù…Ø¯Ø±Ø¨ Ø§Ù„Ø°ÙƒØ§Ø¡ Ø§Ù„Ø§ØµØ·Ù†Ø§Ø¹ÙŠ', 'à¤à¤†à¤ˆ à¤Ÿà¥à¤°à¥‡à¤¨à¤°', 'AIæ•™ç»ƒ', 'AIãƒˆãƒ¬ãƒ¼ãƒŠãƒ¼', 'AI íŠ¸ë ˆì´ë„ˆ');
+  String get createWorkoutForBellyFat => _pick('Create workout for belly fat', 'GÃ¶bek yaÄŸÄ± iÃ§in antrenman oluÅŸtur', 'Training gegen Bauchfett erstellen', 'CrÃ©er un entraÃ®nement pour la graisse du ventre', 'Crear entrenamiento para grasa abdominal', 'Crea allenamento per il grasso addominale', 'Criar treino para gordura abdominal', 'Ø£Ù†Ø´Ø¦ ØªÙ…Ø±ÙŠÙ†Ù‹Ø§ Ù„Ø¯Ù‡ÙˆÙ† Ø§Ù„Ø¨Ø·Ù†', 'à¤ªà¥‡à¤Ÿ à¤•à¥€ à¤šà¤°à¥à¤¬à¥€ à¤•à¥‡ à¤²à¤¿à¤ à¤µà¤°à¥à¤•à¤†à¤‰à¤Ÿ à¤¬à¤¨à¤¾à¤à¤‚', 'ä¸ºè…¹éƒ¨è„‚è‚ªåˆ›å»ºè®­ç»ƒ', 'ãŠè…¹ã®è„‚è‚ªå‘ã‘ãƒ¯ãƒ¼ã‚¯ã‚¢ã‚¦ãƒˆã‚’ä½œæˆ', 'ë³µë¶€ ì§€ë°©ìš© ìš´ë™ ë§Œë“¤ê¸°');
+  String get calorieTracker => _pick('Calorie Tracker', 'Kalori Takibi', 'Kalorien-Tracker', 'Suivi des calories', 'Seguimiento de calorÃ­as', 'Monitor calorie', 'Rastreador de calorias', 'Ù…ØªØªØ¨Ø¹ Ø§Ù„Ø³Ø¹Ø±Ø§Øª Ø§Ù„Ø­Ø±Ø§Ø±ÙŠØ©', 'à¤•à¥ˆà¤²à¥‹à¤°à¥€ à¤Ÿà¥à¤°à¥ˆà¤•à¤°', 'å¡è·¯é‡Œè¿½è¸ª', 'ã‚«ãƒ­ãƒªãƒ¼ãƒˆãƒ©ãƒƒã‚«ãƒ¼', 'ì¹¼ë¡œë¦¬ ì¶”ì ê¸°');
+  String get smartReminder => _pick('Smart Reminder', 'AkÄ±llÄ± HatÄ±rlatÄ±cÄ±', 'Intelligente Erinnerung', 'Rappel intelligent', 'Recordatorio inteligente', 'Promemoria intelligente', 'Lembrete inteligente', 'ØªØ°ÙƒÙŠØ± Ø°ÙƒÙŠ', 'à¤¸à¥à¤®à¤¾à¤°à¥à¤Ÿ à¤°à¤¿à¤®à¤¾à¤‡à¤‚à¤¡à¤°', 'æ™ºèƒ½æé†’', 'ã‚¹ãƒžãƒ¼ãƒˆãƒªãƒžã‚¤ãƒ³ãƒ€ãƒ¼', 'ìŠ¤ë§ˆíŠ¸ ì•Œë¦¼');
+  String get timeForWorkout => _pick('Time for workout', 'Antrenman zamanÄ±', 'Zeit fÃ¼rs Training', "C'est l'heure de s'entraÃ®ner", 'Hora de entrenar', 'Ãˆ ora di allenarsi', 'Hora do treino', 'Ø­Ø§Ù† ÙˆÙ‚Øª Ø§Ù„ØªÙ…Ø±ÙŠÙ†', 'à¤µà¤°à¥à¤•à¤†à¤‰à¤Ÿ à¤•à¤¾ à¤¸à¤®à¤¯', 'è¯¥é”»ç‚¼äº†', 'ãƒ¯ãƒ¼ã‚¯ã‚¢ã‚¦ãƒˆã®æ™‚é–“', 'ìš´ë™í•  ì‹œê°„');
+  String get premiumPlans => _pick('Premium Plans', 'Premium Planlar', 'Premium-PlÃ¤ne', 'Plans premium', 'Planes premium', 'Piani premium', 'Planos premium', 'Ø®Ø·Ø· Ø¨Ø±ÙŠÙ…ÙŠÙˆÙ…', 'à¤ªà¥à¤°à¥€à¤®à¤¿à¤¯à¤® à¤ªà¥à¤²à¤¾à¤¨', 'é«˜çº§è®¡åˆ’', 'ãƒ—ãƒ¬ãƒŸã‚¢ãƒ ãƒ—ãƒ©ãƒ³', 'í”„ë¦¬ë¯¸ì—„ í”Œëžœ');
+  String get loseWeight => _pick('Lose Weight', 'Kilo Ver', 'Gewicht verlieren', 'Perdre du poids', 'Perder peso', 'Perdere peso', 'Perder peso', 'Ø¥Ù†Ù‚Ø§Øµ Ø§Ù„ÙˆØ²Ù†', 'à¤µà¤œà¤¨ à¤˜à¤Ÿà¤¾à¤à¤‚', 'å‡è‚¥', 'æ¸›é‡', 'ì²´ì¤‘ ê°ëŸ‰');
+  String get buildMuscle => _pick('Build Muscle', 'Kas Yap', 'Muskeln aufbauen', 'DÃ©velopper les muscles', 'Ganar mÃºsculo', 'Costruire muscoli', 'Ganhar mÃºsculos', 'Ø¨Ù†Ø§Ø¡ Ø§Ù„Ø¹Ø¶Ù„Ø§Øª', 'à¤®à¤¾à¤‚à¤¸à¤ªà¥‡à¤¶à¤¿à¤¯à¤¾à¤ à¤¬à¤¨à¤¾à¤à¤‚', 'å¢žè‚Œ', 'ç­‹è‚‰ã‚’ã¤ã‘ã‚‹', 'ê·¼ìœ¡ ë§Œë“¤ê¸°');
+  String get stayFit => _pick('Stay Fit', 'Formda Kal', 'Fit bleiben', 'Rester en forme', 'Mantenerse en forma', 'Rimani in forma', 'Manter a forma', 'Ø§Ù„Ø­ÙØ§Ø¸ Ø¹Ù„Ù‰ Ø§Ù„Ù„ÙŠØ§Ù‚Ø©', 'à¤«à¤¿à¤Ÿ à¤°à¤¹à¥‡à¤‚', 'ä¿æŒå¥åº·', 'å¥åº·ã‚’ä¿ã¤', 'ëª¸ë§¤ ìœ ì§€');
+  String get improveCardio => _pick('Improve Cardio', 'Kardiyoyu GeliÅŸtir', 'Cardio verbessern', 'AmÃ©liorer le cardio', 'Mejorar cardio', 'Migliora il cardio', 'Melhorar cardio', 'ØªØ­Ø³ÙŠÙ† Ø§Ù„ÙƒØ§Ø±Ø¯ÙŠÙˆ', 'à¤•à¤¾à¤°à¥à¤¡à¤¿à¤¯à¥‹ à¤¸à¥à¤§à¤¾à¤°à¥‡à¤‚', 'æå‡å¿ƒè‚ºåŠŸèƒ½', 'æœ‰é…¸ç´ èƒ½åŠ›ã‚’å‘ä¸Š', 'ìœ ì‚°ì†Œ ëŠ¥ë ¥ í–¥ìƒ');
+  String get beforeAfter => _pick('Before & After', 'Ã–ncesi ve SonrasÄ±', 'Vorher & Nachher', 'Avant / AprÃ¨s', 'Antes y DespuÃ©s', 'Prima e Dopo', 'Antes e Depois', 'Ù‚Ø¨Ù„ ÙˆØ¨Ø¹Ø¯', 'à¤ªà¤¹à¤²à¥‡ à¤”à¤° à¤¬à¤¾à¤¦ à¤®à¥‡à¤‚', 'å‰åŽå¯¹æ¯”', 'ãƒ“ãƒ•ã‚©ãƒ¼ã‚¢ãƒ•ã‚¿ãƒ¼', 'ì „í›„ ë¹„êµ');
+  String get trackTransformation => _pick('Track Transformation', 'DeÄŸiÅŸimi Takip Et', 'Transformation verfolgen', 'Suivre la transformation', 'Seguir transformaciÃ³n', 'Monitora trasformazione', 'Acompanhar transformaÃ§Ã£o', 'ØªØªØ¨Ø¹ Ø§Ù„ØªØºÙŠÙŠØ±', 'à¤ªà¤°à¤¿à¤µà¤°à¥à¤¤à¤¨ à¤Ÿà¥à¤°à¥ˆà¤• à¤•à¤°à¥‡à¤‚', 'è¿½è¸ªå˜åŒ–', 'å¤‰åŒ–ã‚’è¿½è·¡', 'ë³€í™” ì¶”ì ');
+  String get achievements => _pick('Achievements', 'BaÅŸarÄ±lar', 'Erfolge', 'SuccÃ¨s', 'Logros', 'Risultati', 'Conquistas', 'Ø§Ù„Ø¥Ù†Ø¬Ø§Ø²Ø§Øª', 'à¤‰à¤ªà¤²à¤¬à¥à¤§à¤¿à¤¯à¤¾à¤', 'æˆå°±', 'å®Ÿç¸¾', 'ì—…ì ');
+  String get waterTracker => _pick('Water Tracker', 'Su Takibi', 'Wasser Tracker', 'Suivi de lâ€™eau', 'Seguimiento de agua', 'Monitoraggio acqua', 'Monitor de Ã¡gua', 'Ù…ØªØ§Ø¨Ø¹Ø© Ø§Ù„Ù…Ø§Ø¡', 'à¤µà¥‰à¤Ÿà¤° à¤Ÿà¥à¤°à¥ˆà¤•à¤°', 'é¥®æ°´è¿½è¸ª', 'æ°´åˆ†ãƒˆãƒ©ãƒƒã‚«ãƒ¼', 'ë¬¼ ì„­ì·¨ ì¶”ì ');
+  String get stepCounter => _pick('Step Counter', 'AdÄ±m SayacÄ±', 'SchrittzÃ¤hler', 'Compteur de pas', 'Contador de pasos', 'Contapassi', 'Contador de passos', 'Ø¹Ø¯Ø§Ø¯ Ø§Ù„Ø®Ø·ÙˆØ§Øª', 'à¤¸à¥à¤Ÿà¥‡à¤ª à¤•à¤¾à¤‰à¤‚à¤Ÿà¤°', 'è®¡æ­¥å™¨', 'æ­©æ•°è¨ˆ', 'ë§Œë³´ê³„');
+  String get addWaterGlass => _pick('Add Water', 'Su Ekle', 'Wasser hinzufÃ¼gen', 'Ajouter de lâ€™eau', 'Agregar agua', 'Aggiungi acqua', 'Adicionar Ã¡gua', 'Ø¥Ø¶Ø§ÙØ© Ù…Ø§Ø¡', 'à¤ªà¤¾à¤¨à¥€ à¤œà¥‹à¤¡à¤¼à¥‡à¤‚', 'æ·»åŠ é¥®æ°´', 'æ°´ã‚’è¿½åŠ ', 'ë¬¼ ì¶”ê°€');
+  String get adsPremium => _pick('Ads Premium', 'Reklam Premium', 'Werbe-Premium', 'Premium pubs', 'Premium con anuncios', 'Premium con pubblicitÃ ', 'Premium com anÃºncios', 'Ø¨Ø±ÙŠÙ…ÙŠÙˆÙ… Ù…Ø¹ Ø¥Ø¹Ù„Ø§Ù†Ø§Øª', 'à¤µà¤¿à¤œà¥à¤žà¤¾à¤ªà¤¨ à¤ªà¥à¤°à¥€à¤®à¤¿à¤¯à¤®', 'å¹¿å‘Šé«˜çº§ç‰ˆ', 'åºƒå‘Šä»˜ããƒ—ãƒ¬ãƒŸã‚¢ãƒ ', 'ê´‘ê³  í¬í•¨ í”„ë¦¬ë¯¸ì—„');
+  String get premiumAndAdsModel => _pick('Premium + Ads Model', 'Premium + Reklam Modeli', 'Premium + Werbemodell', 'ModÃ¨le Premium + pubs', 'Modelo Premium + anuncios', 'Modello Premium + pubblicitÃ ', 'Modelo Premium + anÃºncios', 'Ù†Ù…ÙˆØ°Ø¬ Ø¨Ø±ÙŠÙ…ÙŠÙˆÙ… + Ø¥Ø¹Ù„Ø§Ù†Ø§Øª', 'à¤ªà¥à¤°à¥€à¤®à¤¿à¤¯à¤® + à¤µà¤¿à¤œà¥à¤žà¤¾à¤ªà¤¨ à¤®à¥‰à¤¡à¤²', 'é«˜çº§ç‰ˆ + å¹¿å‘Šæ¨¡å¼', 'ãƒ—ãƒ¬ãƒŸã‚¢ãƒ  + åºƒå‘Šãƒ¢ãƒ‡ãƒ«', 'í”„ë¦¬ë¯¸ì—„ + ê´‘ê³  ëª¨ë¸');
+  String get theme => _pick('Theme', 'Tema', 'Thema', 'ThÃ¨me', 'Tema', 'Tema', 'Tema', 'Ø§Ù„Ø³Ù…Ø©', 'à¤¥à¥€à¤®', 'ä¸»é¢˜', 'ãƒ†ãƒ¼ãƒž', 'í…Œë§ˆ');
+  String get language => _pick('Language', 'Dil', 'Sprache', 'Langue', 'Idioma', 'Lingua', 'Idioma', 'Ø§Ù„Ù„ØºØ©', 'à¤­à¤¾à¤·à¤¾', 'è¯­è¨€', 'è¨€èªž', 'ì–¸ì–´');
+  String get bmiCalculator => _pick('BMI Calculator', 'BMI HesaplayÄ±cÄ±', 'BMI Rechner', 'Calculateur IMC', 'Calculadora IMC', 'Calcolatore BMI', 'Calculadora de IMC', 'Ø­Ø§Ø³Ø¨Ø© BMI', 'BMI à¤•à¥ˆà¤²à¤•à¥à¤²à¥‡à¤Ÿà¤°', 'BMI è®¡ç®—å™¨', 'BMIè¨ˆç®—æ©Ÿ', 'BMI ê³„ì‚°ê¸°');
+  String get widgetTitle => _pick('Widgets', 'Widgetler', 'Widgets', 'Widgets', 'Widgets', 'Widget', 'Widgets', 'Ø§Ù„ÙˆÙŠØ¯Ø¬Øª', 'à¤µà¤¿à¤œà¥‡à¤Ÿà¥à¤¸', 'å°ç»„ä»¶', 'ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ', 'ìœ„ì ¯');
+  String get healthIntegration => _pick('Health Integration', 'SaÄŸlÄ±k Entegrasyonu', 'Gesundheitsintegration', 'IntÃ©gration SantÃ©', 'IntegraciÃ³n de Salud', 'Integrazione Salute', 'IntegraÃ§Ã£o de SaÃºde', 'ØªÙƒØ§Ù…Ù„ Ø§Ù„ØµØ­Ø©', 'à¤¹à¥‡à¤²à¥à¤¥ à¤‡à¤‚à¤Ÿà¥€à¤—à¥à¤°à¥‡à¤¶à¤¨', 'å¥åº·é›†æˆ', 'ãƒ˜ãƒ«ã‚¹é€£æº', 'ê±´ê°• ì—°ë™');
+  String get darkMode => _pick('Dark Mode', 'Koyu Mod', 'Dunkler Modus', 'Mode sombre', 'Modo oscuro', 'ModalitÃ  scura', 'Modo escuro', 'Ø§Ù„ÙˆØ¶Ø¹ Ø§Ù„Ø¯Ø§ÙƒÙ†', 'à¤¡à¤¾à¤°à¥à¤• à¤®à¥‹à¤¡', 'æ·±è‰²æ¨¡å¼', 'ãƒ€ãƒ¼ã‚¯ãƒ¢ãƒ¼ãƒ‰', 'ë‹¤í¬ ëª¨ë“œ');
+  String get lightMode => _pick('Light Mode', 'AÃ§Ä±k Mod', 'Heller Modus', 'Mode clair', 'Modo claro', 'ModalitÃ  chiara', 'Modo claro', 'Ø§Ù„ÙˆØ¶Ø¹ Ø§Ù„ÙØ§ØªØ­', 'à¤²à¤¾à¤‡à¤Ÿ à¤®à¥‹à¤¡', 'æµ…è‰²æ¨¡å¼', 'ãƒ©ã‚¤ãƒˆãƒ¢ãƒ¼ãƒ‰', 'ë¼ì´íŠ¸ ëª¨ë“œ');
+  String get systemMode => _pick('System Mode', 'Sistem Modu', 'Systemmodus', 'Mode systÃ¨me', 'Modo del sistema', 'ModalitÃ  sistema', 'Modo do sistema', 'ÙˆØ¶Ø¹ Ø§Ù„Ù†Ø¸Ø§Ù…', 'à¤¸à¤¿à¤¸à¥à¤Ÿà¤® à¤®à¥‹à¤¡', 'ç³»ç»Ÿæ¨¡å¼', 'ã‚·ã‚¹ãƒ†ãƒ ãƒ¢ãƒ¼ãƒ‰', 'ì‹œìŠ¤í…œ ëª¨ë“œ');
+  String get all => _pick('All', 'TÃ¼mÃ¼', 'Alle', 'Tous', 'Todos', 'Tutti', 'Todos', 'Ø§Ù„ÙƒÙ„', 'à¤¸à¤­à¥€', 'å…¨éƒ¨', 'ã™ã¹ã¦', 'ì „ì²´');
+  String get noEquipment => _pick('No Equipment', 'EkipmansÄ±z', 'Ohne GerÃ¤te', 'Sans Ã©quipement', 'Sin equipo', 'Senza attrezzi', 'Sem equipamento', 'Ø¨Ø¯ÙˆÙ† Ù…Ø¹Ø¯Ø§Øª', 'à¤¬à¤¿à¤¨à¤¾ à¤‰à¤ªà¤•à¤°à¤£', 'æ— å™¨æ¢°', 'å™¨å…·ãªã—', 'ìž¥ë¹„ ì—†ìŒ');
+  String get dumbbell => _pick('Dumbbell', 'DambÄ±l', 'Hantel', 'HaltÃ¨re', 'Mancuerna', 'Manubrio', 'Halter', 'Ø¯Ù…Ø¨Ù„', 'à¤¡à¤®à¥à¤¬à¤²', 'å“‘é“ƒ', 'ãƒ€ãƒ³ãƒ™ãƒ«', 'ë¤ë²¨');
+  String get resistanceBand => _pick('Resistance Band', 'DirenÃ§ BandÄ±', 'Widerstandsband', 'Bande de rÃ©sistance', 'Banda elÃ¡stica', 'Banda di resistenza', 'Banda elÃ¡stica', 'Ø­Ø¨Ù„ Ù…Ù‚Ø§ÙˆÙ…Ø©', 'à¤°à¥‡à¤œà¤¼à¤¿à¤¸à¥à¤Ÿà¥‡à¤‚à¤¸ à¤¬à¥ˆà¤‚à¤¡', 'é˜»åŠ›å¸¦', 'ãƒ¬ã‚¸ã‚¹ã‚¿ãƒ³ã‚¹ãƒãƒ³ãƒ‰', 'ì €í•­ ë°´ë“œ');
+  String get gym => _pick('Gym', 'Spor Salonu', 'Fitnessstudio', 'Salle de sport', 'Gimnasio', 'Palestra', 'Academia', 'ØµØ§Ù„Ø© Ø±ÙŠØ§Ø¶ÙŠØ©', 'à¤œà¤¿à¤®', 'å¥èº«æˆ¿', 'ã‚¸ãƒ ', 'í—¬ìŠ¤ìž¥');
+  String get cardio => _pick('Cardio', 'Kardiyo', 'Cardio', 'Cardio', 'Cardio', 'Cardio', 'Cardio', 'ÙƒØ§Ø±Ø¯ÙŠÙˆ', 'à¤•à¤¾à¤°à¥à¤¡à¤¿à¤¯à¥‹', 'æœ‰æ°§', 'æœ‰é…¸ç´ ', 'ìœ ì‚°ì†Œ');
+  String get abs => _pick('Abs', 'KarÄ±n', 'Bauch', 'Abdos', 'Abdominales', 'Addominali', 'Abdominais', 'Ø§Ù„Ø¨Ø·Ù†', 'à¤à¤¬à¥à¤¸', 'è…¹è‚Œ', 'è…¹ç­‹', 'ë³µê·¼');
+  String get legs => _pick('Legs', 'Bacaklar', 'Beine', 'Jambes', 'Piernas', 'Gambe', 'Pernas', 'Ø§Ù„Ø³Ø§Ù‚ÙŠÙ†', 'à¤ªà¥ˆà¤°', 'è…¿', 'è„š', 'ë‹¤ë¦¬');
+  String get arms => _pick('Arms', 'Kollar', 'Arme', 'Bras', 'Brazos', 'Braccia', 'BraÃ§os', 'Ø§Ù„Ø°Ø±Ø§Ø¹ÙŠÙ†', 'à¤¬à¤¾à¤‚à¤¹à¥‡à¤‚', 'æ‰‹è‡‚', 'è…•', 'íŒ”');
+  String get fullBody => _pick('Full Body', 'TÃ¼m VÃ¼cut', 'GanzkÃ¶rper', 'Corps entier', 'Cuerpo completo', 'Corpo intero', 'Corpo inteiro', 'Ø§Ù„Ø¬Ø³Ù… Ø¨Ø§Ù„ÙƒØ§Ù…Ù„', 'à¤ªà¥‚à¤°à¥à¤£ à¤¶à¤°à¥€à¤°', 'å…¨èº«', 'å…¨èº«', 'ì „ì‹ ');
+  String get hiit => _pick('HIIT', 'HIIT', 'HIIT', 'HIIT', 'HIIT', 'HIIT', 'HIIT', 'Ù‡ÙŠØª', 'HIIT', 'HIIT', 'HIIT', 'HIIT');
+  String get stretch => _pick('Stretch', 'Esneme', 'Dehnen', 'Ã‰tirement', 'Estiramiento', 'Stretching', 'Alongamento', 'ØªÙ…Ø¯Ø¯', 'à¤¸à¥à¤Ÿà¥à¤°à¥‡à¤š', 'æ‹‰ä¼¸', 'ã‚¹ãƒˆãƒ¬ãƒƒãƒ', 'ìŠ¤íŠ¸ë ˆì¹­');
 }
-
 
 class ExerciseDetailScreen extends StatelessWidget {
   final ExerciseItem exercise;
   final Strings t;
-
-  const ExerciseDetailScreen({
-    super.key,
-    required this.exercise,
-    required this.t,
-  });
-
-  String equipmentLabelLocal(Strings t, EquipmentType e) {
-    switch (e) {
-      case EquipmentType.none:
-        return t.noEquipment;
-      case EquipmentType.dumbbell:
-        return t.dumbbell;
-      case EquipmentType.resistanceBand:
-        return t.resistanceBand;
-      case EquipmentType.gym:
-        return t.gym;
-    }
-  }
-
+  const ExerciseDetailScreen({super.key, required this.exercise, required this.t});
   @override
   Widget build(BuildContext context) {
-    final exercise = this.exercise;
-    final t = this.t;
-
     return Scaffold(
       appBar: AppBar(title: Text(exercise.name)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    exercise.name,
-                    style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w800),
-                  ),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      Chip(label: Text(categoryLabel(t, exercise.category))),
-                      Chip(label: Text('${exercise.durationSec} sn')),
-                      Chip(label: Text('${exercise.calories} kcal')),
-                      Chip(label: Text(equipmentLabelLocal(t, exercise.equipment))),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text(exercise.description, style: const TextStyle(fontSize: 16, height: 1.5)),
-            const SizedBox(height: 24),
-            if (exercise.gifAsset.isNotEmpty)
-              ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Image.asset(
-                  exercise.gifAsset,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      height: 220,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: const Text('GIF bulunamadı'),
-                    );
-                  },
-                ),
-              )
-            else if (exercise.imageAsset.isNotEmpty)
-              ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Image.asset(
-                  exercise.imageAsset,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      height: 220,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: const Text('Görsel bulunamadı'),
-                    );
-                  },
-                ),
-              ),
-          ],
-        ),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(20)),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(exercise.name, style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w800)),
+              const SizedBox(height: 12),
+              Wrap(spacing: 8, runSpacing: 8, children: [Chip(label: Text(categoryLabel(t, exercise.category))), Chip(label: Text('${exercise.durationSec} sn')), Chip(label: Text('${exercise.calories} kcal')), Chip(label: Text(equipmentLabel(t, exercise.equipment)))]),
+            ]),
+          ),
+          const SizedBox(height: 20),
+          Text(exercise.description, style: const TextStyle(fontSize: 16, height: 1.5)),
+          const SizedBox(height: 24),
+          if (exercise.gifAsset.isNotEmpty)
+            ClipRRect(borderRadius: BorderRadius.circular(20), child: Image.asset(exercise.gifAsset, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Container(height: 220, alignment: Alignment.center, decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(20)), child: const Text('GIF bulunamadÄ±'))))
+          else if (exercise.imageAsset.isNotEmpty)
+            ClipRRect(borderRadius: BorderRadius.circular(20), child: Image.asset(exercise.imageAsset, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Container(height: 220, alignment: Alignment.center, decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(20)), child: const Text('GÃ¶rsel bulunamadÄ±')))),
+        ]),
       ),
     );
   }
@@ -1089,81 +644,30 @@ class ExerciseDetailScreen extends StatelessWidget {
 class ProgramDetailScreen extends StatelessWidget {
   final ProgramItem program;
   final Strings t;
-
-  const ProgramDetailScreen({
-    super.key,
-    required this.program,
-    required this.t,
-  });
-
+  const ProgramDetailScreen({super.key, required this.program, required this.t});
   @override
   Widget build(BuildContext context) {
     final previewGif = programGifAsset(program);
-
     return Scaffold(
-      appBar: AppBar(
-        title: Text(program.title),
-      ),
+      appBar: AppBar(title: Text(program.title)),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           if (previewGif != null)
-            ClipRRect(
-              borderRadius: BorderRadius.circular(24),
-              child: Image.asset(
-                previewGif,
-                height: 180,
-                width: double.infinity,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    height: 180,
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(colors: [AppTheme.primary, AppTheme.accent]),
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    alignment: Alignment.center,
-                    child: const Icon(Icons.play_circle_fill, size: 44, color: Colors.white),
-                  );
-                },
-              ),
-            )
+            ClipRRect(borderRadius: BorderRadius.circular(24), child: Image.asset(previewGif, height: 180, width: double.infinity, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Container(height: 180, decoration: BoxDecoration(gradient: const LinearGradient(colors: [AppTheme.primary, AppTheme.accent]), borderRadius: BorderRadius.circular(24)), alignment: Alignment.center, child: const Icon(Icons.play_circle_fill, size: 44, color: Colors.white))))
           else
-            Container(
-              height: 180,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(colors: [AppTheme.primary, AppTheme.accent]),
-                borderRadius: BorderRadius.circular(24),
-              ),
-              alignment: Alignment.center,
-              child: const Icon(Icons.play_circle_fill, size: 44, color: Colors.white),
-            ),
+            Container(height: 180, decoration: BoxDecoration(gradient: const LinearGradient(colors: [AppTheme.primary, AppTheme.accent]), borderRadius: BorderRadius.circular(24)), alignment: Alignment.center, child: const Icon(Icons.play_circle_fill, size: 44, color: Colors.white)),
           const SizedBox(height: 16),
           Card(
             child: Padding(
               padding: const EdgeInsets.all(18),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    program.title,
-                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(program.group),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      Chip(label: Text('${program.totalDays} days')),
-                      Chip(label: Text(program.level.name)),
-                      Chip(label: Text(equipmentLabel(t, program.equipment))),
-                      if (program.isPremium) const Chip(label: Text('Premium')),
-                    ],
-                  ),
-                ],
-              ),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(program.title, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800)),
+                const SizedBox(height: 8),
+                Text(program.group),
+                const SizedBox(height: 12),
+                Wrap(spacing: 8, runSpacing: 8, children: [Chip(label: Text('${program.totalDays} days')), Chip(label: Text(program.level.name)), Chip(label: Text(equipmentLabel(t, program.equipment))), if (program.isPremium) const Chip(label: Text('Premium'))]),
+              ]),
             ),
           ),
           const SizedBox(height: 16),
@@ -1173,46 +677,17 @@ class ProgramDetailScreen extends StatelessWidget {
               margin: const EdgeInsets.only(bottom: 12),
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Day ${day.day}',
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
-                    ),
-                    const SizedBox(height: 10),
-                    ...exercises.map((exercise) {
-                      return ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        leading: Container(
-                          width: 48,
-                          height: 48,
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(colors: [AppTheme.primary, AppTheme.accent]),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          alignment: Alignment.center,
-                          child: const Icon(Icons.play_arrow, color: Colors.white),
-                        ),
-                        title: Text(exercise.name),
-                        subtitle: Text(
-                          '${categoryLabel(t, exercise.category)} • ${exercise.durationSec} sn • ${exercise.calories} kcal',
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => ExerciseDetailScreen(
-                                exercise: exercise,
-                                t: t,
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    }),
-                  ],
-                ),
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text('Day ${day.day}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                  const SizedBox(height: 10),
+                  ...exercises.map((exercise) => ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: Container(width: 48, height: 48, decoration: BoxDecoration(gradient: const LinearGradient(colors: [AppTheme.primary, AppTheme.accent]), borderRadius: BorderRadius.circular(10)), alignment: Alignment.center, child: const Icon(Icons.play_arrow, color: Colors.white)),
+                    title: Text(exercise.name),
+                    subtitle: Text('${categoryLabel(t, exercise.category)} â€¢ ${exercise.durationSec} sn â€¢ ${exercise.calories} kcal'),
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ExerciseDetailScreen(exercise: exercise, t: t))),
+                  )),
+                ]),
               ),
             );
           }),
