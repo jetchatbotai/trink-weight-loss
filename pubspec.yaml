@@ -16,7 +16,7 @@ dev_dependencies:
     sdk: flutter
 
 flutter:
-uses-material-design: true
-assets:
-  - assets/exercises/
-  - assets/gifs/
+  uses-material-design: true
+  assets:
+    - assets/exercises/
+    - assets/gifs/
